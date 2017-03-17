@@ -1,0 +1,1 @@
+java -jar sablecc.jar -d .. simpleAdder.sable

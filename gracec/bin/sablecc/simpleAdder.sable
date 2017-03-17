@@ -1,0 +1,20 @@
+/* simpleAdder.sable - A very simple program that recognizes two integers being added. */ 
+Package simpleAdder ; 
+     
+Helpers 
+    /* Our helpers */ 
+    digit = ['0' .. '9'] ; 
+    sp = ' ' ; 
+    nl = 10 ; 
+    cr = 13 ;
+    eol = nl | cr | cr nl ;
+  
+Tokens 
+    /* Our simple token definition(s). */ 
+    integer = digit+ sp*; 
+    plus = '+' sp*; 
+    semi = ';' eol?; 
+  
+Productions 
+    /* Our super-simple grammar */ 
+    program = [left]:integer plus [right]:integer semi;
