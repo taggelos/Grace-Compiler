@@ -1,0 +1,49 @@
+Onoma : Rafail Ilias
+AM : 1115201300149
+
+Part1 :
+
+Arxikh grammatikh :
+
+exp -> num | exp op exp | (exp)
+
+op -> + | - | * | /
+
+num -> 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+
+Metasxhmatismos grammatikhs gia pros8hkh proteraiothtas :
+
+expr -> expr + term
+     |  expr - term
+     |  expr - term
+
+term -> term * factor
+     |  term / factor
+     |  factor
+
+factor -> nom
+       | ( expr )
+
+num -> 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+
+O telikos metasxhmatismos gia na apaleipsoume thn aristerh anadromh einai o e3hs :
+
+#1) goal -> expr
+
+#2) expr -> term expr2
+
+#3) expr2 -> + term expr2
+#4)       |  - term expr2
+#5)       |  e
+
+#6) term -> factor term2
+ 
+#7) term2 -> * factor term2
+#8)       |  / factor term2
+#9)       |  e
+
+#10) factor -> num
+#11)        | ( expr )
+
+num -> 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+

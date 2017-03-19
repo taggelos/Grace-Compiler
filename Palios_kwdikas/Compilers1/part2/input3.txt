@@ -1,0 +1,25 @@
+may_be_gerund(x) {
+    if ("ing" in x)
+        "yes"
+    else
+        "no"
+}
+
+repeat(x) {
+    x + x
+}
+
+cond_repeat_gerund(c, x) {
+    if (c = "yes")
+        if (may_be_gerund(x) = "yes")
+            repeat(x)
+        else
+            x
+    else
+        x
+
+}
+
+cond_repeat_gerund("yes", "running")
+cond_repeat_gerund("yes", "run")
+cond_repeat_gerund("no", "running")

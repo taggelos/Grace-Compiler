@@ -1,0 +1,243 @@
+import syntaxtree.*;
+import java.util.*;
+import java.util.Vector;
+import visitor.GJDepthFirst;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
+
+public class SpigletVisitor extends GJDepthFirst<String,String> {
+
+	
+
+	public SpigletVisitor() {
+
+	}
+
+
+
+   /**
+    * f0 -> "MAIN"
+    * f1 -> StmtList()
+    * f2 -> "END"
+    * f3 -> ( Procedure() )*
+    * f4 -> <EOF>
+    */
+   public String visit(Goal n, String argu) throws Exception {
+
+
+   }
+
+   /**
+    * f0 -> ( ( Label() )? Stmt() )*
+    */
+   public String visit(StmtList n, String argu) throws Exception {
+
+
+   }
+
+   /**
+    * f0 -> Label()
+    * f1 -> "["
+    * f2 -> IntegerLiteral()
+    * f3 -> "]"
+    * f4 -> StmtExp()
+    */
+   public String visit(Procedure n, String argu) throws Exception {
+
+
+   }
+
+   /**
+    * f0 -> NoOpStmt()
+    *       | ErrorStmt()
+    *       | CJumpStmt()
+    *       | JumpStmt()
+    *       | HStoreStmt()
+    *       | HLoadStmt()
+    *       | MoveStmt()
+    *       | PrintStmt()
+    */
+   public String visit(Stmt n, String argu) throws Exception {
+
+
+   }
+
+   /**
+    * f0 -> "NOOP"
+    */
+   public String visit(NoOpStmt n, String argu) throws Exception {
+
+
+   }
+
+   /**
+    * f0 -> "ERROR"
+    */
+   public String visit(ErrorStmt n, String argu) throws Exception {
+
+
+   }
+
+   /**
+    * f0 -> "CJUMP"
+    * f1 -> Temp()
+    * f2 -> Label()
+    */
+   public String visit(CJumpStmt n, String argu) throws Exception {
+
+
+   }
+
+   /**
+    * f0 -> "JUMP"
+    * f1 -> Label()
+    */
+   public String visit(JumpStmt n, String argu) throws Exception {
+
+
+   }
+
+   /**
+    * f0 -> "HSTORE"
+    * f1 -> Temp()
+    * f2 -> IntegerLiteral()
+    * f3 -> Temp()
+    */
+   public String visit(HStoreStmt n, String argu) throws Exception {
+
+
+   }
+
+   /**
+    * f0 -> "HLOAD"
+    * f1 -> Temp()
+    * f2 -> Temp()
+    * f3 -> IntegerLiteral()
+    */
+   public String visit(HLoadStmt n, String argu) throws Exception {
+
+
+   }
+
+   /**
+    * f0 -> "MOVE"
+    * f1 -> Temp()
+    * f2 -> Exp()
+    */
+   public String visit(MoveStmt n, String argu) throws Exception {
+
+
+   }
+
+   /**
+    * f0 -> "PRINT"
+    * f1 -> SimpleExp()
+    */
+   public String visit(PrintStmt n, String argu) throws Exception {
+
+
+   }
+
+   /**
+    * f0 -> Call()
+    *       | HAllocate()
+    *       | BinOp()
+    *       | SimpleExp()
+    */
+   public String visit(Exp n, String argu) throws Exception {
+
+
+   }
+
+   /**
+    * f0 -> "BEGIN"
+    * f1 -> StmtList()
+    * f2 -> "RETURN"
+    * f3 -> SimpleExp()
+    * f4 -> "END"
+    */
+   public String visit(StmtExp n, String argu) throws Exception {
+
+
+   }
+
+   /**
+    * f0 -> "CALL"
+    * f1 -> SimpleExp()
+    * f2 -> "("
+    * f3 -> ( Temp() )*
+    * f4 -> ")"
+    */
+   public String visit(Call n, String argu) throws Exception {
+
+
+   }
+
+   /**
+    * f0 -> "HALLOCATE"
+    * f1 -> SimpleExp()
+    */
+   public String visit(HAllocate n, String argu) throws Exception {
+
+
+   }
+
+   /**
+    * f0 -> Operator()
+    * f1 -> Temp()
+    * f2 -> SimpleExp()
+    */
+   public String visit(BinOp n, String argu) throws Exception {
+
+
+   }
+
+   /**
+    * f0 -> "LT"
+    *       | "PLUS"
+    *       | "MINUS"
+    *       | "TIMES"
+    */
+   public String visit(Operator n, String argu) throws Exception {
+
+
+   }
+
+   /**
+    * f0 -> Temp()
+    *       | IntegerLiteral()
+    *       | Label()
+    */
+   public String visit(SimpleExp n, String argu) throws Exception {
+
+
+   }
+
+   /**
+    * f0 -> "TEMP"
+    * f1 -> IntegerLiteral()
+    */
+   public String visit(Temp n, String argu) throws Exception {
+
+
+   }
+
+   /**
+    * f0 -> <INTEGER_LITERAL>
+    */
+   public String visit(IntegerLiteral n, String argu) throws Exception {
+
+
+   }
+
+   /**
+    * f0 -> <IDENTIFIER>
+    */
+   public String visit(Label n, String argu) throws Exception {
+
+
+   }
+
+}

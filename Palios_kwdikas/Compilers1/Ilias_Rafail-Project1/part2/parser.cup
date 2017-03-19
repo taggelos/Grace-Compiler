@@ -1,0 +1,69 @@
+/* Simple +/-/* expression language; parser evaluates constant expressions on the fly*/
+/**
+ *  Package and Import Specifications
+ */
+import java_cup.runtime.*;
+
+/**
+ *  Usercode Components
+ */
+parser code {:
+    // Connect this parser to a scanner!
+    Scanner s;
+    Parser(Scanner s){ this.s=s; }
+:}
+
+/* define how to connect to the scanner! */
+scan with {: return s.next_token(); :};
+
+/**
+ *  Symbol Lists
+ */
+
+/* Terminals (tokens returned by the scanner). */
+terminal            IF, ELSE, PLUS, EQUAL, IN, LAG, RAG, LPAREN, RPAREN, COMMA;
+terminal String     STRING_LITERAL;        
+
+/*  Non terminals */
+non terminal           expr_list;
+non terminal String    expr, expr2, expr3, function, condition, args;   // used to store evaluated subexpressions
+
+/**
+ *  The Grammar Rules
+ */
+
+expr_list   ::= expr_list expr:e                            {: System.out.println(e);			                        :}
+			| expr:e                                        {: System.out.println(e);			                        :}
+;
+
+expr        ::= function:f                                  {: RESULT = "(" + f + ")";                                  :}
+            |   function:f expr2:e                          {: RESULT = "(define (" + f +")" + e + ")";                 :}
+            ;
+
+expr2       ::= LAG expr3:e RAG                             {: RESULT = e;                                              :}
+            ;
+
+expr3       ::= STRING_LITERAL:s expr3:e                    {: RESULT = " " + s + e;                                    :}
+            | STRING_LITERAL:s PLUS expr3:e                 {: RESULT = "(string-append "+ s + e +")";                  :}
+            | function:f PLUS expr3:e                       {: RESULT = "(string-append "+ f + e +")";                  :}
+            | IF LPAREN condition:c RPAREN expr3:e          {: RESULT = "(if " + c + e;                                 :}
+            | function:f expr3:e                            {: RESULT = "(" + f + ")" + e;                              :}
+            | ELSE STRING_LITERAL:s expr3:e                 {: RESULT = " " + s + ")" + e;                              :}
+            | ELSE function:f expr3:e                       {: RESULT = "(" + f + ")" + e;                              :}
+            |                                               {: RESULT = " ";                                            :}
+            ;
+
+condition   ::= STRING_LITERAL:s1 EQUAL STRING_LITERAL:s2   {: RESULT = "(equal? " + s1 + " " + s2 + ")";               :}
+            | STRING_LITERAL:s1 IN STRING_LITERAL:s2        {: RESULT = "(substring? " + s1 + " " + s2 + ")";           :}
+            | function:f EQUAL expr3:e                      {: RESULT = "(equal? " + "(" + f + ")" + " " + e + ")";     :}
+            | function:f IN expr3:e                         {: RESULT = "(substring? " + "(" + f + ")" + " " + e + ")"; :}
+            ;
+
+function    ::= STRING_LITERAL:s LPAREN args:a RPAREN       {:   RESULT = s + a;                                        :}
+            ;
+
+args        ::= function:f args:a                           {:  RESULT = " " + "(" + f + ")" + a;                       :}
+            | STRING_LITERAL:s args:a                       {:  RESULT = " " + s + " " + a;                             :}
+            | COMMA args:a                                  {:  RESULT = a;                                             :}
+            |                                               {: RESULT = " ";                                            :}
+            ;

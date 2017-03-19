@@ -1,0 +1,10 @@
+MAIN
+    //	MOVE TEMP 1 3
+    	MOVE TEMP 2 5
+L1		NOOP
+       	MOVE TEMP 1 TEMP 2
+		MOVE TEMP 5 TEMP 1
+       	CJUMP TEMP 2 L1
+       	PRINT TEMP 5
+END
+

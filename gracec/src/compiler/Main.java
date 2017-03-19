@@ -1,10 +1,10 @@
-/*package compiler;
+package compiler;
 
 import java.io.PushbackReader;
 
-import org.sablecc.sablecc.lexer.Lexer;
-import org.sablecc.sablecc.node.EOF;
-import org.sablecc.sablecc.node.Token;
+import lexer.Lexer;
+import node.EOF;
+import node.Token;
 
 import java.io.InputStreamReader;
 
@@ -30,4 +30,4 @@ public class Main {
                 System.exit(0);
         }
 
-}*/
+}

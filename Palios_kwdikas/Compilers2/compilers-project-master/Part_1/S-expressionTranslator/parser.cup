@@ -1,0 +1,80 @@
+/* Simple +/-/*///% expression language; parser evaluates constant expressions on the fly*/
+/* Package and Import Specifications */
+import java_cup.runtime.*;
+
+/* Usercode Components */
+parser code {:
+    // Connect this parser to a scanner!
+    Scanner s;
+    Parser(Scanner s){ this.s = s; }
+:}
+
+/* define how to connect to the scanner! */
+scan with {: return s.next_token(); :};
+
+/* Symbol Lists */
+
+/* Terminals (tokens returned by the scanner). */
+terminal            COMMA, IF, ELSE, LPAREN, RPAREN, LBRAC, RBRAC; 
+terminal            EQUAL, GREATERTHAN, LESSTHAN;
+terminal            PLUS, MINUS, TIMES, DIV, MOD, UMINUS;
+terminal String     IDENTIFIER;
+terminal Integer    NUMBER;        // our scanner provides numbers as integers
+
+/*  Non terminals */
+non terminal String    program, statement_list, identifier_list, statement, function, condition, func_declaration;
+non terminal String    expression;      // used to store evaluated subexpressions
+
+/* Precedence Declarations */
+precedence left ELSE;
+precedence left LPAREN;
+precedence left PLUS, MINUS;
+precedence left TIMES, DIV, MOD;
+precedence left UMINUS;
+
+/* The Grammar Rules */
+
+program         ::= statement_list:sl                                               {: System.out.println("The S-Expression output:\n" + sl); :}
+                   ;
+
+statement_list   ::= statement_list:sl statement:s                                  {: RESULT = (sl != null)? new String(sl + "\n" + s) : s; :}
+                   | /* ε */                                                        {: /* do nothing */ :}
+                   ;
+
+statement        ::= expression:e                                                   {: RESULT = e; :}
+                   | IF LPAREN condition:c RPAREN statement:s                       {: RESULT = (s != null)? new String("\n\t(if (" + c + ") " + s + ")\n\t") : new String("\n\t(if (" + c + "))\n"); :}
+                   | IF LPAREN condition:c RPAREN statement:s1 ELSE statement:s2    {: String t1 = (s1 == null)?"":s1; String t2 = (s2 == null)?"":s2; 
+                                                                                       RESULT = (t2.matches("(\r\n|[\r\n]|\r\n\t|[\r\n\t])*.*if(.*(\r\n|[\r\n]|\r\n\t|[\r\n\t])*)*")) ? 
+                                                                                       new String("\n\t(if (" + c + ") " + t1 + "\t\t" + t2 + ")") : new String("\n\t(if (" + c + ") " + t1 + "\n\t\t" + t2 + ")"); :}
+                   | func_declaration:fd                                            {: RESULT = fd; :}
+                   ;
+
+identifier_list  ::= expression:e COMMA identifier_list:il                          {: RESULT = (il != null)? new String(e + " " + il) : e; :}
+                   | expression:e                                                   {: RESULT = e; :}
+                   | /* ε */                                                        {: /* do nothing */ :}
+                   ;
+
+function         ::= IDENTIFIER:i LPAREN identifier_list:il RPAREN                  {: RESULT = (il != null)? new String("(" + i + " " + il + ")") : new String("(" + i + ")"); :}
+                   ;
+
+func_declaration ::= function:f LBRAC statement_list:sl RBRAC                       {: RESULT = (sl != null)? new String("(define " + f + " " + sl + ")") : new String("(define " + f + ")"); :}
+                   ;
+
+condition        ::= LPAREN condition:c RPAREN                                      {: RESULT = new String("(" + c + ")"); :}
+                   | expression:e1 EQUAL expression:e2                              {: RESULT = new String("= " + e1 + " " + e2); :}
+                   | expression:e1 GREATERTHAN expression:e2                        {: RESULT = new String("> " + e1 + " " + e2); :}
+                   | expression:e1 LESSTHAN expression:e2                           {: RESULT = new String("< " + e1 + " " + e2); :}
+                   ;
+
+expression       ::= expression:e1 PLUS  expression:e2                              {: RESULT = new String("(+ " + e1 + " " + e2 + ")"); :}
+                   | expression:e1 MINUS expression:e2                              {: RESULT = new String("(- " + e1 + " " + e2 + ")"); :}
+                   | expression:e1 TIMES expression:e2                              {: RESULT = new String("(* " + e1 + " " + e2 + ")"); :}
+                   | expression:e1 DIV expression:e2                                {: RESULT = new String("(/ " + e1 + " " + e2 + ")"); :}
+                   | expression:e1 MOD expression:e2                                {: RESULT = new String("(modulo " + e1 + " " + e2 + ")"); :}
+                   | MINUS expression:e                                             {: RESULT = new String("(-" + e + ")"); :}
+                  %prec UMINUS
+                   | NUMBER:n                                                       {: RESULT = new String(Integer.toString(n)); :}
+                   | function:f                                                     {: RESULT = f; :}
+                   | IDENTIFIER:i                                                   {: RESULT = i; :}
+                   | LPAREN expression:e RPAREN                                     {: RESULT = e; :}
+                   ;

@@ -1,0 +1,373 @@
+cJumpInstruction(?m, ?i) :- next(?m, ?i, ?j), 
+                            next(?m, ?i, ?k), 
+                            ?i+1 = ?k,
+                            ?j != ?k.
+                            
+jumpInstruction(?m, ?i) :- next(?m, ?i, ?j),
+                           ?i+1 = ?k,
+                           ?j != ?k,
+                           !next(?m, ?i, ?k).
+
+labelInstruction(?m, ?i, ?ins) :- 	next(?m, ?j, ?i),
+									?j+1 = ?k,
+									?i != ?k,
+									instruction(?m,?i,?ins).
+
+
+elseInstruction(?m, ?cj, ?else) :- cJumpInstruction(?m, ?cj),
+							 	   next(?m, ?cj, ?else),
+							 	   ?cj+1 = ?k,
+							 	   ?else != ?k.
+
+endInstruction(?m, ?cj, ?end) :- elseInstruction(?m, ?cj, ?else),
+								 ?prev+1 = ?else,
+								 next(?m, ?prev, ?end).
+
+
+jumpExistsBetween(?m, ?i, ?end) :- instruction(?m, ?i, ?ins1),
+								   instruction(?m, ?end, ?ins2),
+								   ?j > ?i,
+								   ?j < ?end,
+								   jumpInstruction(?m, ?j).
+
+labelExistsBetween(?m, ?i, ?end) :- instruction(?m, ?i, ?ins1),
+								   instruction(?m, ?end, ?ins2),
+								   ?j > ?i,
+								   ?j < ?end,
+								   labelInstruction(?m, ?j).
+
+
+ifInstruction(?m, ?cj, ?next) :- cJumpInstruction(?m, ?cj),
+							 	 next(?m, ?cj, ?next),
+							 	 elseInstruction(?m, ?cj, ?else),
+							 	 ?next != ?else.
+
+//Start of a method
+basicBlockStarts(?m, 1, ?ins) :- instruction(?m,1,?ins).
+
+//At a label
+basicBlockStarts(?m, ?i, ?ins) :- labelInstruction(?m, ?i, ?ins).
+//After jump / Cjump
+basicBlockStarts(?m, ?i, ?ins) :- instruction(?m,?i,?ins),
+								 previous(?m, ?i, ?k),
+								 cJumpInstruction(?m, ?k).
+
+basicBlockStarts(?m, ?i, ?ins) :- instruction(?m,?i,?ins),
+								 previous(?m, ?i, ?k),
+								 jumpInstruction(?m, ?k).
+
+
+//End of method
+basicBlockEnds(?m, ?starti, ?j, ?insj) :- 	instruction(?m ,?starti, ?insi),
+											instruction(?m ,?j, ?insj),
+											?j >= ?starti,
+											last(?m, ?j).
+//At a jump / Cjump
+basicBlockEnds(?m, ?starti, ?j, ?insj) :-	instruction(?m ,?starti, ?insi),
+											instruction(?m ,?j, ?insj),
+											?j >= ?starti,
+											cJumpInstruction(?m, ?j).
+												
+basicBlockEnds(?m, ?starti, ?j, ?insj) :-	instruction(?m ,?starti, ?insi),
+											instruction(?m ,?j, ?insj),
+											?j >= ?starti,
+											jumpInstruction(?m, ?j).
+
+//Before a label
+basicBlockEnds(?m, ?starti, ?j, ?insj) :- 	instruction(?m ,?starti, ?insi),
+											instruction(?m ,?j, ?insj),
+											?j >= ?starti,
+											next(?m, ?j, ?next),
+											labelInstruction(?m, ?next, ?nextins).
+
+basicBlock(?m, ?start, ?end) :- basicBlockStarts(?m, ?start, ?startins), 
+								basicBlockEnds(?m, ?start, ?end, ?endins),
+								!secondStop(?m, ?start, ?end).
+
+secondStop(?m, ?start, ?j) :- basicBlockEnds(?m, ?start, ?j, ?jins),
+							  ?k < ?j,
+							  basicBlockEnds(?m, ?start, ?k, ?kins).
+
+
+reachable(?m, ?i, ?j) :- next(?m, ?i, ?j).
+
+reachable(?m, ?i, ?j) :- next(?m, ?i, ?k),
+						 reachable(?m, ?k, ?j).
+
+
+reachableUp(?m, ?i, ?j) :- previous(?m, ?i, ?j),
+						   ?i > ?j.
+
+reachableUp(?m, ?i, ?j) :- previous(?m, ?i, ?k),
+						   ?i > ?j,
+						   reachableUp(?m, ?k, ?j).
+
+
+reachableUp2(?m, ?i, ?j) :- previous(?m, ?i, ?j).
+
+reachableUp2(?m, ?i, ?j) :- previous(?m, ?i, ?k),
+						   reachableUp2(?m, ?k, ?j).
+
+
+
+
+reachableDown(?m, ?i, ?j) :- ?j > ?i,
+							 next(?m, ?i, ?j).
+
+reachableDown(?m, ?i, ?j) :- ?j > ?i,
+							 next(?m, ?i, ?k),
+						 	 reachable(?m, ?k, ?j).
+
+
+
+
+last(?m, ?i) :- instruction(?m, ?i, ?insi), 
+				 ?i+1 = ?j,
+				 !instruction(?m,?j,?insj).
+
+def(?m, ?i, ?v) :- varDef(?m, ?i, ?v).
+
+use(?m, ?i, ?v) :- varUse(?m, ?i, ?v).
+
+
+out(?m, ?i, ?v) :- instruction(?m, ?i, ?ins),
+					// not last(?m, ?i),
+					next(?m, ?i, ?next),
+					in(?m,?next,?v).
+
+in(?m, ?i, ?v) :- out(?m, ?i, ?v),
+				  !def(?m, ?i, ?v).
+
+in(?m, ?i, ?v) :- use(?m, ?i, ?v).
+
+live(?m, ?i, ?v) :- in(?m, ?i, ?v). 
+
+
+
+deadAssignment(?m, ?i, ?ins) :- instruction(?m, ?i, ?ins),
+								varDef(?m, ?i, ?v),
+								dead(?m, ?i, ?v).
+
+
+
+//Not live in next instruction
+dead(?m, ?i, ?v) :- instruction(?m, ?i, ?ins),
+					var(?m, ?v),
+					next(?m, ?i, ?next),
+					!live(?m, ?next, ?v).
+
+previous(?m, ?i, ?j) :- next(?m, ?j, ?i).
+
+
+insideConditionAfterConst(?m, ?i, ?start) :- constMove(?m, ?start, ?v, ?c),
+											 instruction(?m, ?i, ?ins2),
+						   					 cJumpInstruction(?m, ?cj),
+						   					 ?cj > ?start,
+						   					 ifInstruction(?m, ?cj, ?if),
+						   					 elseInstruction(?m, ?cj, ?else),
+						   					 ?i >= ?if,
+						   					 ?i < ?else.
+
+
+insideIfCondition(?m, ?i) :- instruction(?m, ?i, ?ins2),
+	   					   cJumpInstruction(?m, ?cj),
+	   					   ifInstruction(?m, ?cj, ?if),
+	   					   elseInstruction(?m, ?cj, ?else),
+	   					   ?i >= ?if,
+	   					   ?i < ?else.
+
+insideElseCondition(?m, ?i) :- instruction(?m, ?i, ?ins2),
+	   					   	   cJumpInstruction(?m, ?cj),
+	   					   	   elseInstruction(?m, ?cj, ?else),
+	   					   	   endInstruction(?m, ?cj, ?end),
+	   					   	   ?i > ?else,
+	   					   	   ?i <= ?end.
+
+insideCondition(?m, ?i):-insideIfCondition(?m, ?i).
+insideCondition(?m, ?i):-insideElseCondition(?m, ?i).
+
+
+
+
+inSameBasicBlock(?m, ?i, ?j) :- instruction(?m, ?i, ?insi),
+								instruction(?m, ?j, ?insj),
+								basicBlock(?m, ?start, ?end),
+								?start <= ?i,
+								?i <= ?end,
+								?start <= ?j,
+								?j <= ?end.
+
+
+
+
+firstConstBackwards(?m, ?j, ?starti) :- varUse(?m, ?j, ?v),
+										reachableUp(?m, ?j, ?starti),
+										constMove(?m, ?starti, ?v, ?c),
+										not existsDefBetweenConst(?m, ?j, ?starti, ?v),
+										not existsConstBetween(?m, ?j, ?starti, ?v).
+
+constBackwards(?m, ?j, ?starti) :- varUse(?m, ?j, ?v),
+									reachableUp(?m, ?j, ?starti),
+									constMove(?m, ?starti, ?v, ?c).
+
+
+//?i bottom, ?j top.
+existsDefBetweenConst(?m, ?i, ?j, ?v) :- varUse(?m, ?i, ?v),
+									constMove(?m, ?j, ?v, ?c),
+									?k < ?i,
+									?k > ?j,
+									varDef(?m, ?k, ?v).
+
+//?i bottom, ?j top.
+existsConstBetween(?m, ?i, ?j, ?v) :- varUse(?m, ?i, ?v),
+								  	  constMove(?m, ?j, ?v, ?c),
+								  	  ?k < ?i,
+								  	  ?k > ?j,
+								  	  constMove(?m, ?k, ?v).
+
+
+
+constantPropagation(?m, ?i, ?v, ?c) :- firstConstBackwards(?m, ?i, ?starti),
+							  constMove(?m, ?starti, ?v, ?c),
+							  inSameBasicBlock(?m, ?i, ?starti).
+
+
+constantPropagation(?m, ?i, ?v, ?c) :- firstConstBackwards(?m, ?i, ?starti),
+							  constMove(?m, ?starti, ?v, ?c),
+							  not inSameBasicBlock(?m, ?i, ?starti),
+							  insideWhichBasicBlock(?m, ?starti, ?bbstart1, ?bbend1),
+							  insideWhichBasicBlock(?m, ?i, ?bbstart2, ?bbend2),
+							  basicBlock(?m, ?bbstart3, ?bbend3),
+							  ?bbstart3 != ?bbstart2,
+							  ?bbstart3 != ?bbstart1,
+							  ?bbend3 != ?bbend2,
+							  ?bbend3 != ?bbend1,
+							  constMove(?m, ?ci, ?v, ?c),
+							  ?ci >= ?bbstart3,
+							  ?ci <= ?bbend3,
+							  reachableUp(?m, ?i, ?ci),
+							  not reachableUp(?m, ?starti, ?ci).
+
+
+constantPropagation(?m, ?i, ?v, ?c) :- firstConstBackwards(?m, ?i, ?starti),
+							  constMove(?m, ?starti, ?v, ?c),
+							  not inSameBasicBlock(?m, ?i, ?starti),
+							  insideWhichBasicBlock(?m, ?starti, ?bbstart1, ?bbend1),
+							  insideWhichBasicBlock(?m, ?i, ?bbstart2, ?bbend2),
+							  basicBlock(?m, ?bbstart3, ?bbend3),
+							  ?bbstart3 != ?bbstart2,
+							  ?bbstart3 != ?bbstart1,
+							  ?bbend3 != ?bbend2,
+							  ?bbend3 != ?bbend1,
+							  constMove(?m, ?ci, ?v, ?c),
+							  ?ci >= ?bbstart3,
+							  ?ci <= ?bbend3,
+							  reachableUp(?m, ?i, ?ci),
+							  reachableUp(?m, ?starti, ?ci),
+							  insideIfCondition(?m, ?starti).
+
+constantPropagation(?m, ?i, ?v, ?c) :- firstConstBackwards(?m, ?i, ?starti),
+							  constMove(?m, ?starti, ?v, ?c),
+							  not inSameBasicBlock(?m, ?i, ?starti),
+							  insideWhichBasicBlock(?m, ?starti, ?bbstart1, ?bbend1),
+							  insideWhichBasicBlock(?m, ?i, ?bbstart2, ?bbend2),
+							  not insideCondition(?m, ?starti),
+							  consecutiveBlocks(?m, ?bbstart1, ?bbend1, ?bbstart2, ?bbend2).
+
+
+existsDifferentConstantInBasicBlock(?m, ?i, ?v, ?c, ?bbstart, ?bbend) :- basicBlock(?m, ?bbstart, ?bbend), 
+																		constMove(?m, ?ci, ?v, ?c),
+										   								varUse(?m, ?j, ?v),
+										   								constBackwards(?m, ?i, ?starti),
+							  			   								constMove(?m, ?starti, ?v, ?c1),
+							  			   								?c != ?c1,
+							  			   								?starti >= ?bbstart,
+							  			   								?starti <= ?bbend.
+
+insideWhichBasicBlock(?m, ?i, ?bbstart, ?bbend) :- instruction(?m, ?i, ?ins),
+								 basicBlock(?m, ?bbstart, ?bbend),
+								 ?i >= ?bbstart,
+								 ?i <= ?bbend,
+								 not inSecondBasicBlock(?m, ?i, ?bbstart, ?bbend).
+
+inSecondBasicBlock(?m, ?i, ?bbstart, ?bbend) :- instruction(?m, ?i, ?ins),
+												basicBlock(?m, ?bbstart, ?bbend),
+												basicBlock(?m, ?bbstart1, ?bbend1),
+								 				?i >= ?bbstart1,
+								 				?i <= ?bbend1,
+								 				?bbstart1 != ?bbstart,
+								 				?bbend1 != ?bbend.
+
+consecutiveBlocks(?m, ?bbs1, ?bbe1, ?bbs2, ?bbe2) :- basicBlock(?m, ?bbs1, ?bbe1),
+													 basicBlock(?m, ?bbs2, ?bbe2),
+													 ?bbe1 + 1 = ?bbs2.
+
+copyPropagation(?m, ?i, ?v, ?c) :- firstCopyBackwards(?m, ?i, ?starti),
+							  varMove(?m, ?starti, ?v, ?c),
+							  inSameBasicBlock(?m, ?i, ?starti).
+
+
+copyPropagation(?m, ?i, ?v, ?c) :- firstCopyBackwards(?m, ?i, ?starti),
+							  varMove(?m, ?starti, ?v, ?c),
+							  not inSameBasicBlock(?m, ?i, ?starti),
+							  insideWhichBasicBlock(?m, ?starti, ?bbstart1, ?bbend1),
+							  insideWhichBasicBlock(?m, ?i, ?bbstart2, ?bbend2),
+							  basicBlock(?m, ?bbstart3, ?bbend3),
+							  ?bbstart3 != ?bbstart2,
+							  ?bbstart3 != ?bbstart1,
+							  ?bbend3 != ?bbend2,
+							  ?bbend3 != ?bbend1,
+							  varMove(?m, ?ci, ?v, ?c),
+							  ?ci >= ?bbstart3,
+							  ?ci <= ?bbend3,
+							  reachableUp(?m, ?i, ?ci),
+							  not reachableUp(?m, ?starti, ?ci).
+
+
+copyPropagation(?m, ?i, ?v, ?c) :- firstCopyBackwards(?m, ?i, ?starti),
+							  varMove(?m, ?starti, ?v, ?c),
+							  not inSameBasicBlock(?m, ?i, ?starti),
+							  insideWhichBasicBlock(?m, ?starti, ?bbstart1, ?bbend1),
+							  insideWhichBasicBlock(?m, ?i, ?bbstart2, ?bbend2),
+							  basicBlock(?m, ?bbstart3, ?bbend3),
+							  ?bbstart3 != ?bbstart2,
+							  ?bbstart3 != ?bbstart1,
+							  ?bbend3 != ?bbend2,
+							  ?bbend3 != ?bbend1,
+							  varMove(?m, ?ci, ?v, ?c),
+							  ?ci >= ?bbstart3,
+							  ?ci <= ?bbend3,
+							  reachableUp(?m, ?i, ?ci),
+							  reachableUp(?m, ?starti, ?ci),
+							  insideIfCondition(?m, ?starti).
+
+copyPropagation(?m, ?i, ?v, ?c) :- firstCopyBackwards(?m, ?i, ?starti),
+							  varMove(?m, ?starti, ?v, ?c),
+							  not inSameBasicBlock(?m, ?i, ?starti),
+							  insideWhichBasicBlock(?m, ?starti, ?bbstart1, ?bbend1),
+							  insideWhichBasicBlock(?m, ?i, ?bbstart2, ?bbend2),
+							  not insideCondition(?m, ?starti),
+							  consecutiveBlocks(?m, ?bbstart1, ?bbend1, ?bbstart2, ?bbend2).
+
+
+
+
+firstCopyBackwards(?m, ?j, ?starti) :- varUse(?m, ?j, ?v),
+										reachableUp(?m, ?j, ?starti),
+										varMove(?m, ?starti, ?v, ?c),
+										not existsDefBetweenCopy(?m, ?j, ?starti, ?v),
+										not existsCopyBetween(?m, ?j, ?starti, ?v).
+
+//?i bottom, ?j top.
+existsDefBetweenCopy(?m, ?i, ?j, ?v) :- varUse(?m, ?i, ?v),
+										varMove(?m, ?j, ?v, ?c),
+										?k < ?i,
+										?k > ?j,
+										varDef(?m, ?k, ?v).
+
+//?i bottom, ?j top.
+existsCopyBetween(?m, ?i, ?j, ?v) :- varUse(?m, ?i, ?v),
+								  	  varMove(?m, ?j, ?v, ?c),
+								  	  ?k < ?i,
+								  	  ?k > ?j,
+								  	  varMove(?m, ?k, ?v).

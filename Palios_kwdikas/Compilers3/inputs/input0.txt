@@ -1,0 +1,8 @@
+  public static void main(String[] a){
+	int s;
+	int x;
+	s = 10;
+	x = 5;
+        System.out.println(s+x);
+    }
+}
