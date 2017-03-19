@@ -1,3 +1,4 @@
+Package compiler;
 
 Helpers
     sp = ' ';
@@ -8,6 +9,9 @@ Helpers
     line_terminator = lf | cr | cr lf;
     white_space = (sp | ht | ff | line_terminator)*;
 
+    all = [0..0xffff];
+    input_character = [all - [cr + lf]];
+
     digit = ['0' .. '9'];
 
     escape_seq = '\n' | '\t' | '\r' | '\0'  | '\\' | '\' ''' | '\"' | '\xnn'; //<--
@@ -17,8 +21,12 @@ Helpers
         | '?' | '@' | '[' | ']' | '^' | '_' | '`' | '{' | '|' | '}' | '~'
         | ['a' .. 'z'] | ['A' .. 'Z'] | digit | escape_seq;  //(escape_seq | ([_A-Za-z][_A-Za-z0-9])*)*
 
-    
+    not_dollar = [all - '$'];
+    //not_doubledollar = [all - '$$'];
 
+    simple_comment = '$' input_character* line_terminator?;
+    //multi_comment = '$$' not_dollar* ('$' (not_dollar+))* '$$';
+    multi_comment = '$$' ('$'? not_dollar)* '$$';
 
 Tokens
     white_space = white_space;
@@ -76,6 +84,11 @@ Tokens
     colon = ':';
     arrow = '<-';  
 
+    
+    comment = simple_comment | multi_comment;
+
+
 Ignored Tokens
     white_space,
-    escape_seq;
+    escape_seq,
+    comment;
