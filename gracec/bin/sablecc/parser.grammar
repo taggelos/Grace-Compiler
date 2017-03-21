@@ -58,8 +58,8 @@ Tokens
 
     //operators
 
-    minus = '+';
-    plus  = '-';
+    minus = '-';
+    plus  = '+';
     star  = '*';
     slash = '/';
     htag  = '#';
@@ -92,3 +92,19 @@ Ignored Tokens
     white_space,
     escape_seq,
     comment;
+
+
+Productions
+    expr =
+        {factor} factor |
+        {plus} expr plus factor |
+        {minus} expr minus factor;
+
+    factor =
+        {term} term |
+        {mult} factor star term |
+        {div} factor slash term;
+
+    term =
+        {integers} integers |
+        {expr} l_par expr r_par;

@@ -11,6 +11,16 @@ public interface Analysis extends Switch
     Object getOut(Node node);
     void setOut(Node node, Object o);
 
+    void caseStart(Start node);
+    void caseAFactorExpr(AFactorExpr node);
+    void caseAPlusExpr(APlusExpr node);
+    void caseAMinusExpr(AMinusExpr node);
+    void caseATermFactor(ATermFactor node);
+    void caseAMultFactor(AMultFactor node);
+    void caseADivFactor(ADivFactor node);
+    void caseAIntegersTerm(AIntegersTerm node);
+    void caseAExprTerm(AExprTerm node);
+
     void caseTWhiteSpace(TWhiteSpace node);
     void caseTEscapeSeq(TEscapeSeq node);
     void caseTAnd(TAnd node);

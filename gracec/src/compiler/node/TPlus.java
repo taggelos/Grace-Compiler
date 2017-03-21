@@ -9,12 +9,12 @@ public final class TPlus extends Token
 {
     public TPlus()
     {
-        super.setText("-");
+        super.setText("+");
     }
 
     public TPlus(int line, int pos)
     {
-        super.setText("-");
+        super.setText("+");
         setLine(line);
         setPos(pos);
     }

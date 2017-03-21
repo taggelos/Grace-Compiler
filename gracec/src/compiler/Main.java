@@ -9,22 +9,38 @@ import java.io.PushbackReader;
 
 import compiler.lexer.Lexer;
 import compiler.node.EOF;
+import compiler.node.Start;
 import compiler.node.Token;
+import compiler.parser.*;
 
 public class Main {
 
     public static void main(String args[]) throws FileNotFoundException {
         FileInputStream fis = null;
         if(args.length < 1){
-            System.err.println("Usage: java Main <inputFile1> [<inputFile2>] ...");
-            System.exit(1);
+            //System.err.println("Usage: java Main <inputFile1> [<inputFile2>] ...");
+            //System.exit(1);
+
+        	Parser p = new Parser(
+                    new Lexer(
+                        new PushbackReader(
+                            new InputStreamReader(System.in), 1024
+                    )
+                )
+            );
+            try {
+                Start tree = p.parse();
+                System.out.println(tree.toString());
+            } catch (Exception e) {
+                e.printStackTrace();
+            } 
         }
 
         for(int i = 0; i < args.length; i++) {
             try {
                 fis = new FileInputStream(args[i]);
 
-                PushbackReader reader = new PushbackReader(new InputStreamReader(fis));   
+                /*PushbackReader reader = new PushbackReader(new InputStreamReader(fis));   
                 Lexer lexer = new Lexer(reader);
 
                 while(true) {
@@ -38,7 +54,20 @@ public class Main {
                     catch (Exception e) {
                         System.err.println(e.getMessage());
                     }
-                }
+                }*/
+                Parser p = new Parser(
+                        new Lexer(
+                            new PushbackReader(
+                                new InputStreamReader(fis), 1024
+                        )
+                    )
+                );
+                try {
+                    Start tree = p.parse();
+                    System.out.println(tree.toString());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } 
             }
             catch(FileNotFoundException ex) {
                 System.err.println(ex.getMessage());

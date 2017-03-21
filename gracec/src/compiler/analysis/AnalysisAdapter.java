@@ -69,6 +69,60 @@ public class AnalysisAdapter implements Analysis
     }
 
     @Override
+    public void caseStart(Start node)
+    {
+        defaultCase(node);
+    }
+
+    @Override
+    public void caseAFactorExpr(AFactorExpr node)
+    {
+        defaultCase(node);
+    }
+
+    @Override
+    public void caseAPlusExpr(APlusExpr node)
+    {
+        defaultCase(node);
+    }
+
+    @Override
+    public void caseAMinusExpr(AMinusExpr node)
+    {
+        defaultCase(node);
+    }
+
+    @Override
+    public void caseATermFactor(ATermFactor node)
+    {
+        defaultCase(node);
+    }
+
+    @Override
+    public void caseAMultFactor(AMultFactor node)
+    {
+        defaultCase(node);
+    }
+
+    @Override
+    public void caseADivFactor(ADivFactor node)
+    {
+        defaultCase(node);
+    }
+
+    @Override
+    public void caseAIntegersTerm(AIntegersTerm node)
+    {
+        defaultCase(node);
+    }
+
+    @Override
+    public void caseAExprTerm(AExprTerm node)
+    {
+        defaultCase(node);
+    }
+
+    @Override
     public void caseTWhiteSpace(TWhiteSpace node)
     {
         defaultCase(node);
