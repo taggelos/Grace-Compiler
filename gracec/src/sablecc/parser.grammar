@@ -24,7 +24,7 @@ Helpers
     not_dollar = [all - '$'];
     //not_doubledollar = [all - '$$'];
 
-    simple_comment = '$' input_character* line_terminator?;
+    simple_comment = '$' not_dollar input_character* line_terminator?;
     //multi_comment = '$$' not_dollar* ('$' (not_dollar+))* '$$';
     multi_comment = '$$' ('$'? not_dollar)* '$$';
 
@@ -102,8 +102,8 @@ Productions
 
     factor =
         {term} term |
-        {mult} factor star term |
-        {div} factor slash term;
+        {star} factor star term |
+        {slash} factor slash term;
 
     term =
         {integers} integers |

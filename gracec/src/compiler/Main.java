@@ -40,7 +40,7 @@ public class Main {
             try {
                 fis = new FileInputStream(args[i]);
 
-                /*PushbackReader reader = new PushbackReader(new InputStreamReader(fis));   
+                PushbackReader reader = new PushbackReader(new InputStreamReader(fis));   
                 Lexer lexer = new Lexer(reader);
 
                 while(true) {
@@ -54,8 +54,8 @@ public class Main {
                     catch (Exception e) {
                         System.err.println(e.getMessage());
                     }
-                }*/
-                Parser p = new Parser(
+                }
+                /*Parser p = new Parser(
                         new Lexer(
                             new PushbackReader(
                                 new InputStreamReader(fis), 1024
@@ -67,7 +67,7 @@ public class Main {
                     System.out.println(tree.toString());
                 } catch (Exception e) {
                     e.printStackTrace();
-                } 
+                } */
             }
             catch(FileNotFoundException ex) {
                 System.err.println(ex.getMessage());

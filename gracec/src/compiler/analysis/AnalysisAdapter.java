@@ -99,13 +99,13 @@ public class AnalysisAdapter implements Analysis
     }
 
     @Override
-    public void caseAMultFactor(AMultFactor node)
+    public void caseAStarFactor(AStarFactor node)
     {
         defaultCase(node);
     }
 
     @Override
-    public void caseADivFactor(ADivFactor node)
+    public void caseASlashFactor(ASlashFactor node)
     {
         defaultCase(node);
     }

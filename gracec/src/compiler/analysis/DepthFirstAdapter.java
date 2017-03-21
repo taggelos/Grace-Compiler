@@ -136,20 +136,20 @@ public class DepthFirstAdapter extends AnalysisAdapter
         outATermFactor(node);
     }
 
-    public void inAMultFactor(AMultFactor node)
+    public void inAStarFactor(AStarFactor node)
     {
         defaultIn(node);
     }
 
-    public void outAMultFactor(AMultFactor node)
+    public void outAStarFactor(AStarFactor node)
     {
         defaultOut(node);
     }
 
     @Override
-    public void caseAMultFactor(AMultFactor node)
+    public void caseAStarFactor(AStarFactor node)
     {
-        inAMultFactor(node);
+        inAStarFactor(node);
         if(node.getFactor() != null)
         {
             node.getFactor().apply(this);
@@ -162,23 +162,23 @@ public class DepthFirstAdapter extends AnalysisAdapter
         {
             node.getTerm().apply(this);
         }
-        outAMultFactor(node);
+        outAStarFactor(node);
     }
 
-    public void inADivFactor(ADivFactor node)
+    public void inASlashFactor(ASlashFactor node)
     {
         defaultIn(node);
     }
 
-    public void outADivFactor(ADivFactor node)
+    public void outASlashFactor(ASlashFactor node)
     {
         defaultOut(node);
     }
 
     @Override
-    public void caseADivFactor(ADivFactor node)
+    public void caseASlashFactor(ASlashFactor node)
     {
-        inADivFactor(node);
+        inASlashFactor(node);
         if(node.getFactor() != null)
         {
             node.getFactor().apply(this);
@@ -191,7 +191,7 @@ public class DepthFirstAdapter extends AnalysisAdapter
         {
             node.getTerm().apply(this);
         }
-        outADivFactor(node);
+        outASlashFactor(node);
     }
 
     public void inAIntegersTerm(AIntegersTerm node)

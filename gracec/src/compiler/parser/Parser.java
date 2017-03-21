@@ -222,13 +222,13 @@ public class Parser
                 push(goTo(1), list, false);
             }
             break;
-            case 4: /* reduce AMultFactor */
+            case 4: /* reduce AStarFactor */
             {
                 ArrayList<Object> list = new4();
                 push(goTo(1), list, false);
             }
             break;
-            case 5: /* reduce ADivFactor */
+            case 5: /* reduce ASlashFactor */
             {
                 ArrayList<Object> list = new5();
                 push(goTo(1), list, false);
@@ -344,7 +344,7 @@ public class Parser
 
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    ArrayList<Object> new4() /* reduce AMultFactor */
+    ArrayList<Object> new4() /* reduce AStarFactor */
     {
         @SuppressWarnings("hiding") ArrayList<Object> nodeList = new ArrayList<Object>();
 
@@ -361,7 +361,7 @@ public class Parser
         tstarNode3 = (TStar)nodeArrayList2.get(0);
         ptermNode4 = (PTerm)nodeArrayList3.get(0);
 
-        pfactorNode1 = new AMultFactor(pfactorNode2, tstarNode3, ptermNode4);
+        pfactorNode1 = new AStarFactor(pfactorNode2, tstarNode3, ptermNode4);
         }
 	nodeList.add(pfactorNode1);
         return nodeList;
@@ -370,7 +370,7 @@ public class Parser
 
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    ArrayList<Object> new5() /* reduce ADivFactor */
+    ArrayList<Object> new5() /* reduce ASlashFactor */
     {
         @SuppressWarnings("hiding") ArrayList<Object> nodeList = new ArrayList<Object>();
 
@@ -387,7 +387,7 @@ public class Parser
         tslashNode3 = (TSlash)nodeArrayList2.get(0);
         ptermNode4 = (PTerm)nodeArrayList3.get(0);
 
-        pfactorNode1 = new ADivFactor(pfactorNode2, tslashNode3, ptermNode4);
+        pfactorNode1 = new ASlashFactor(pfactorNode2, tslashNode3, ptermNode4);
         }
 	nodeList.add(pfactorNode1);
         return nodeList;

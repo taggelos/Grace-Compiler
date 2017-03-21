@@ -5,26 +5,26 @@ package compiler.node;
 import compiler.analysis.*;
 
 @SuppressWarnings("nls")
-public final class ADivFactor extends PFactor
+public final class AStarFactor extends PFactor
 {
     private PFactor _factor_;
-    private TSlash _slash_;
+    private TStar _star_;
     private PTerm _term_;
 
-    public ADivFactor()
+    public AStarFactor()
     {
         // Constructor
     }
 
-    public ADivFactor(
+    public AStarFactor(
         @SuppressWarnings("hiding") PFactor _factor_,
-        @SuppressWarnings("hiding") TSlash _slash_,
+        @SuppressWarnings("hiding") TStar _star_,
         @SuppressWarnings("hiding") PTerm _term_)
     {
         // Constructor
         setFactor(_factor_);
 
-        setSlash(_slash_);
+        setStar(_star_);
 
         setTerm(_term_);
 
@@ -33,16 +33,16 @@ public final class ADivFactor extends PFactor
     @Override
     public Object clone()
     {
-        return new ADivFactor(
+        return new AStarFactor(
             cloneNode(this._factor_),
-            cloneNode(this._slash_),
+            cloneNode(this._star_),
             cloneNode(this._term_));
     }
 
     @Override
     public void apply(Switch sw)
     {
-        ((Analysis) sw).caseADivFactor(this);
+        ((Analysis) sw).caseAStarFactor(this);
     }
 
     public PFactor getFactor()
@@ -70,16 +70,16 @@ public final class ADivFactor extends PFactor
         this._factor_ = node;
     }
 
-    public TSlash getSlash()
+    public TStar getStar()
     {
-        return this._slash_;
+        return this._star_;
     }
 
-    public void setSlash(TSlash node)
+    public void setStar(TStar node)
     {
-        if(this._slash_ != null)
+        if(this._star_ != null)
         {
-            this._slash_.parent(null);
+            this._star_.parent(null);
         }
 
         if(node != null)
@@ -92,7 +92,7 @@ public final class ADivFactor extends PFactor
             node.parent(this);
         }
 
-        this._slash_ = node;
+        this._star_ = node;
     }
 
     public PTerm getTerm()
@@ -125,7 +125,7 @@ public final class ADivFactor extends PFactor
     {
         return ""
             + toString(this._factor_)
-            + toString(this._slash_)
+            + toString(this._star_)
             + toString(this._term_);
     }
 
@@ -139,9 +139,9 @@ public final class ADivFactor extends PFactor
             return;
         }
 
-        if(this._slash_ == child)
+        if(this._star_ == child)
         {
-            this._slash_ = null;
+            this._star_ = null;
             return;
         }
 
@@ -164,9 +164,9 @@ public final class ADivFactor extends PFactor
             return;
         }
 
-        if(this._slash_ == oldChild)
+        if(this._star_ == oldChild)
         {
-            setSlash((TSlash) newChild);
+            setStar((TStar) newChild);
             return;
         }
 

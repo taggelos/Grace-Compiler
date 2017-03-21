@@ -5,26 +5,26 @@ package compiler.node;
 import compiler.analysis.*;
 
 @SuppressWarnings("nls")
-public final class AMultFactor extends PFactor
+public final class ASlashFactor extends PFactor
 {
     private PFactor _factor_;
-    private TStar _star_;
+    private TSlash _slash_;
     private PTerm _term_;
 
-    public AMultFactor()
+    public ASlashFactor()
     {
         // Constructor
     }
 
-    public AMultFactor(
+    public ASlashFactor(
         @SuppressWarnings("hiding") PFactor _factor_,
-        @SuppressWarnings("hiding") TStar _star_,
+        @SuppressWarnings("hiding") TSlash _slash_,
         @SuppressWarnings("hiding") PTerm _term_)
     {
         // Constructor
         setFactor(_factor_);
 
-        setStar(_star_);
+        setSlash(_slash_);
 
         setTerm(_term_);
 
@@ -33,16 +33,16 @@ public final class AMultFactor extends PFactor
     @Override
     public Object clone()
     {
-        return new AMultFactor(
+        return new ASlashFactor(
             cloneNode(this._factor_),
-            cloneNode(this._star_),
+            cloneNode(this._slash_),
             cloneNode(this._term_));
     }
 
     @Override
     public void apply(Switch sw)
     {
-        ((Analysis) sw).caseAMultFactor(this);
+        ((Analysis) sw).caseASlashFactor(this);
     }
 
     public PFactor getFactor()
@@ -70,16 +70,16 @@ public final class AMultFactor extends PFactor
         this._factor_ = node;
     }
 
-    public TStar getStar()
+    public TSlash getSlash()
     {
-        return this._star_;
+        return this._slash_;
     }
 
-    public void setStar(TStar node)
+    public void setSlash(TSlash node)
     {
-        if(this._star_ != null)
+        if(this._slash_ != null)
         {
-            this._star_.parent(null);
+            this._slash_.parent(null);
         }
 
         if(node != null)
@@ -92,7 +92,7 @@ public final class AMultFactor extends PFactor
             node.parent(this);
         }
 
-        this._star_ = node;
+        this._slash_ = node;
     }
 
     public PTerm getTerm()
@@ -125,7 +125,7 @@ public final class AMultFactor extends PFactor
     {
         return ""
             + toString(this._factor_)
-            + toString(this._star_)
+            + toString(this._slash_)
             + toString(this._term_);
     }
 
@@ -139,9 +139,9 @@ public final class AMultFactor extends PFactor
             return;
         }
 
-        if(this._star_ == child)
+        if(this._slash_ == child)
         {
-            this._star_ = null;
+            this._slash_ = null;
             return;
         }
 
@@ -164,9 +164,9 @@ public final class AMultFactor extends PFactor
             return;
         }
 
-        if(this._star_ == oldChild)
+        if(this._slash_ == oldChild)
         {
-            setStar((TStar) newChild);
+            setSlash((TSlash) newChild);
             return;
         }
 
