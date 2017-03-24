@@ -75,49 +75,103 @@ public class AnalysisAdapter implements Analysis
     }
 
     @Override
-    public void caseAFactorExpr(AFactorExpr node)
+    public void caseAExprList(AExprList node)
     {
         defaultCase(node);
     }
 
     @Override
-    public void caseAPlusExpr(APlusExpr node)
+    public void caseAExpr1Expr(AExpr1Expr node)
     {
         defaultCase(node);
     }
 
     @Override
-    public void caseAMinusExpr(AMinusExpr node)
+    public void caseAExpr2Expr(AExpr2Expr node)
     {
         defaultCase(node);
     }
 
     @Override
-    public void caseATermFactor(ATermFactor node)
+    public void caseAExpr3Expr(AExpr3Expr node)
     {
         defaultCase(node);
     }
 
     @Override
-    public void caseAStarFactor(AStarFactor node)
+    public void caseAExpr4Expr(AExpr4Expr node)
     {
         defaultCase(node);
     }
 
     @Override
-    public void caseASlashFactor(ASlashFactor node)
+    public void caseAFactor1Factor(AFactor1Factor node)
     {
         defaultCase(node);
     }
 
     @Override
-    public void caseAIntegersTerm(AIntegersTerm node)
+    public void caseAFactor2Factor(AFactor2Factor node)
     {
         defaultCase(node);
     }
 
     @Override
-    public void caseAExprTerm(AExprTerm node)
+    public void caseAFactor3Factor(AFactor3Factor node)
+    {
+        defaultCase(node);
+    }
+
+    @Override
+    public void caseATerm1Term(ATerm1Term node)
+    {
+        defaultCase(node);
+    }
+
+    @Override
+    public void caseATerm2Term(ATerm2Term node)
+    {
+        defaultCase(node);
+    }
+
+    @Override
+    public void caseAVarDec1VarDec(AVarDec1VarDec node)
+    {
+        defaultCase(node);
+    }
+
+    @Override
+    public void caseAVarIds1VarIds(AVarIds1VarIds node)
+    {
+        defaultCase(node);
+    }
+
+    @Override
+    public void caseAVarIds2VarIds(AVarIds2VarIds node)
+    {
+        defaultCase(node);
+    }
+
+    @Override
+    public void caseAVarType1VarType(AVarType1VarType node)
+    {
+        defaultCase(node);
+    }
+
+    @Override
+    public void caseAVarType2VarType(AVarType2VarType node)
+    {
+        defaultCase(node);
+    }
+
+    @Override
+    public void caseAVarType3VarType(AVarType3VarType node)
+    {
+        defaultCase(node);
+    }
+
+    @Override
+    public void caseAVarType4VarType(AVarType4VarType node)
     {
         defaultCase(node);
     }
@@ -225,7 +279,7 @@ public class AnalysisAdapter implements Analysis
     }
 
     @Override
-    public void caseTVar(TVar node)
+    public void caseTVara(TVara node)
     {
         defaultCase(node);
     }
@@ -244,6 +298,12 @@ public class AnalysisAdapter implements Analysis
 
     @Override
     public void caseTStringLiteral(TStringLiteral node)
+    {
+        defaultCase(node);
+    }
+
+    @Override
+    public void caseTIdentifier(TIdentifier node)
     {
         defaultCase(node);
     }
@@ -279,7 +339,7 @@ public class AnalysisAdapter implements Analysis
     }
 
     @Override
-    public void caseTAssign(TAssign node)
+    public void caseTEq(TEq node)
     {
         defaultCase(node);
     }
@@ -327,25 +387,25 @@ public class AnalysisAdapter implements Analysis
     }
 
     @Override
-    public void caseTLBkt(TLBkt node)
+    public void caseTLBr(TLBr node)
     {
         defaultCase(node);
     }
 
     @Override
-    public void caseTRBkt(TRBkt node)
+    public void caseTRBr(TRBr node)
     {
         defaultCase(node);
     }
 
     @Override
-    public void caseTLBrc(TLBrc node)
+    public void caseTLAg(TLAg node)
     {
         defaultCase(node);
     }
 
     @Override
-    public void caseTRBrc(TRBrc node)
+    public void caseTRAg(TRAg node)
     {
         defaultCase(node);
     }

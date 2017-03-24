@@ -32,57 +32,58 @@ Tokens
     white_space = white_space;
     escape_seq = escape_seq;
 
-    and = 'and'; 
-    char = 'char';
-    div = 'div';
-    do = 'do';
-    else = 'else';
-    fun = 'fun';
-    if  = 'if';
-    int   = 'int';
-    mod   = 'mod';
-    not   = 'not';
-    nothing= 'nothing';
-    or    = 'or';
-    ref   = 'ref';
-    return= 'return';
-    then  = 'then';
-    var   = 'var';
-    while = 'while';
+    and     = 'and'; 
+    char    = 'char';
+    div     = 'div';
+    do      = 'do';
+    else    = 'else';
+    fun     = 'fun';
+    if      = 'if';
+    int     = 'int';
+    mod     = 'mod';
+    not     = 'not';
+    nothing = 'nothing';
+    or      = 'or';
+    ref     = 'ref';
+    return  = 'return';
+    then    = 'then';
+    vara     = 'var';
+    while   = 'while';
 
     
     integers = digit+;
 
     string_literal = '"' char_literal* '"'; //<--
 
+    identifier = char_literal*;
 
     //operators
 
-    minus = '-';
-    plus  = '+';
-    star  = '*';
-    slash = '/';
-    htag  = '#';
-    assign= '=';
-    neq   = '<>';
-    lt    = '<';
-    gt    = '>';
-    lteq  = '<=';
-    gteq  = '>=';
+    minus   = '-';
+    plus    = '+';
+    star    = '*';
+    slash   = '/';
+    htag    = '#';
+    eq      = '=';
+    neq     = '<>';
+    lt      = '<';
+    gt      = '>';
+    lteq    = '<=';
+    gteq    = '>=';
     
   
     //separators
 
-    l_par = '(';
-    r_par = ')';
-    l_bkt = '[';
-    r_bkt = ']';
-    l_brc = '{';
-    r_brc = '}';
-    comma = ',';
-    semi  = ';';
-    colon = ':';
-    arrow = '<-';  
+    l_par   = '(';
+    r_par   = ')';
+    l_br    = '[';
+    r_br    = ']';
+    l_ag    = '{';
+    r_ag    = '}';
+    comma   = ',';
+    semi    = ';';
+    colon   = ':';
+    arrow   = '<-';  
 
     
     comment = simple_comment | multi_comment;
@@ -90,21 +91,40 @@ Tokens
 
 Ignored Tokens
     white_space,
-    escape_seq,
     comment;
 
 
 Productions
-    expr =
-        {factor} factor |
-        {plus} expr plus factor |
-        {minus} expr minus factor;
+    expr_list = var_dec+;
+    
+    /* expr =
+        {expr1} factor |
+        {expr2} expr plus factor |
+        {expr3} expr minus factor |
+        {expr4} var_dec;
 
     factor =
-        {term} term |
-        {star} factor star term |
-        {slash} factor slash term;
+        {factor1} term |
+        {factor2} factor star term |
+        {factor3} factor slash term;
 
     term =
-        {integers} integers |
-        {expr} l_par expr r_par;
+        {term1} integers |
+        {term2} l_par expr r_par;
+    */
+    
+    var_dec =
+        {var_dec1} vara var_ids colon var_type semi;
+
+    var_ids =
+        {var_ids1} identifier |
+        {var_ids2} identifier comma var_ids;  //{var_ids2} var_ids comma identifier;
+
+    var_type =
+        {var_type1} int |
+        {var_type2} char |
+        {var_type3} int l_br integers r_br |
+        {var_type4} char l_br integers r_br;
+    
+    
+    
