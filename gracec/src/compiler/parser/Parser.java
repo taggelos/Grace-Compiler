@@ -204,112 +204,118 @@ public class Parser
                 push(goTo(0), list, false);
             }
             break;
-            case 1: /* reduce AExpr1Expr */
+            case 1: /* reduce AKaratseLine */
             {
                 ArrayList<Object> list = new1();
                 push(goTo(1), list, false);
             }
             break;
-            case 2: /* reduce AExpr2Expr */
+            case 2: /* reduce ALefterhsLine */
             {
                 ArrayList<Object> list = new2();
                 push(goTo(1), list, false);
             }
             break;
-            case 3: /* reduce AExpr3Expr */
+            case 3: /* reduce AExpr1Expr */
             {
                 ArrayList<Object> list = new3();
-                push(goTo(1), list, false);
+                push(goTo(2), list, false);
             }
             break;
-            case 4: /* reduce AExpr4Expr */
+            case 4: /* reduce AExpr2Expr */
             {
                 ArrayList<Object> list = new4();
-                push(goTo(1), list, false);
+                push(goTo(2), list, false);
             }
             break;
-            case 5: /* reduce AFactor1Factor */
+            case 5: /* reduce AExpr3Expr */
             {
                 ArrayList<Object> list = new5();
                 push(goTo(2), list, false);
             }
             break;
-            case 6: /* reduce AFactor2Factor */
+            case 6: /* reduce AFactor1Factor */
             {
                 ArrayList<Object> list = new6();
-                push(goTo(2), list, false);
+                push(goTo(3), list, false);
             }
             break;
-            case 7: /* reduce AFactor3Factor */
+            case 7: /* reduce AFactor2Factor */
             {
                 ArrayList<Object> list = new7();
-                push(goTo(2), list, false);
+                push(goTo(3), list, false);
             }
             break;
-            case 8: /* reduce ATerm1Term */
+            case 8: /* reduce AFactor3Factor */
             {
                 ArrayList<Object> list = new8();
                 push(goTo(3), list, false);
             }
             break;
-            case 9: /* reduce ATerm2Term */
+            case 9: /* reduce ATerm1Term */
             {
                 ArrayList<Object> list = new9();
-                push(goTo(3), list, false);
+                push(goTo(4), list, false);
             }
             break;
-            case 10: /* reduce AVarDec1VarDec */
+            case 10: /* reduce ATerm2Term */
             {
                 ArrayList<Object> list = new10();
                 push(goTo(4), list, false);
             }
             break;
-            case 11: /* reduce AVarIds1VarIds */
+            case 11: /* reduce AVarDec1VarDec */
             {
                 ArrayList<Object> list = new11();
                 push(goTo(5), list, false);
             }
             break;
-            case 12: /* reduce AVarIds2VarIds */
+            case 12: /* reduce AVarIds1VarIds */
             {
                 ArrayList<Object> list = new12();
-                push(goTo(5), list, false);
+                push(goTo(6), list, false);
             }
             break;
-            case 13: /* reduce AVarType1VarType */
+            case 13: /* reduce AVarIds2VarIds */
             {
                 ArrayList<Object> list = new13();
                 push(goTo(6), list, false);
             }
             break;
-            case 14: /* reduce AVarType2VarType */
+            case 14: /* reduce AVarType1VarType */
             {
                 ArrayList<Object> list = new14();
-                push(goTo(6), list, false);
+                push(goTo(7), list, false);
             }
             break;
-            case 15: /* reduce AVarType3VarType */
+            case 15: /* reduce AVarType2VarType */
             {
                 ArrayList<Object> list = new15();
-                push(goTo(6), list, false);
+                push(goTo(7), list, false);
             }
             break;
-            case 16: /* reduce AVarType4VarType */
+            case 16: /* reduce AVarType3VarType */
             {
                 ArrayList<Object> list = new16();
-                push(goTo(6), list, false);
+                push(goTo(7), list, false);
             }
             break;
-            case 17: /* reduce ATerminal$VarDec */
+            case 17: /* reduce AVarType4VarType */
             {
                 ArrayList<Object> list = new17();
-                push(goTo(7), list, true);
+                push(goTo(7), list, false);
             }
             break;
-            case 18: /* reduce ANonTerminal$VarDec */
+            case 18: /* reduce ATerminal$Line */
             {
                 ArrayList<Object> list = new18();
-                push(goTo(7), list, true);
+                push(goTo(8), list, true);
+            }
+            break;
+            case 19: /* reduce ANonTerminal$Line */
+            {
+                ArrayList<Object> list = new19();
+                push(goTo(8), list, true);
             }
             break;
         }
@@ -346,7 +352,47 @@ public class Parser
 
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    ArrayList<Object> new1() /* reduce AExpr1Expr */
+    ArrayList<Object> new1() /* reduce AKaratseLine */
+    {
+        @SuppressWarnings("hiding") ArrayList<Object> nodeList = new ArrayList<Object>();
+
+        @SuppressWarnings("unused") ArrayList<Object> nodeArrayList1 = pop();
+        PLine plineNode1;
+        {
+            // Block
+        PExpr pexprNode2;
+        pexprNode2 = (PExpr)nodeArrayList1.get(0);
+
+        plineNode1 = new AKaratseLine(pexprNode2);
+        }
+	nodeList.add(plineNode1);
+        return nodeList;
+    }
+
+
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    ArrayList<Object> new2() /* reduce ALefterhsLine */
+    {
+        @SuppressWarnings("hiding") ArrayList<Object> nodeList = new ArrayList<Object>();
+
+        @SuppressWarnings("unused") ArrayList<Object> nodeArrayList1 = pop();
+        PLine plineNode1;
+        {
+            // Block
+        PVarDec pvardecNode2;
+        pvardecNode2 = (PVarDec)nodeArrayList1.get(0);
+
+        plineNode1 = new ALefterhsLine(pvardecNode2);
+        }
+	nodeList.add(plineNode1);
+        return nodeList;
+    }
+
+
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    ArrayList<Object> new3() /* reduce AExpr1Expr */
     {
         @SuppressWarnings("hiding") ArrayList<Object> nodeList = new ArrayList<Object>();
 
@@ -366,7 +412,7 @@ public class Parser
 
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    ArrayList<Object> new2() /* reduce AExpr2Expr */
+    ArrayList<Object> new4() /* reduce AExpr2Expr */
     {
         @SuppressWarnings("hiding") ArrayList<Object> nodeList = new ArrayList<Object>();
 
@@ -392,7 +438,7 @@ public class Parser
 
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    ArrayList<Object> new3() /* reduce AExpr3Expr */
+    ArrayList<Object> new5() /* reduce AExpr3Expr */
     {
         @SuppressWarnings("hiding") ArrayList<Object> nodeList = new ArrayList<Object>();
 
@@ -418,27 +464,7 @@ public class Parser
 
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    ArrayList<Object> new4() /* reduce AExpr4Expr */
-    {
-        @SuppressWarnings("hiding") ArrayList<Object> nodeList = new ArrayList<Object>();
-
-        @SuppressWarnings("unused") ArrayList<Object> nodeArrayList1 = pop();
-        PExpr pexprNode1;
-        {
-            // Block
-        PVarDec pvardecNode2;
-        pvardecNode2 = (PVarDec)nodeArrayList1.get(0);
-
-        pexprNode1 = new AExpr4Expr(pvardecNode2);
-        }
-	nodeList.add(pexprNode1);
-        return nodeList;
-    }
-
-
-
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    ArrayList<Object> new5() /* reduce AFactor1Factor */
+    ArrayList<Object> new6() /* reduce AFactor1Factor */
     {
         @SuppressWarnings("hiding") ArrayList<Object> nodeList = new ArrayList<Object>();
 
@@ -458,7 +484,7 @@ public class Parser
 
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    ArrayList<Object> new6() /* reduce AFactor2Factor */
+    ArrayList<Object> new7() /* reduce AFactor2Factor */
     {
         @SuppressWarnings("hiding") ArrayList<Object> nodeList = new ArrayList<Object>();
 
@@ -484,7 +510,7 @@ public class Parser
 
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    ArrayList<Object> new7() /* reduce AFactor3Factor */
+    ArrayList<Object> new8() /* reduce AFactor3Factor */
     {
         @SuppressWarnings("hiding") ArrayList<Object> nodeList = new ArrayList<Object>();
 
@@ -510,7 +536,7 @@ public class Parser
 
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    ArrayList<Object> new8() /* reduce ATerm1Term */
+    ArrayList<Object> new9() /* reduce ATerm1Term */
     {
         @SuppressWarnings("hiding") ArrayList<Object> nodeList = new ArrayList<Object>();
 
@@ -530,7 +556,7 @@ public class Parser
 
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    ArrayList<Object> new9() /* reduce ATerm2Term */
+    ArrayList<Object> new10() /* reduce ATerm2Term */
     {
         @SuppressWarnings("hiding") ArrayList<Object> nodeList = new ArrayList<Object>();
 
@@ -556,7 +582,7 @@ public class Parser
 
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    ArrayList<Object> new10() /* reduce AVarDec1VarDec */
+    ArrayList<Object> new11() /* reduce AVarDec1VarDec */
     {
         @SuppressWarnings("hiding") ArrayList<Object> nodeList = new ArrayList<Object>();
 
@@ -568,18 +594,18 @@ public class Parser
         PVarDec pvardecNode1;
         {
             // Block
-        TVara tvaraNode2;
+        TVar tvarNode2;
         PVarIds pvaridsNode3;
         TColon tcolonNode4;
         PVarType pvartypeNode5;
         TSemi tsemiNode6;
-        tvaraNode2 = (TVara)nodeArrayList1.get(0);
+        tvarNode2 = (TVar)nodeArrayList1.get(0);
         pvaridsNode3 = (PVarIds)nodeArrayList2.get(0);
         tcolonNode4 = (TColon)nodeArrayList3.get(0);
         pvartypeNode5 = (PVarType)nodeArrayList4.get(0);
         tsemiNode6 = (TSemi)nodeArrayList5.get(0);
 
-        pvardecNode1 = new AVarDec1VarDec(tvaraNode2, pvaridsNode3, tcolonNode4, pvartypeNode5, tsemiNode6);
+        pvardecNode1 = new AVarDec1VarDec(tvarNode2, pvaridsNode3, tcolonNode4, pvartypeNode5, tsemiNode6);
         }
 	nodeList.add(pvardecNode1);
         return nodeList;
@@ -588,7 +614,7 @@ public class Parser
 
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    ArrayList<Object> new11() /* reduce AVarIds1VarIds */
+    ArrayList<Object> new12() /* reduce AVarIds1VarIds */
     {
         @SuppressWarnings("hiding") ArrayList<Object> nodeList = new ArrayList<Object>();
 
@@ -608,7 +634,7 @@ public class Parser
 
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    ArrayList<Object> new12() /* reduce AVarIds2VarIds */
+    ArrayList<Object> new13() /* reduce AVarIds2VarIds */
     {
         @SuppressWarnings("hiding") ArrayList<Object> nodeList = new ArrayList<Object>();
 
@@ -634,7 +660,7 @@ public class Parser
 
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    ArrayList<Object> new13() /* reduce AVarType1VarType */
+    ArrayList<Object> new14() /* reduce AVarType1VarType */
     {
         @SuppressWarnings("hiding") ArrayList<Object> nodeList = new ArrayList<Object>();
 
@@ -654,7 +680,7 @@ public class Parser
 
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    ArrayList<Object> new14() /* reduce AVarType2VarType */
+    ArrayList<Object> new15() /* reduce AVarType2VarType */
     {
         @SuppressWarnings("hiding") ArrayList<Object> nodeList = new ArrayList<Object>();
 
@@ -674,7 +700,7 @@ public class Parser
 
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    ArrayList<Object> new15() /* reduce AVarType3VarType */
+    ArrayList<Object> new16() /* reduce AVarType3VarType */
     {
         @SuppressWarnings("hiding") ArrayList<Object> nodeList = new ArrayList<Object>();
 
@@ -703,7 +729,7 @@ public class Parser
 
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    ArrayList<Object> new16() /* reduce AVarType4VarType */
+    ArrayList<Object> new17() /* reduce AVarType4VarType */
     {
         @SuppressWarnings("hiding") ArrayList<Object> nodeList = new ArrayList<Object>();
 
@@ -732,7 +758,7 @@ public class Parser
 
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    ArrayList<Object> new17() /* reduce ATerminal$VarDec */
+    ArrayList<Object> new18() /* reduce ATerminal$Line */
     {
         @SuppressWarnings("hiding") ArrayList<Object> nodeList = new ArrayList<Object>();
 
@@ -740,11 +766,11 @@ public class Parser
         LinkedList<Object> listNode2 = new LinkedList<Object>();
         {
             // Block
-        PVarDec pvardecNode1;
-        pvardecNode1 = (PVarDec)nodeArrayList1.get(0);
-	if(pvardecNode1 != null)
+        PLine plineNode1;
+        plineNode1 = (PLine)nodeArrayList1.get(0);
+	if(plineNode1 != null)
 	{
-	  listNode2.add(pvardecNode1);
+	  listNode2.add(plineNode1);
 	}
         }
 	nodeList.add(listNode2);
@@ -754,7 +780,7 @@ public class Parser
 
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    ArrayList<Object> new18() /* reduce ANonTerminal$VarDec */
+    ArrayList<Object> new19() /* reduce ANonTerminal$Line */
     {
         @SuppressWarnings("hiding") ArrayList<Object> nodeList = new ArrayList<Object>();
 
@@ -764,16 +790,16 @@ public class Parser
         {
             // Block
         LinkedList<Object> listNode1 = new LinkedList<Object>();
-        PVarDec pvardecNode2;
+        PLine plineNode2;
         listNode1 = (LinkedList)nodeArrayList1.get(0);
-        pvardecNode2 = (PVarDec)nodeArrayList2.get(0);
+        plineNode2 = (PLine)nodeArrayList2.get(0);
 	if(listNode1 != null)
 	{
 	  listNode3.addAll(listNode1);
 	}
-	if(pvardecNode2 != null)
+	if(plineNode2 != null)
 	{
-	  listNode3.add(pvardecNode2);
+	  listNode3.add(plineNode2);
 	}
         }
 	nodeList.add(listNode3);
@@ -784,47 +810,68 @@ public class Parser
 
     private static int[][][] actionTable;
 /*      {
-			{{-1, ERROR, 0}, {16, SHIFT, 1}, },
-			{{-1, ERROR, 1}, {20, SHIFT, 5}, },
-			{{-1, ERROR, 2}, {42, ACCEPT, -1}, },
-			{{-1, REDUCE, 17}, },
-			{{-1, REDUCE, 0}, {16, SHIFT, 1}, },
-			{{-1, REDUCE, 11}, {38, SHIFT, 8}, },
-			{{-1, ERROR, 6}, {40, SHIFT, 9}, },
+			{{-1, ERROR, 0}, {16, SHIFT, 1}, {18, SHIFT, 2}, {32, SHIFT, 3}, },
+			{{-1, ERROR, 1}, {20, SHIFT, 11}, },
+			{{-1, REDUCE, 9}, },
+			{{-1, ERROR, 3}, {18, SHIFT, 2}, {32, SHIFT, 3}, },
+			{{-1, ERROR, 4}, {42, ACCEPT, -1}, },
 			{{-1, REDUCE, 18}, },
-			{{-1, ERROR, 8}, {20, SHIFT, 5}, },
-			{{-1, ERROR, 9}, {2, SHIFT, 11}, {8, SHIFT, 12}, },
-			{{-1, REDUCE, 12}, },
-			{{-1, REDUCE, 14}, {34, SHIFT, 14}, },
-			{{-1, REDUCE, 13}, {34, SHIFT, 15}, },
-			{{-1, ERROR, 13}, {39, SHIFT, 16}, },
-			{{-1, ERROR, 14}, {18, SHIFT, 17}, },
-			{{-1, ERROR, 15}, {18, SHIFT, 18}, },
+			{{-1, REDUCE, 1}, {21, SHIFT, 14}, {22, SHIFT, 15}, },
+			{{-1, REDUCE, 3}, {23, SHIFT, 16}, {24, SHIFT, 17}, },
+			{{-1, REDUCE, 6}, },
+			{{-1, REDUCE, 2}, },
+			{{-1, REDUCE, 0}, {16, SHIFT, 1}, {18, SHIFT, 2}, {32, SHIFT, 3}, },
+			{{-1, REDUCE, 12}, {38, SHIFT, 19}, },
+			{{-1, ERROR, 12}, {40, SHIFT, 20}, },
+			{{-1, ERROR, 13}, {21, SHIFT, 14}, {22, SHIFT, 15}, {33, SHIFT, 21}, },
+			{{-1, ERROR, 14}, {18, SHIFT, 2}, {32, SHIFT, 3}, },
+			{{-1, ERROR, 15}, {18, SHIFT, 2}, {32, SHIFT, 3}, },
+			{{-1, ERROR, 16}, {18, SHIFT, 2}, {32, SHIFT, 3}, },
+			{{-1, ERROR, 17}, {18, SHIFT, 2}, {32, SHIFT, 3}, },
+			{{-1, REDUCE, 19}, },
+			{{-1, ERROR, 19}, {20, SHIFT, 11}, },
+			{{-1, ERROR, 20}, {2, SHIFT, 27}, {8, SHIFT, 28}, },
 			{{-1, REDUCE, 10}, },
-			{{-1, ERROR, 17}, {35, SHIFT, 19}, },
-			{{-1, ERROR, 18}, {35, SHIFT, 20}, },
+			{{-1, REDUCE, 5}, {23, SHIFT, 16}, {24, SHIFT, 17}, },
+			{{-1, REDUCE, 4}, {23, SHIFT, 16}, {24, SHIFT, 17}, },
+			{{-1, REDUCE, 7}, },
+			{{-1, REDUCE, 8}, },
+			{{-1, REDUCE, 13}, },
+			{{-1, REDUCE, 15}, {34, SHIFT, 30}, },
+			{{-1, REDUCE, 14}, {34, SHIFT, 31}, },
+			{{-1, ERROR, 29}, {39, SHIFT, 32}, },
+			{{-1, ERROR, 30}, {18, SHIFT, 33}, },
+			{{-1, ERROR, 31}, {18, SHIFT, 34}, },
+			{{-1, REDUCE, 11}, },
+			{{-1, ERROR, 33}, {35, SHIFT, 35}, },
+			{{-1, ERROR, 34}, {35, SHIFT, 36}, },
+			{{-1, REDUCE, 17}, },
 			{{-1, REDUCE, 16}, },
-			{{-1, REDUCE, 15}, },
         };*/
     private static int[][][] gotoTable;
 /*      {
-			{{-1, 2}, },
-			{{-1, -1}, },
-			{{-1, -1}, },
-			{{-1, -1}, },
-			{{-1, 3}, {4, 7}, },
-			{{-1, 6}, {8, 10}, },
-			{{-1, 13}, },
 			{{-1, 4}, },
+			{{-1, 5}, {10, 18}, },
+			{{-1, 6}, {3, 13}, },
+			{{-1, 7}, {14, 22}, {15, 23}, },
+			{{-1, 8}, {16, 24}, {17, 25}, },
+			{{-1, 9}, },
+			{{-1, 12}, {19, 26}, },
+			{{-1, 29}, },
+			{{-1, 10}, },
         };*/
     private static String[] errorMessages;
 /*      {
-			"expecting: 'var'",
+			"expecting: 'var', integers, '('",
 			"expecting: identifier",
+			"expecting: 'var', integers, '-', '+', '*', '/', '(', ')', EOF",
+			"expecting: integers, '('",
 			"expecting: EOF",
-			"expecting: 'var', EOF",
+			"expecting: 'var', integers, '(', EOF",
+			"expecting: 'var', integers, '-', '+', '(', EOF",
 			"expecting: ',', ':'",
 			"expecting: ':'",
+			"expecting: '-', '+', ')'",
 			"expecting: 'char', 'int'",
 			"expecting: '[', ';'",
 			"expecting: ';'",
@@ -833,7 +880,7 @@ public class Parser
         };*/
     private static int[] errors;
 /*      {
-			0, 1, 2, 3, 3, 4, 5, 3, 1, 6, 5, 7, 7, 8, 9, 9, 3, 10, 10, 8, 8, 
+			0, 1, 2, 3, 4, 5, 6, 2, 2, 5, 5, 7, 8, 9, 3, 3, 3, 3, 5, 1, 10, 2, 2, 2, 2, 2, 8, 11, 11, 12, 13, 13, 5, 14, 14, 12, 12, 
         };*/
 
     static 

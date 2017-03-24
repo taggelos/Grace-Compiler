@@ -5,46 +5,46 @@ package compiler.node;
 import compiler.analysis.*;
 
 @SuppressWarnings("nls")
-public final class AExpr4Expr extends PExpr
+public final class AKaratseLine extends PLine
 {
-    private PVarDec _varDec_;
+    private PExpr _expr_;
 
-    public AExpr4Expr()
+    public AKaratseLine()
     {
         // Constructor
     }
 
-    public AExpr4Expr(
-        @SuppressWarnings("hiding") PVarDec _varDec_)
+    public AKaratseLine(
+        @SuppressWarnings("hiding") PExpr _expr_)
     {
         // Constructor
-        setVarDec(_varDec_);
+        setExpr(_expr_);
 
     }
 
     @Override
     public Object clone()
     {
-        return new AExpr4Expr(
-            cloneNode(this._varDec_));
+        return new AKaratseLine(
+            cloneNode(this._expr_));
     }
 
     @Override
     public void apply(Switch sw)
     {
-        ((Analysis) sw).caseAExpr4Expr(this);
+        ((Analysis) sw).caseAKaratseLine(this);
     }
 
-    public PVarDec getVarDec()
+    public PExpr getExpr()
     {
-        return this._varDec_;
+        return this._expr_;
     }
 
-    public void setVarDec(PVarDec node)
+    public void setExpr(PExpr node)
     {
-        if(this._varDec_ != null)
+        if(this._expr_ != null)
         {
-            this._varDec_.parent(null);
+            this._expr_.parent(null);
         }
 
         if(node != null)
@@ -57,23 +57,23 @@ public final class AExpr4Expr extends PExpr
             node.parent(this);
         }
 
-        this._varDec_ = node;
+        this._expr_ = node;
     }
 
     @Override
     public String toString()
     {
         return ""
-            + toString(this._varDec_);
+            + toString(this._expr_);
     }
 
     @Override
     void removeChild(@SuppressWarnings("unused") Node child)
     {
         // Remove child
-        if(this._varDec_ == child)
+        if(this._expr_ == child)
         {
-            this._varDec_ = null;
+            this._expr_ = null;
             return;
         }
 
@@ -84,9 +84,9 @@ public final class AExpr4Expr extends PExpr
     void replaceChild(@SuppressWarnings("unused") Node oldChild, @SuppressWarnings("unused") Node newChild)
     {
         // Replace child
-        if(this._varDec_ == oldChild)
+        if(this._expr_ == oldChild)
         {
-            setVarDec((PVarDec) newChild);
+            setExpr((PExpr) newChild);
             return;
         }
 

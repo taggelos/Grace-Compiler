@@ -106,7 +106,7 @@ class TokenIndex extends AnalysisAdapter
     }
 
     @Override
-    public void caseTVara(@SuppressWarnings("unused") TVara node)
+    public void caseTVar(@SuppressWarnings("unused") TVar node)
     {
         this.index = 16;
     }

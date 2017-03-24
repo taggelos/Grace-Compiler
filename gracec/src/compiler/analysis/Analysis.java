@@ -13,10 +13,11 @@ public interface Analysis extends Switch
 
     void caseStart(Start node);
     void caseAExprList(AExprList node);
+    void caseAKaratseLine(AKaratseLine node);
+    void caseALefterhsLine(ALefterhsLine node);
     void caseAExpr1Expr(AExpr1Expr node);
     void caseAExpr2Expr(AExpr2Expr node);
     void caseAExpr3Expr(AExpr3Expr node);
-    void caseAExpr4Expr(AExpr4Expr node);
     void caseAFactor1Factor(AFactor1Factor node);
     void caseAFactor2Factor(AFactor2Factor node);
     void caseAFactor3Factor(AFactor3Factor node);
@@ -47,7 +48,7 @@ public interface Analysis extends Switch
     void caseTRef(TRef node);
     void caseTReturn(TReturn node);
     void caseTThen(TThen node);
-    void caseTVara(TVara node);
+    void caseTVar(TVar node);
     void caseTWhile(TWhile node);
     void caseTIntegers(TIntegers node);
     void caseTStringLiteral(TStringLiteral node);

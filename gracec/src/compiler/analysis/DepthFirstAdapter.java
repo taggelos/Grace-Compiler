@@ -51,13 +51,55 @@ public class DepthFirstAdapter extends AnalysisAdapter
     {
         inAExprList(node);
         {
-            List<PVarDec> copy = new ArrayList<PVarDec>(node.getVarDec());
-            for(PVarDec e : copy)
+            List<PLine> copy = new ArrayList<PLine>(node.getLine());
+            for(PLine e : copy)
             {
                 e.apply(this);
             }
         }
         outAExprList(node);
+    }
+
+    public void inAKaratseLine(AKaratseLine node)
+    {
+        defaultIn(node);
+    }
+
+    public void outAKaratseLine(AKaratseLine node)
+    {
+        defaultOut(node);
+    }
+
+    @Override
+    public void caseAKaratseLine(AKaratseLine node)
+    {
+        inAKaratseLine(node);
+        if(node.getExpr() != null)
+        {
+            node.getExpr().apply(this);
+        }
+        outAKaratseLine(node);
+    }
+
+    public void inALefterhsLine(ALefterhsLine node)
+    {
+        defaultIn(node);
+    }
+
+    public void outALefterhsLine(ALefterhsLine node)
+    {
+        defaultOut(node);
+    }
+
+    @Override
+    public void caseALefterhsLine(ALefterhsLine node)
+    {
+        inALefterhsLine(node);
+        if(node.getVarDec() != null)
+        {
+            node.getVarDec().apply(this);
+        }
+        outALefterhsLine(node);
     }
 
     public void inAExpr1Expr(AExpr1Expr node)
@@ -137,27 +179,6 @@ public class DepthFirstAdapter extends AnalysisAdapter
             node.getFactor().apply(this);
         }
         outAExpr3Expr(node);
-    }
-
-    public void inAExpr4Expr(AExpr4Expr node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAExpr4Expr(AExpr4Expr node)
-    {
-        defaultOut(node);
-    }
-
-    @Override
-    public void caseAExpr4Expr(AExpr4Expr node)
-    {
-        inAExpr4Expr(node);
-        if(node.getVarDec() != null)
-        {
-            node.getVarDec().apply(this);
-        }
-        outAExpr4Expr(node);
     }
 
     public void inAFactor1Factor(AFactor1Factor node)
@@ -303,9 +324,9 @@ public class DepthFirstAdapter extends AnalysisAdapter
     public void caseAVarDec1VarDec(AVarDec1VarDec node)
     {
         inAVarDec1VarDec(node);
-        if(node.getVara() != null)
+        if(node.getVar() != null)
         {
-            node.getVara().apply(this);
+            node.getVar().apply(this);
         }
         if(node.getVarIds() != null)
         {

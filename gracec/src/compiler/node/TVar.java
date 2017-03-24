@@ -5,14 +5,14 @@ package compiler.node;
 import compiler.analysis.*;
 
 @SuppressWarnings("nls")
-public final class TVara extends Token
+public final class TVar extends Token
 {
-    public TVara()
+    public TVar()
     {
         super.setText("var");
     }
 
-    public TVara(int line, int pos)
+    public TVar(int line, int pos)
     {
         super.setText("var");
         setLine(line);
@@ -22,18 +22,18 @@ public final class TVara extends Token
     @Override
     public Object clone()
     {
-      return new TVara(getLine(), getPos());
+      return new TVar(getLine(), getPos());
     }
 
     @Override
     public void apply(Switch sw)
     {
-        ((Analysis) sw).caseTVara(this);
+        ((Analysis) sw).caseTVar(this);
     }
 
     @Override
     public void setText(@SuppressWarnings("unused") String text)
     {
-        throw new RuntimeException("Cannot change TVara text.");
+        throw new RuntimeException("Cannot change TVar text.");
     }
 }

@@ -1,1 +1,7 @@
+$$$$$$dsada
+var i : int;
+var x, y, z : int;
+var s : char[80];
+2 * 3
+$$
 var i : int;

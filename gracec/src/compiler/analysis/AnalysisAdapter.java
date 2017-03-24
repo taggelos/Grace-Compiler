@@ -81,6 +81,18 @@ public class AnalysisAdapter implements Analysis
     }
 
     @Override
+    public void caseAKaratseLine(AKaratseLine node)
+    {
+        defaultCase(node);
+    }
+
+    @Override
+    public void caseALefterhsLine(ALefterhsLine node)
+    {
+        defaultCase(node);
+    }
+
+    @Override
     public void caseAExpr1Expr(AExpr1Expr node)
     {
         defaultCase(node);
@@ -94,12 +106,6 @@ public class AnalysisAdapter implements Analysis
 
     @Override
     public void caseAExpr3Expr(AExpr3Expr node)
-    {
-        defaultCase(node);
-    }
-
-    @Override
-    public void caseAExpr4Expr(AExpr4Expr node)
     {
         defaultCase(node);
     }
@@ -279,7 +285,7 @@ public class AnalysisAdapter implements Analysis
     }
 
     @Override
-    public void caseTVara(TVara node)
+    public void caseTVar(TVar node)
     {
         defaultCase(node);
     }

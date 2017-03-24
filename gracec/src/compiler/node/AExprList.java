@@ -8,7 +8,7 @@ import compiler.analysis.*;
 @SuppressWarnings("nls")
 public final class AExprList extends PExprList
 {
-    private final LinkedList<PVarDec> _varDec_ = new LinkedList<PVarDec>();
+    private final LinkedList<PLine> _line_ = new LinkedList<PLine>();
 
     public AExprList()
     {
@@ -16,10 +16,10 @@ public final class AExprList extends PExprList
     }
 
     public AExprList(
-        @SuppressWarnings("hiding") List<?> _varDec_)
+        @SuppressWarnings("hiding") List<?> _line_)
     {
         // Constructor
-        setVarDec(_varDec_);
+        setLine(_line_);
 
     }
 
@@ -27,7 +27,7 @@ public final class AExprList extends PExprList
     public Object clone()
     {
         return new AExprList(
-            cloneList(this._varDec_));
+            cloneList(this._line_));
     }
 
     @Override
@@ -36,29 +36,29 @@ public final class AExprList extends PExprList
         ((Analysis) sw).caseAExprList(this);
     }
 
-    public LinkedList<PVarDec> getVarDec()
+    public LinkedList<PLine> getLine()
     {
-        return this._varDec_;
+        return this._line_;
     }
 
-    public void setVarDec(List<?> list)
+    public void setLine(List<?> list)
     {
-        for(PVarDec e : this._varDec_)
+        for(PLine e : this._line_)
         {
             e.parent(null);
         }
-        this._varDec_.clear();
+        this._line_.clear();
 
         for(Object obj_e : list)
         {
-            PVarDec e = (PVarDec) obj_e;
+            PLine e = (PLine) obj_e;
             if(e.parent() != null)
             {
                 e.parent().removeChild(e);
             }
 
             e.parent(this);
-            this._varDec_.add(e);
+            this._line_.add(e);
         }
     }
 
@@ -66,14 +66,14 @@ public final class AExprList extends PExprList
     public String toString()
     {
         return ""
-            + toString(this._varDec_);
+            + toString(this._line_);
     }
 
     @Override
     void removeChild(@SuppressWarnings("unused") Node child)
     {
         // Remove child
-        if(this._varDec_.remove(child))
+        if(this._line_.remove(child))
         {
             return;
         }
@@ -85,13 +85,13 @@ public final class AExprList extends PExprList
     void replaceChild(@SuppressWarnings("unused") Node oldChild, @SuppressWarnings("unused") Node newChild)
     {
         // Replace child
-        for(ListIterator<PVarDec> i = this._varDec_.listIterator(); i.hasNext();)
+        for(ListIterator<PLine> i = this._line_.listIterator(); i.hasNext();)
         {
             if(i.next() == oldChild)
             {
                 if(newChild != null)
                 {
-                    i.set((PVarDec) newChild);
+                    i.set((PLine) newChild);
                     newChild.parent(this);
                     oldChild.parent(null);
                     return;

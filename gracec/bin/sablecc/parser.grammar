@@ -16,6 +16,8 @@ Helpers
 
     escape_seq = '\n' | '\t' | '\r' | '\0'  | '\\' | '\' ''' | '\"' | '\xnn'; //<--
 
+    latin_letter = ['a' .. 'z'] | ['A' .. 'Z']; 
+
     char_literal = ' ' | '!' | '"' | '#' | '$' | '%' | '&' | '(' | ')' 
         | '*' | '+' | ',' | '-' | '.' | '/' | ':' | ';' | '<' | '=' | '>' 
         | '?' | '@' | '[' | ']' | '^' | '_' | '`' | '{' | '|' | '}' | '~'
@@ -24,7 +26,7 @@ Helpers
     not_dollar = [all - '$'];
     //not_doubledollar = [all - '$$'];
 
-    simple_comment = '$' not_dollar input_character* line_terminator?;
+    simple_comment = '$' (not_dollar input_character*)? line_terminator?;
     //multi_comment = '$$' not_dollar* ('$' (not_dollar+))* '$$';
     multi_comment = '$$' ('$'? not_dollar)* '$$';
 
@@ -47,7 +49,7 @@ Tokens
     ref     = 'ref';
     return  = 'return';
     then    = 'then';
-    vara     = 'var';
+    var     = 'var';
     while   = 'while';
 
     
@@ -55,7 +57,7 @@ Tokens
 
     string_literal = '"' char_literal* '"'; //<--
 
-    identifier = char_literal*;
+    identifier = latin_letter (latin_letter | digit | '_' )*;
 
     //operators
 
@@ -95,13 +97,15 @@ Ignored Tokens
 
 
 Productions
-    expr_list = var_dec+;
+    expr_list = line+;
+    line = 
+        {karatse} expr | 
+        {lefterhs} var_dec;
     
     expr =
         {expr1} factor |
         {expr2} expr plus factor |
-        {expr3} expr minus factor |
-        {expr4} var_dec;
+        {expr3} expr minus factor ;
 
     factor =
         {factor1} term |
@@ -111,17 +115,18 @@ Productions
     term =
         {term1} integers |
         {term2} l_par expr r_par;
-
+    
     
     var_dec =
-        {var_dec1} vara var_ids colon var_type semi;
+        {var_dec1} var var_ids colon var_type semi;
 
     var_ids =
         {var_ids1} identifier |
         {var_ids2} identifier comma var_ids;  //{var_ids2} var_ids comma identifier;
-
     
-
+    /*var_ids = 
+        {var_ids1} identifier (comma identifier)* ;
+*/
     var_type =
         {var_type1} int |
         {var_type2} char |

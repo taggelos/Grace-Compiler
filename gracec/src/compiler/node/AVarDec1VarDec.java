@@ -7,7 +7,7 @@ import compiler.analysis.*;
 @SuppressWarnings("nls")
 public final class AVarDec1VarDec extends PVarDec
 {
-    private TVara _vara_;
+    private TVar _var_;
     private PVarIds _varIds_;
     private TColon _colon_;
     private PVarType _varType_;
@@ -19,14 +19,14 @@ public final class AVarDec1VarDec extends PVarDec
     }
 
     public AVarDec1VarDec(
-        @SuppressWarnings("hiding") TVara _vara_,
+        @SuppressWarnings("hiding") TVar _var_,
         @SuppressWarnings("hiding") PVarIds _varIds_,
         @SuppressWarnings("hiding") TColon _colon_,
         @SuppressWarnings("hiding") PVarType _varType_,
         @SuppressWarnings("hiding") TSemi _semi_)
     {
         // Constructor
-        setVara(_vara_);
+        setVar(_var_);
 
         setVarIds(_varIds_);
 
@@ -42,7 +42,7 @@ public final class AVarDec1VarDec extends PVarDec
     public Object clone()
     {
         return new AVarDec1VarDec(
-            cloneNode(this._vara_),
+            cloneNode(this._var_),
             cloneNode(this._varIds_),
             cloneNode(this._colon_),
             cloneNode(this._varType_),
@@ -55,16 +55,16 @@ public final class AVarDec1VarDec extends PVarDec
         ((Analysis) sw).caseAVarDec1VarDec(this);
     }
 
-    public TVara getVara()
+    public TVar getVar()
     {
-        return this._vara_;
+        return this._var_;
     }
 
-    public void setVara(TVara node)
+    public void setVar(TVar node)
     {
-        if(this._vara_ != null)
+        if(this._var_ != null)
         {
-            this._vara_.parent(null);
+            this._var_.parent(null);
         }
 
         if(node != null)
@@ -77,7 +77,7 @@ public final class AVarDec1VarDec extends PVarDec
             node.parent(this);
         }
 
-        this._vara_ = node;
+        this._var_ = node;
     }
 
     public PVarIds getVarIds()
@@ -184,7 +184,7 @@ public final class AVarDec1VarDec extends PVarDec
     public String toString()
     {
         return ""
-            + toString(this._vara_)
+            + toString(this._var_)
             + toString(this._varIds_)
             + toString(this._colon_)
             + toString(this._varType_)
@@ -195,9 +195,9 @@ public final class AVarDec1VarDec extends PVarDec
     void removeChild(@SuppressWarnings("unused") Node child)
     {
         // Remove child
-        if(this._vara_ == child)
+        if(this._var_ == child)
         {
-            this._vara_ = null;
+            this._var_ = null;
             return;
         }
 
@@ -232,9 +232,9 @@ public final class AVarDec1VarDec extends PVarDec
     void replaceChild(@SuppressWarnings("unused") Node oldChild, @SuppressWarnings("unused") Node newChild)
     {
         // Replace child
-        if(this._vara_ == oldChild)
+        if(this._var_ == oldChild)
         {
-            setVara((TVara) newChild);
+            setVar((TVar) newChild);
             return;
         }
 
