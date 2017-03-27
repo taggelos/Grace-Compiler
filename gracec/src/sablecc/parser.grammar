@@ -56,6 +56,7 @@ Tokens
     integers = digit+;
 
     string_literal = '"' char_literal* '"'; //<--
+    char_const = '"' char_literal '"';
 
     identifier = latin_letter (latin_letter | digit | '_' )*;
 
@@ -184,7 +185,7 @@ Productions
         {expr1} factor |
         {expr2} expr plus factor |
         {expr3} expr minus factor |
-        //{expr4} l_val |        
+        {expr4} l_val |        
         {expr5} fun_cal ;
 
     factor =
@@ -195,8 +196,9 @@ Productions
 
     term =
         {term1} integers |
+        {term2} char_const;
         //{term2} l_val | //pros suzhthsh
-        {term3} l_par expr r_par;
+        //{term3} l_par expr r_par;
 
 
 

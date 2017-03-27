@@ -6,20 +6,28 @@ $$
 
 fun hello1 () : nothing
 {
-1
+	i <- 2;
 }
 
-fun hello2 (n : int) : int
+fun hello () : nothing
 {
-2
+puts("Hello world!\n");
 }
 
 fun hello3 (n : int, ref s : char[]) : int
 {
-2
+
 }
 
 fun hello4 (ref s1, s2 : char[], n : int) : nothing
 {
-2
+
 }
+
+fun hanoi (rings : int; ref source, target, auxiliary : char[]) : nothing
+{
+ 
+}
+
+fun putArray (ref msg : char[]; n : int; ref x : int[]) : nothing
+{ }
