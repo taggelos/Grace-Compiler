@@ -1,7 +1,33 @@
-$$$$$$dsada
+$$
 var i : int;
 var x, y, z : int;
 var s : char[80];
-2 * 3
 $$
-var i : int;
+
+fun hello1 () : nothing
+{
+	i <- i+2;
+}
+
+fun hello2 (n : int) : int
+{
+
+}
+
+fun hello3 (n : int, ref s : char[]) : int
+{
+
+}
+
+fun hello4 (ref s1, s2 : char[], n : int) : nothing
+{
+
+}
+
+fun hanoi (rings : int; ref source, target, auxiliary : char[]) : nothing
+{
+ 
+}
+
+fun putArray (ref msg : char[]; n : int; ref x : int[]) : nothing
+{ }
