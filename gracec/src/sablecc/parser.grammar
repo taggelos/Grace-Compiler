@@ -100,7 +100,63 @@ Productions
     expr_list = line+;
     line = 
         {line1} expr | 
-        {line2} var_dec;
+        {line2} var_def |
+        {line3} fun_def;
+    
+    
+    fun_def =
+        {fun_def1} header local_def* block;
+
+
+    header =
+        {header1} fun identifier l_par fpar_def r_par colon return_type;
+
+
+    fpar_def =
+        {fpar_def1} ref? identifier colon fpar_type |
+        {fpar_def2} ref? identifier comma fpar_def |
+        {fpar_def3} ref? identifier colon fpar_type comma fpar_def |
+        {fpar_def4} ;
+
+    fpar_type =
+        {fpar_type1} int |
+        {fpar_type2} char |
+        {fpar_type3} char l_br r_br |
+        {fpar_type4} char l_br integers r_br;
+
+    return_type =
+        {return_type1} int |
+        {return_type2} char |
+        {return_type3} nothing;
+
+    local_def =
+        {local_def1} fun_def |
+        {local_def2} fun_dec |
+        {local_def3} var_def;
+
+    fun_dec =
+        {fun_dec} header semi;
+
+    block =
+        {block} l_ag integers r_ag;  // <----
+
+
+    var_def =
+        {var_def1} var var_ids colon var_type semi;
+
+    var_ids =
+        {var_ids1} identifier |
+        {var_ids2} identifier comma var_ids;  //{var_ids1} identifier (comma identifier)*;
+    
+    /*var_ids = 
+        {var_ids1} identifier (comma identifier)* ;
+*/
+    var_type =
+        {var_type1} int |
+        {var_type2} char |
+        {var_type3} int l_br integers r_br |   //<---- char l_br integers? r_br;
+        {var_type4} char l_br integers r_br;
+    
     
     expr =
         {expr1} factor |
@@ -115,23 +171,6 @@ Productions
     term =
         {term1} integers |
         {term2} l_par expr r_par;
-    
-    
-    var_dec =
-        {var_dec1} var var_ids colon var_type semi;
 
-    var_ids =
-        {var_ids1} identifier |
-        {var_ids2} identifier comma var_ids;  //{var_ids2} var_ids comma identifier;
-    
-    /*var_ids = 
-        {var_ids1} identifier (comma identifier)* ;
-*/
-    var_type =
-        {var_type1} int |
-        {var_type2} char |
-        {var_type3} int l_br integers r_br |
-        {var_type4} char l_br integers r_br;
-    
-    
-    
+
+

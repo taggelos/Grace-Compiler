@@ -1,7 +1,25 @@
-$$$$$$dsada
+$$
 var i : int;
 var x, y, z : int;
 var s : char[80];
-2 * 3
 $$
-var i : int;
+
+fun hello1 () : nothing
+{
+1
+}
+
+fun hello2 (n : int) : int
+{
+2
+}
+
+fun hello3 (n : int, ref s : char[]) : int
+{
+2
+}
+
+fun hello4 (ref s1, s2 : char[], n : int) : nothing
+{
+2
+}
