@@ -2,32 +2,63 @@ $$
 var i : int;
 var x, y, z : int;
 var s : char[80];
+
+if 1 then i <- 3;
+	else 
+		if 1 then i <- 3;
+		else 
+			if 1 then return 0;
+			else 
+				if 1 then return i+1;
+				else {
+					i <- 3;
+					while 1 do {
+						if 1 then
+							i <- 3;
+						i <- 3;
+					}
+				i <- 3;
+				}
 $$
 
 fun hello1 () : nothing
-{
-	i <- 2;
-}
-
 fun hello () : nothing
-{
-puts("Hello world!\n");
-}
 
-fun hello3 (n : int, ref s : char[]) : int
-{
 
-}
+fun hello3 (n : int, ref s : char[][123]) : int
+
 
 fun hello4 (ref s1, s2 : char[], n : int) : nothing
-{
 
-}
 
 fun hanoi (rings : int; ref source, target, auxiliary : char[]) : nothing
-{
- 
-}
+
 
 fun putArray (ref msg : char[]; n : int; ref x : int[]) : nothing
-{ }
+
+{
+	if 1 then i <- 3;
+	else 
+		if 1 then i <- 3;
+		else 
+			if 1 then return 0;
+			else 
+				if 1 then return i+1;
+				else {
+					i <- 3;
+					while 1 do {
+						if 11 then {
+							counter <- counter + 1;
+							puti(number - 1);
+							puts("\n");
+						}
+						if 21 then {
+							counter <- counter + 1;
+							puti(number + 1);
+							puts("\n");
+						}
+						number <- number + 6;
+					}
+				i <- 3;
+				}
+}

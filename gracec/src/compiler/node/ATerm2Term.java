@@ -7,9 +7,7 @@ import compiler.analysis.*;
 @SuppressWarnings("nls")
 public final class ATerm2Term extends PTerm
 {
-    private TLPar _lPar_;
-    private PExpr _expr_;
-    private TRPar _rPar_;
+    private TCharConst _charConst_;
 
     public ATerm2Term()
     {
@@ -17,16 +15,10 @@ public final class ATerm2Term extends PTerm
     }
 
     public ATerm2Term(
-        @SuppressWarnings("hiding") TLPar _lPar_,
-        @SuppressWarnings("hiding") PExpr _expr_,
-        @SuppressWarnings("hiding") TRPar _rPar_)
+        @SuppressWarnings("hiding") TCharConst _charConst_)
     {
         // Constructor
-        setLPar(_lPar_);
-
-        setExpr(_expr_);
-
-        setRPar(_rPar_);
+        setCharConst(_charConst_);
 
     }
 
@@ -34,9 +26,7 @@ public final class ATerm2Term extends PTerm
     public Object clone()
     {
         return new ATerm2Term(
-            cloneNode(this._lPar_),
-            cloneNode(this._expr_),
-            cloneNode(this._rPar_));
+            cloneNode(this._charConst_));
     }
 
     @Override
@@ -45,16 +35,16 @@ public final class ATerm2Term extends PTerm
         ((Analysis) sw).caseATerm2Term(this);
     }
 
-    public TLPar getLPar()
+    public TCharConst getCharConst()
     {
-        return this._lPar_;
+        return this._charConst_;
     }
 
-    public void setLPar(TLPar node)
+    public void setCharConst(TCharConst node)
     {
-        if(this._lPar_ != null)
+        if(this._charConst_ != null)
         {
-            this._lPar_.parent(null);
+            this._charConst_.parent(null);
         }
 
         if(node != null)
@@ -67,87 +57,23 @@ public final class ATerm2Term extends PTerm
             node.parent(this);
         }
 
-        this._lPar_ = node;
-    }
-
-    public PExpr getExpr()
-    {
-        return this._expr_;
-    }
-
-    public void setExpr(PExpr node)
-    {
-        if(this._expr_ != null)
-        {
-            this._expr_.parent(null);
-        }
-
-        if(node != null)
-        {
-            if(node.parent() != null)
-            {
-                node.parent().removeChild(node);
-            }
-
-            node.parent(this);
-        }
-
-        this._expr_ = node;
-    }
-
-    public TRPar getRPar()
-    {
-        return this._rPar_;
-    }
-
-    public void setRPar(TRPar node)
-    {
-        if(this._rPar_ != null)
-        {
-            this._rPar_.parent(null);
-        }
-
-        if(node != null)
-        {
-            if(node.parent() != null)
-            {
-                node.parent().removeChild(node);
-            }
-
-            node.parent(this);
-        }
-
-        this._rPar_ = node;
+        this._charConst_ = node;
     }
 
     @Override
     public String toString()
     {
         return ""
-            + toString(this._lPar_)
-            + toString(this._expr_)
-            + toString(this._rPar_);
+            + toString(this._charConst_);
     }
 
     @Override
     void removeChild(@SuppressWarnings("unused") Node child)
     {
         // Remove child
-        if(this._lPar_ == child)
+        if(this._charConst_ == child)
         {
-            this._lPar_ = null;
-            return;
-        }
-
-        if(this._expr_ == child)
-        {
-            this._expr_ = null;
-            return;
-        }
-
-        if(this._rPar_ == child)
-        {
-            this._rPar_ = null;
+            this._charConst_ = null;
             return;
         }
 
@@ -158,21 +84,9 @@ public final class ATerm2Term extends PTerm
     void replaceChild(@SuppressWarnings("unused") Node oldChild, @SuppressWarnings("unused") Node newChild)
     {
         // Replace child
-        if(this._lPar_ == oldChild)
+        if(this._charConst_ == oldChild)
         {
-            setLPar((TLPar) newChild);
-            return;
-        }
-
-        if(this._expr_ == oldChild)
-        {
-            setExpr((PExpr) newChild);
-            return;
-        }
-
-        if(this._rPar_ == oldChild)
-        {
-            setRPar((TRPar) newChild);
+            setCharConst((TCharConst) newChild);
             return;
         }
 

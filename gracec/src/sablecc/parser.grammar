@@ -98,40 +98,41 @@ Ignored Tokens
 
 
 Productions
-    program = line+;
+    /* program = line+;
     line = 
         {line1} expr | 
         {line2} var_def |
         {line3} fun_def;
-    
+    */
+    program = fun_def;
     
     fun_def =
         {fun_def1} header local_def* block;
 
-
     header =
         {header1} fun identifier l_par fpar_def r_par colon return_type;
 
-
     fpar_def =
-        {fpar_def1} ref? identifier colon types fpar_def|
+        {fpar_def1} ref? identifier colon types fpar_def |
         {fpar_def2} ref? identifier comma fpar_def |
         {fpar_def3} ref? identifier colon types comma fpar_def |
         {fpar_def4} semi fpar_def |
         {fpar_def5} ;
 
+    data_types = 
+        {data_types1} int |
+        {data_types2} char;
+
+    array_types =
+        {array_types1} l_br integers? r_br;
+
     types =
-        {types1} int |
-        {types2} char |
-        {types3} char l_br r_br |
-        {types4} char l_br integers r_br |
-        {types5} int l_br r_br |
-        {types6} int l_br integers r_br;
+        {types1} data_types |
+        {types2} data_types array_types+;
 
     return_type =
-        {return_type1} int |
-        {return_type2} char |
-        {return_type3} nothing;
+        {return_type1} data_types |
+        {return_type2} nothing;
 
     local_def =
         {local_def1} fun_def |
@@ -142,25 +143,24 @@ Productions
         {fun_dec} header semi;
 
     block =
-        {block} l_ag stmt* r_ag;  // <----
-
-    /*block =
-        {block1} l_ag r_ag | // <----
-        {block2} l_ag stmt+ r_ag;*/
+        {block} l_ag stmt* r_ag;
 
     stmt =  
         {stmt1} semi | 
-        {stmt2} l_val arrow expr semi| 
+        {stmt2} l_val arrow expr semi |   //<---- assignment
         {stmt3} block | 
-        {stmt4} fun_cal semi ;
-        /*{ifstmt} ifstmt | 
-        {whilestmt} whilestmt;
-        {returnstmt} returnstmt;*/
+        {stmt4} fun_cal semi |
+        {ifstmt} ifstmt | 
+        {whilestmt} whilestmt |
+        {returnstmt} returnstmt;
+
+    assignment = 
+        identifier arrow expr semi;
 
     l_val = 
         {l_val1} identifier | 
-        {l_val2} string_literal ;  /*| 
-        {l_val3} l_val ; */
+        {l_val2} string_literal | 
+        {l_val3} identifier l_br expr r_br;  // Paizetai malakia
 
     fun_cal = 
         {fun_cal1} identifier l_par expr_list r_par;    
@@ -175,11 +175,56 @@ Productions
 
     var_ids =
         {var_ids1} identifier |
-        {var_ids2} identifier comma var_ids;  //{var_ids1} identifier (comma identifier)*;
+        {var_ids2} identifier comma var_ids;
+
+    whilestmt = 
+        while cond do stmt ;        
+
+    while_with_else = 
+        while cond do stmt_with_else ;   
+
+    ifstmt = 
+        if_header if_trail ;
     
-    /*var_ids = 
-        {var_ids1} identifier (comma identifier)* ;
+    if_header = 
+        if cond then;
+    
+    if_trail  = 
+        {no_else} [then]:stmt | 
+        {with_else} [then]:stmt_with_else else [else_st]:stmt ;
+
+    stmt_with_else = 
+        {semi} semi | 
+        {assignment} assignment | 
+        {stmt_returnstmt} returnstmt |    
+        {stmt_funcal} fun_cal semi |
+        {block} block | 
+        {if} if_else | 
+        {while} while_with_else ;
+
+    if_else = 
+        if_header [then]:stmt_with_else else [else_st]:stmt_with_else ;
+
+    cond =
+        integers;
+
+
+/*
+    comparative_expression {-> expression} =
+        {relational} expr |
+        {equal} [left]:comparative_expression equal [right]:expr |
+        {not_equal} [left]:comparative_expression not_equal [right]:expr |
+        {additive} additive_expression |
+        {less_than} [left]:expr less_than [right]:additive_expression |
+        {greater_than} [left]:expr greater_than [right]:additive_expression |
+        {greater_equal_than} [left]:expr greater_equal_than [right]:additive_expression |
+        {less_equal_than} [left]:expr less_equal_than [right]:additive_expression;
 */
+
+
+    returnstmt =
+        {returnstmt1} return semi |
+        {returnstmt2} return expr semi;
         
     expr =
         {expr1} factor |
@@ -199,6 +244,4 @@ Productions
         {term2} char_const;
         //{term2} l_val | //pros suzhthsh
         //{term3} l_par expr r_par;
-
-
 
