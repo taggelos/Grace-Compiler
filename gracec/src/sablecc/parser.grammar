@@ -65,7 +65,6 @@ Tokens
     minus   = '-';
     plus    = '+';
     star    = '*';
-    slash   = '/';
     neq     = '#';
     eq      = '=';
     lt      = '<';
@@ -103,7 +102,7 @@ Productions
         {line2} var_def |
         {line3} fun_def;
     */
-    program = fun_def+;   // Na bgaloume to +
+    program = fun_def;   // Na bgaloume to +
     
     fun_def =
         {fun_def1} header local_def* block;
@@ -247,18 +246,20 @@ Productions
         
 
     factor =
-        {factor1} term |   
-        {factor2} factor star term |
-        {factor3} factor slash term |
-        {factor4} factor mod term |
-        {factor5} factor div term;
+        {factor1} term |  
+        {factor4} factor star term |
+        {factor6} factor mod term |
+        {factor7} factor div term;
 
     term =
-        {term1} integers |
+        {term1} plus_or_minus? integers |
         {term2} char_const |
-        {term3} l_val |
+        {term3} plus_or_minus? l_val |
         {term4} fun_cal |
         {term5} l_par expr r_par;
         //{term2} l_val | //pros suzhthsh
         //{term3} l_par expr r_par;
 
+    plus_or_minus = 
+        {plus} plus | 
+        {minus} minus;
