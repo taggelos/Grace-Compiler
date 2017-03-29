@@ -5,61 +5,56 @@ package compiler.node;
 import compiler.analysis.*;
 
 @SuppressWarnings("nls")
-public final class AAssignment extends PAssignment
+public final class ATerm5Term extends PTerm
 {
-    private PLVal _lVal_;
-    private TArrow _arrow_;
+    private TLPar _lPar_;
     private PExpr _expr_;
-    private TSemi _semi_;
+    private TRPar _rPar_;
 
-    public AAssignment()
+    public ATerm5Term()
     {
         // Constructor
     }
 
-    public AAssignment(
-        @SuppressWarnings("hiding") PLVal _lVal_,
-        @SuppressWarnings("hiding") TArrow _arrow_,
+    public ATerm5Term(
+        @SuppressWarnings("hiding") TLPar _lPar_,
         @SuppressWarnings("hiding") PExpr _expr_,
-        @SuppressWarnings("hiding") TSemi _semi_)
+        @SuppressWarnings("hiding") TRPar _rPar_)
     {
         // Constructor
-        setLVal(_lVal_);
-
-        setArrow(_arrow_);
+        setLPar(_lPar_);
 
         setExpr(_expr_);
 
-        setSemi(_semi_);
+        setRPar(_rPar_);
 
     }
 
     @Override
     public Object clone()
     {
-        return new AAssignment(
-            cloneNode(this._lVal_),
-            cloneNode(this._arrow_),
+        return new ATerm5Term(
+            cloneNode(this._lPar_),
             cloneNode(this._expr_),
-            cloneNode(this._semi_));
+            cloneNode(this._rPar_));
     }
 
     @Override
     public void apply(Switch sw)
     {
-        ((Analysis) sw).caseAAssignment(this);
+        ((Analysis) sw).caseATerm5Term(this);
     }
 
-    public PLVal getLVal()
+    public TLPar getLPar()
     {
-        return this._lVal_;
+        return this._lPar_;
     }
 
-    public void setLVal(PLVal node)
+    public void setLPar(TLPar node)
     {
-        if(this._lVal_ != null)
+        if(this._lPar_ != null)
         {
-            this._lVal_.parent(null);
+            this._lPar_.parent(null);
         }
 
         if(node != null)
@@ -72,32 +67,7 @@ public final class AAssignment extends PAssignment
             node.parent(this);
         }
 
-        this._lVal_ = node;
-    }
-
-    public TArrow getArrow()
-    {
-        return this._arrow_;
-    }
-
-    public void setArrow(TArrow node)
-    {
-        if(this._arrow_ != null)
-        {
-            this._arrow_.parent(null);
-        }
-
-        if(node != null)
-        {
-            if(node.parent() != null)
-            {
-                node.parent().removeChild(node);
-            }
-
-            node.parent(this);
-        }
-
-        this._arrow_ = node;
+        this._lPar_ = node;
     }
 
     public PExpr getExpr()
@@ -125,16 +95,16 @@ public final class AAssignment extends PAssignment
         this._expr_ = node;
     }
 
-    public TSemi getSemi()
+    public TRPar getRPar()
     {
-        return this._semi_;
+        return this._rPar_;
     }
 
-    public void setSemi(TSemi node)
+    public void setRPar(TRPar node)
     {
-        if(this._semi_ != null)
+        if(this._rPar_ != null)
         {
-            this._semi_.parent(null);
+            this._rPar_.parent(null);
         }
 
         if(node != null)
@@ -147,32 +117,25 @@ public final class AAssignment extends PAssignment
             node.parent(this);
         }
 
-        this._semi_ = node;
+        this._rPar_ = node;
     }
 
     @Override
     public String toString()
     {
         return ""
-            + toString(this._lVal_)
-            + toString(this._arrow_)
+            + toString(this._lPar_)
             + toString(this._expr_)
-            + toString(this._semi_);
+            + toString(this._rPar_);
     }
 
     @Override
     void removeChild(@SuppressWarnings("unused") Node child)
     {
         // Remove child
-        if(this._lVal_ == child)
+        if(this._lPar_ == child)
         {
-            this._lVal_ = null;
-            return;
-        }
-
-        if(this._arrow_ == child)
-        {
-            this._arrow_ = null;
+            this._lPar_ = null;
             return;
         }
 
@@ -182,9 +145,9 @@ public final class AAssignment extends PAssignment
             return;
         }
 
-        if(this._semi_ == child)
+        if(this._rPar_ == child)
         {
-            this._semi_ = null;
+            this._rPar_ = null;
             return;
         }
 
@@ -195,15 +158,9 @@ public final class AAssignment extends PAssignment
     void replaceChild(@SuppressWarnings("unused") Node oldChild, @SuppressWarnings("unused") Node newChild)
     {
         // Replace child
-        if(this._lVal_ == oldChild)
+        if(this._lPar_ == oldChild)
         {
-            setLVal((PLVal) newChild);
-            return;
-        }
-
-        if(this._arrow_ == oldChild)
-        {
-            setArrow((TArrow) newChild);
+            setLPar((TLPar) newChild);
             return;
         }
 
@@ -213,9 +170,9 @@ public final class AAssignment extends PAssignment
             return;
         }
 
-        if(this._semi_ == oldChild)
+        if(this._rPar_ == oldChild)
         {
-            setSemi((TSemi) newChild);
+            setRPar((TRPar) newChild);
             return;
         }
 

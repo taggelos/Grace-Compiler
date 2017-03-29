@@ -5,46 +5,46 @@ package compiler.node;
 import compiler.analysis.*;
 
 @SuppressWarnings("nls")
-public final class AStmt2Stmt extends PStmt
+public final class ATerm4Term extends PTerm
 {
-    private PAssignment _assignment_;
+    private PFunCal _funCal_;
 
-    public AStmt2Stmt()
+    public ATerm4Term()
     {
         // Constructor
     }
 
-    public AStmt2Stmt(
-        @SuppressWarnings("hiding") PAssignment _assignment_)
+    public ATerm4Term(
+        @SuppressWarnings("hiding") PFunCal _funCal_)
     {
         // Constructor
-        setAssignment(_assignment_);
+        setFunCal(_funCal_);
 
     }
 
     @Override
     public Object clone()
     {
-        return new AStmt2Stmt(
-            cloneNode(this._assignment_));
+        return new ATerm4Term(
+            cloneNode(this._funCal_));
     }
 
     @Override
     public void apply(Switch sw)
     {
-        ((Analysis) sw).caseAStmt2Stmt(this);
+        ((Analysis) sw).caseATerm4Term(this);
     }
 
-    public PAssignment getAssignment()
+    public PFunCal getFunCal()
     {
-        return this._assignment_;
+        return this._funCal_;
     }
 
-    public void setAssignment(PAssignment node)
+    public void setFunCal(PFunCal node)
     {
-        if(this._assignment_ != null)
+        if(this._funCal_ != null)
         {
-            this._assignment_.parent(null);
+            this._funCal_.parent(null);
         }
 
         if(node != null)
@@ -57,23 +57,23 @@ public final class AStmt2Stmt extends PStmt
             node.parent(this);
         }
 
-        this._assignment_ = node;
+        this._funCal_ = node;
     }
 
     @Override
     public String toString()
     {
         return ""
-            + toString(this._assignment_);
+            + toString(this._funCal_);
     }
 
     @Override
     void removeChild(@SuppressWarnings("unused") Node child)
     {
         // Remove child
-        if(this._assignment_ == child)
+        if(this._funCal_ == child)
         {
-            this._assignment_ = null;
+            this._funCal_ = null;
             return;
         }
 
@@ -84,9 +84,9 @@ public final class AStmt2Stmt extends PStmt
     void replaceChild(@SuppressWarnings("unused") Node oldChild, @SuppressWarnings("unused") Node newChild)
     {
         // Replace child
-        if(this._assignment_ == oldChild)
+        if(this._funCal_ == oldChild)
         {
-            setAssignment((PAssignment) newChild);
+            setFunCal((PFunCal) newChild);
             return;
         }
 

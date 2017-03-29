@@ -9,12 +9,12 @@ public final class TNeq extends Token
 {
     public TNeq()
     {
-        super.setText("<>");
+        super.setText("#");
     }
 
     public TNeq(int line, int pos)
     {
-        super.setText("<>");
+        super.setText("#");
         setLine(line);
         setPos(pos);
     }

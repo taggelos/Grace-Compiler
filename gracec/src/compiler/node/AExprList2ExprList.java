@@ -7,9 +7,9 @@ import compiler.analysis.*;
 @SuppressWarnings("nls")
 public final class AExprList2ExprList extends PExprList
 {
-    private PExpr _expr_;
-    private TComma _comma_;
     private PExprList _exprList_;
+    private TComma _comma_;
+    private PExpr _expr_;
 
     public AExprList2ExprList()
     {
@@ -17,16 +17,16 @@ public final class AExprList2ExprList extends PExprList
     }
 
     public AExprList2ExprList(
-        @SuppressWarnings("hiding") PExpr _expr_,
+        @SuppressWarnings("hiding") PExprList _exprList_,
         @SuppressWarnings("hiding") TComma _comma_,
-        @SuppressWarnings("hiding") PExprList _exprList_)
+        @SuppressWarnings("hiding") PExpr _expr_)
     {
         // Constructor
-        setExpr(_expr_);
+        setExprList(_exprList_);
 
         setComma(_comma_);
 
-        setExprList(_exprList_);
+        setExpr(_expr_);
 
     }
 
@@ -34,65 +34,15 @@ public final class AExprList2ExprList extends PExprList
     public Object clone()
     {
         return new AExprList2ExprList(
-            cloneNode(this._expr_),
+            cloneNode(this._exprList_),
             cloneNode(this._comma_),
-            cloneNode(this._exprList_));
+            cloneNode(this._expr_));
     }
 
     @Override
     public void apply(Switch sw)
     {
         ((Analysis) sw).caseAExprList2ExprList(this);
-    }
-
-    public PExpr getExpr()
-    {
-        return this._expr_;
-    }
-
-    public void setExpr(PExpr node)
-    {
-        if(this._expr_ != null)
-        {
-            this._expr_.parent(null);
-        }
-
-        if(node != null)
-        {
-            if(node.parent() != null)
-            {
-                node.parent().removeChild(node);
-            }
-
-            node.parent(this);
-        }
-
-        this._expr_ = node;
-    }
-
-    public TComma getComma()
-    {
-        return this._comma_;
-    }
-
-    public void setComma(TComma node)
-    {
-        if(this._comma_ != null)
-        {
-            this._comma_.parent(null);
-        }
-
-        if(node != null)
-        {
-            if(node.parent() != null)
-            {
-                node.parent().removeChild(node);
-            }
-
-            node.parent(this);
-        }
-
-        this._comma_ = node;
     }
 
     public PExprList getExprList()
@@ -120,22 +70,72 @@ public final class AExprList2ExprList extends PExprList
         this._exprList_ = node;
     }
 
+    public TComma getComma()
+    {
+        return this._comma_;
+    }
+
+    public void setComma(TComma node)
+    {
+        if(this._comma_ != null)
+        {
+            this._comma_.parent(null);
+        }
+
+        if(node != null)
+        {
+            if(node.parent() != null)
+            {
+                node.parent().removeChild(node);
+            }
+
+            node.parent(this);
+        }
+
+        this._comma_ = node;
+    }
+
+    public PExpr getExpr()
+    {
+        return this._expr_;
+    }
+
+    public void setExpr(PExpr node)
+    {
+        if(this._expr_ != null)
+        {
+            this._expr_.parent(null);
+        }
+
+        if(node != null)
+        {
+            if(node.parent() != null)
+            {
+                node.parent().removeChild(node);
+            }
+
+            node.parent(this);
+        }
+
+        this._expr_ = node;
+    }
+
     @Override
     public String toString()
     {
         return ""
-            + toString(this._expr_)
+            + toString(this._exprList_)
             + toString(this._comma_)
-            + toString(this._exprList_);
+            + toString(this._expr_);
     }
 
     @Override
     void removeChild(@SuppressWarnings("unused") Node child)
     {
         // Remove child
-        if(this._expr_ == child)
+        if(this._exprList_ == child)
         {
-            this._expr_ = null;
+            this._exprList_ = null;
             return;
         }
 
@@ -145,9 +145,9 @@ public final class AExprList2ExprList extends PExprList
             return;
         }
 
-        if(this._exprList_ == child)
+        if(this._expr_ == child)
         {
-            this._exprList_ = null;
+            this._expr_ = null;
             return;
         }
 
@@ -158,9 +158,9 @@ public final class AExprList2ExprList extends PExprList
     void replaceChild(@SuppressWarnings("unused") Node oldChild, @SuppressWarnings("unused") Node newChild)
     {
         // Replace child
-        if(this._expr_ == oldChild)
+        if(this._exprList_ == oldChild)
         {
-            setExpr((PExpr) newChild);
+            setExprList((PExprList) newChild);
             return;
         }
 
@@ -170,9 +170,9 @@ public final class AExprList2ExprList extends PExprList
             return;
         }
 
-        if(this._exprList_ == oldChild)
+        if(this._expr_ == oldChild)
         {
-            setExprList((PExprList) newChild);
+            setExpr((PExpr) newChild);
             return;
         }
 

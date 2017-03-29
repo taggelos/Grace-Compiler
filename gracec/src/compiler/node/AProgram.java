@@ -2,12 +2,13 @@
 
 package compiler.node;
 
+import java.util.*;
 import compiler.analysis.*;
 
 @SuppressWarnings("nls")
 public final class AProgram extends PProgram
 {
-    private PFunDef _funDef_;
+    private final LinkedList<PFunDef> _funDef_ = new LinkedList<PFunDef>();
 
     public AProgram()
     {
@@ -15,7 +16,7 @@ public final class AProgram extends PProgram
     }
 
     public AProgram(
-        @SuppressWarnings("hiding") PFunDef _funDef_)
+        @SuppressWarnings("hiding") List<?> _funDef_)
     {
         // Constructor
         setFunDef(_funDef_);
@@ -26,7 +27,7 @@ public final class AProgram extends PProgram
     public Object clone()
     {
         return new AProgram(
-            cloneNode(this._funDef_));
+            cloneList(this._funDef_));
     }
 
     @Override
@@ -35,29 +36,30 @@ public final class AProgram extends PProgram
         ((Analysis) sw).caseAProgram(this);
     }
 
-    public PFunDef getFunDef()
+    public LinkedList<PFunDef> getFunDef()
     {
         return this._funDef_;
     }
 
-    public void setFunDef(PFunDef node)
+    public void setFunDef(List<?> list)
     {
-        if(this._funDef_ != null)
+        for(PFunDef e : this._funDef_)
         {
-            this._funDef_.parent(null);
+            e.parent(null);
         }
+        this._funDef_.clear();
 
-        if(node != null)
+        for(Object obj_e : list)
         {
-            if(node.parent() != null)
+            PFunDef e = (PFunDef) obj_e;
+            if(e.parent() != null)
             {
-                node.parent().removeChild(node);
+                e.parent().removeChild(e);
             }
 
-            node.parent(this);
+            e.parent(this);
+            this._funDef_.add(e);
         }
-
-        this._funDef_ = node;
     }
 
     @Override
@@ -71,9 +73,8 @@ public final class AProgram extends PProgram
     void removeChild(@SuppressWarnings("unused") Node child)
     {
         // Remove child
-        if(this._funDef_ == child)
+        if(this._funDef_.remove(child))
         {
-            this._funDef_ = null;
             return;
         }
 
@@ -84,10 +85,22 @@ public final class AProgram extends PProgram
     void replaceChild(@SuppressWarnings("unused") Node oldChild, @SuppressWarnings("unused") Node newChild)
     {
         // Replace child
-        if(this._funDef_ == oldChild)
+        for(ListIterator<PFunDef> i = this._funDef_.listIterator(); i.hasNext();)
         {
-            setFunDef((PFunDef) newChild);
-            return;
+            if(i.next() == oldChild)
+            {
+                if(newChild != null)
+                {
+                    i.set((PFunDef) newChild);
+                    newChild.parent(this);
+                    oldChild.parent(null);
+                    return;
+                }
+
+                i.remove();
+                oldChild.parent(null);
+                return;
+            }
         }
 
         throw new RuntimeException("Not a child.");

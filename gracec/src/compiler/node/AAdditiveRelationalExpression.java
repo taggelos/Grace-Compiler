@@ -5,46 +5,46 @@ package compiler.node;
 import compiler.analysis.*;
 
 @SuppressWarnings("nls")
-public final class AStmt2Stmt extends PStmt
+public final class AAdditiveRelationalExpression extends PRelationalExpression
 {
-    private PAssignment _assignment_;
+    private PExpr _expr_;
 
-    public AStmt2Stmt()
+    public AAdditiveRelationalExpression()
     {
         // Constructor
     }
 
-    public AStmt2Stmt(
-        @SuppressWarnings("hiding") PAssignment _assignment_)
+    public AAdditiveRelationalExpression(
+        @SuppressWarnings("hiding") PExpr _expr_)
     {
         // Constructor
-        setAssignment(_assignment_);
+        setExpr(_expr_);
 
     }
 
     @Override
     public Object clone()
     {
-        return new AStmt2Stmt(
-            cloneNode(this._assignment_));
+        return new AAdditiveRelationalExpression(
+            cloneNode(this._expr_));
     }
 
     @Override
     public void apply(Switch sw)
     {
-        ((Analysis) sw).caseAStmt2Stmt(this);
+        ((Analysis) sw).caseAAdditiveRelationalExpression(this);
     }
 
-    public PAssignment getAssignment()
+    public PExpr getExpr()
     {
-        return this._assignment_;
+        return this._expr_;
     }
 
-    public void setAssignment(PAssignment node)
+    public void setExpr(PExpr node)
     {
-        if(this._assignment_ != null)
+        if(this._expr_ != null)
         {
-            this._assignment_.parent(null);
+            this._expr_.parent(null);
         }
 
         if(node != null)
@@ -57,23 +57,23 @@ public final class AStmt2Stmt extends PStmt
             node.parent(this);
         }
 
-        this._assignment_ = node;
+        this._expr_ = node;
     }
 
     @Override
     public String toString()
     {
         return ""
-            + toString(this._assignment_);
+            + toString(this._expr_);
     }
 
     @Override
     void removeChild(@SuppressWarnings("unused") Node child)
     {
         // Remove child
-        if(this._assignment_ == child)
+        if(this._expr_ == child)
         {
-            this._assignment_ = null;
+            this._expr_ = null;
             return;
         }
 
@@ -84,9 +84,9 @@ public final class AStmt2Stmt extends PStmt
     void replaceChild(@SuppressWarnings("unused") Node oldChild, @SuppressWarnings("unused") Node newChild)
     {
         // Replace child
-        if(this._assignment_ == oldChild)
+        if(this._expr_ == oldChild)
         {
-            setAssignment((PAssignment) newChild);
+            setExpr((PExpr) newChild);
             return;
         }
 

@@ -5,46 +5,46 @@ package compiler.node;
 import compiler.analysis.*;
 
 @SuppressWarnings("nls")
-public final class AStmt2Stmt extends PStmt
+public final class ACondOrAndCond extends PCond
 {
-    private PAssignment _assignment_;
+    private PConditionalOrExpression _conditionalOrExpression_;
 
-    public AStmt2Stmt()
+    public ACondOrAndCond()
     {
         // Constructor
     }
 
-    public AStmt2Stmt(
-        @SuppressWarnings("hiding") PAssignment _assignment_)
+    public ACondOrAndCond(
+        @SuppressWarnings("hiding") PConditionalOrExpression _conditionalOrExpression_)
     {
         // Constructor
-        setAssignment(_assignment_);
+        setConditionalOrExpression(_conditionalOrExpression_);
 
     }
 
     @Override
     public Object clone()
     {
-        return new AStmt2Stmt(
-            cloneNode(this._assignment_));
+        return new ACondOrAndCond(
+            cloneNode(this._conditionalOrExpression_));
     }
 
     @Override
     public void apply(Switch sw)
     {
-        ((Analysis) sw).caseAStmt2Stmt(this);
+        ((Analysis) sw).caseACondOrAndCond(this);
     }
 
-    public PAssignment getAssignment()
+    public PConditionalOrExpression getConditionalOrExpression()
     {
-        return this._assignment_;
+        return this._conditionalOrExpression_;
     }
 
-    public void setAssignment(PAssignment node)
+    public void setConditionalOrExpression(PConditionalOrExpression node)
     {
-        if(this._assignment_ != null)
+        if(this._conditionalOrExpression_ != null)
         {
-            this._assignment_.parent(null);
+            this._conditionalOrExpression_.parent(null);
         }
 
         if(node != null)
@@ -57,23 +57,23 @@ public final class AStmt2Stmt extends PStmt
             node.parent(this);
         }
 
-        this._assignment_ = node;
+        this._conditionalOrExpression_ = node;
     }
 
     @Override
     public String toString()
     {
         return ""
-            + toString(this._assignment_);
+            + toString(this._conditionalOrExpression_);
     }
 
     @Override
     void removeChild(@SuppressWarnings("unused") Node child)
     {
         // Remove child
-        if(this._assignment_ == child)
+        if(this._conditionalOrExpression_ == child)
         {
-            this._assignment_ = null;
+            this._conditionalOrExpression_ = null;
             return;
         }
 
@@ -84,9 +84,9 @@ public final class AStmt2Stmt extends PStmt
     void replaceChild(@SuppressWarnings("unused") Node oldChild, @SuppressWarnings("unused") Node newChild)
     {
         // Replace child
-        if(this._assignment_ == oldChild)
+        if(this._conditionalOrExpression_ == oldChild)
         {
-            setAssignment((PAssignment) newChild);
+            setConditionalOrExpression((PConditionalOrExpression) newChild);
             return;
         }
 
