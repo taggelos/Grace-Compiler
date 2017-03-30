@@ -14,20 +14,21 @@ Helpers
 
     digit = ['0' .. '9'];
 
-    escape_seq = '\n' | '\t' | '\r' | '\0'  | '\\' | '\' ''' | '\"' | '\xnn'; //<--
+    hexdig = digit | ['a' .. 'f']; // | ['A' .. 'F'];
+    hexcode = hexdig hexdig;
+
+    escape_seq = '\n' | '\t' | '\r' | '\0'  | '\\' | '\' ''' | '\"' | '\x' hexcode;
 
     latin_letter = ['a' .. 'z'] | ['A' .. 'Z']; 
 
-    char_literal = ' ' | '!' | '"' | '#' | '$' | '%' | '&' | '(' | ')' 
+    char_literal = ' ' | '!' | '#' | '$' | '%' | '&' | '(' | ')' 
         | '*' | '+' | ',' | '-' | '.' | '/' | ':' | ';' | '<' | '=' | '>' 
         | '?' | '@' | '[' | ']' | '^' | '_' | '`' | '{' | '|' | '}' | '~'
-        | ['a' .. 'z'] | ['A' .. 'Z'] | digit | escape_seq;  //(escape_seq | ([_A-Za-z][_A-Za-z0-9])*)*
+        | latin_letter | digit | escape_seq;
 
     not_dollar = [all - '$'];
-    //not_doubledollar = [all - '$$'];
 
     simple_comment = '$' (not_dollar input_character*)? line_terminator?;
-    //multi_comment = '$$' not_dollar* ('$' (not_dollar+))* '$$';
     multi_comment = '$$' ('$'? not_dollar)* '$$';
 
 Tokens
@@ -52,13 +53,13 @@ Tokens
     var     = 'var';
     while   = 'while';
 
-    
+    identifier = latin_letter (latin_letter | digit | '_' )*;
+
     integers = digit+;
 
-    string_literal = '"' char_literal* '"'; //<--
     char_const = ''' char_literal ''';
 
-    identifier = latin_letter (latin_letter | digit | '_' )*;
+    string_literal = '"' char_literal* '"';
 
     //operators
 
@@ -71,8 +72,7 @@ Tokens
     gt      = '>';
     lteq    = '<=';
     gteq    = '>=';
-    
-  
+
     //separators
 
     l_par   = '(';
@@ -84,26 +84,22 @@ Tokens
     comma   = ',';
     semi    = ';';
     colon   = ':';
-    arrow   = '<-';  
-
-    
-    comment = simple_comment | multi_comment;
-
+    arrow   = '<-';
 
 Ignored Tokens
     white_space,
-    comment;
-
+    simple_comment,
+    multi_comment;
 
 Productions
     /* program = line+;
-    line = 
+    line =
         {line1} expr | 
         {line2} var_def |
         {line3} fun_def;
     */
     program = fun_def;   // Na bgaloume to +
-    
+
     fun_def =
         {fun_def1} header local_def* block;
 
@@ -117,7 +113,7 @@ Productions
         {fpar_def4} semi fpar_def |
         {fpar_def5} ;
 
-    data_types = 
+    data_types =
         {data_types1} int |
         {data_types2} char;
 
@@ -143,7 +139,7 @@ Productions
     block =
         {block} l_ag stmt* r_ag;
 
-    stmt =  
+    stmt =
         {stmt1} semi | 
         {stmt2} assignment |   //<---- assignment
         {stmt3} block | 
@@ -152,18 +148,18 @@ Productions
         {whilestmt} whilestmt |
         {returnstmt} returnstmt;
 
-    assignment = 
+    assignment =
         l_val arrow expr semi;
 
-    l_val = 
+    l_val =
         {l_val1} identifier | 
         {l_val2} string_literal | 
         {l_val3} identifier l_br expr r_br;  // Paizetai malakia
 
-    fun_cal = 
-        {fun_cal1} identifier l_par expr_list r_par;    
-    
-    expr_list =  
+    fun_cal =
+        {fun_cal1} identifier l_par expr_list r_par;
+
+    expr_list =
         {expr_list1} expr |
         {expr_list2} expr_list comma expr |
         {expr_list3} ; 
@@ -177,32 +173,32 @@ Productions
 
     /* ----------------- IF & WHILE  ---------------------- */
 
-    whilestmt = 
-        while cond do stmt ;        
+    whilestmt =
+        while cond do stmt ;
 
-    while_with_else = 
-        while cond do stmt_with_else ;   
+    while_with_else =
+        while cond do stmt_with_else ;
 
-    ifstmt = 
+    ifstmt =
         if_header if_trail ;
-    
-    if_header = 
+
+    if_header =
         if cond then;
-    
-    if_trail  = 
+
+    if_trail  =
         {no_else} [then]:stmt | 
         {with_else} [then]:stmt_with_else else [else_st]:stmt ;
 
-    stmt_with_else = 
+    stmt_with_else =
         {semi} semi | 
         {assignment} assignment | 
-        {stmt_returnstmt} returnstmt |    
+        {stmt_returnstmt} returnstmt |
         {stmt_funcal} fun_cal semi |
         {block} block | 
         {if} if_else | 
         {while} while_with_else ;
 
-    if_else = 
+    if_else =
         if_header [then]:stmt_with_else else [else_st]:stmt_with_else ;
 
     /* ---------------------------------------------------- */
@@ -238,15 +234,15 @@ Productions
     returnstmt =
         {returnstmt1} return semi |
         {returnstmt2} return expr semi;
-        
+
     expr =
         {expr1} factor |
         {expr2} expr plus factor |
         {expr3} expr minus factor;
-        
+
 
     factor =
-        {factor1} term |  
+        {factor1} term |
         {factor4} factor star term |
         {factor6} factor mod term |
         {factor7} factor div term;
@@ -260,6 +256,6 @@ Productions
         //{term2} l_val | //pros suzhthsh
         //{term3} l_par expr r_par;
 
-    plus_or_minus = 
+    plus_or_minus =
         {plus} plus | 
         {minus} minus;
