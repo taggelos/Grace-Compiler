@@ -14,7 +14,7 @@ Helpers
 
     digit = ['0' .. '9'];
 
-    hexdig = digit | ['a' .. 'f']; // | ['A' .. 'F'];
+    hexdig = digit | ['a' .. 'f'] | ['A' .. 'F'];
     hexcode = hexdig hexdig;
 
     escape_seq = '\n' | '\t' | '\r' | '\0'  | '\\' | '\' ''' | '\"' | '\x' hexcode;
@@ -34,6 +34,7 @@ Helpers
 Tokens
     white_space = white_space;
     escape_seq = escape_seq;
+    comment = simple_comment | multi_comment;
 
     and     = 'and'; 
     char    = 'char';
@@ -60,6 +61,7 @@ Tokens
     char_const = ''' char_literal ''';
 
     string_literal = '"' char_literal* '"';
+
 
     //operators
 
@@ -88,8 +90,7 @@ Tokens
 
 Ignored Tokens
     white_space,
-    simple_comment,
-    multi_comment;
+    comment;
 
 Productions
     /* program = line+;
