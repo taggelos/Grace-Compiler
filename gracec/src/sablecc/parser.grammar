@@ -102,49 +102,49 @@ Productions
     program = fun_def;   // Na bgaloume to +
 
     fun_def =
-        {fun_def1} header local_def* block;
+        header local_def* block;
 
     header =
-        {header1} fun identifier l_par fpar_def r_par colon return_type;
+        fun identifier l_par fpar_def r_par colon return_type;
 
     fpar_def =
-        {fpar_def1} ref? identifier colon types fpar_def |
-        {fpar_def2} ref? identifier comma fpar_def |
-        {fpar_def3} ref? identifier colon types comma fpar_def |
-        {fpar_def4} semi fpar_def |
-        {fpar_def5} ;
+        {simple_par} ref? identifier colon types fpar_def |
+        {mult_par} ref? identifier comma fpar_def |
+        {mult_types} ref? identifier colon types comma fpar_def |
+        {semi_par} semi fpar_def |
+        {none} ;
 
     data_types =
-        {data_types1} int |
-        {data_types2} char;
+        {int} int |
+        {char} char;
 
     array_types =
-        {array_types1} l_br integers? r_br;
+        {brackets} l_br integers? r_br;
 
     types =
-        {types1} data_types |
-        {types2} data_types array_types+;
+        {simple} data_types |
+        {array} data_types array_types+;
 
     return_type =
-        {return_type1} data_types |
-        {return_type2} nothing;
+        {simple} data_types |
+        {none} nothing;
 
     local_def =
-        {local_def1} fun_def |
-        {local_def2} fun_dec |
-        {local_def3} var_def;
+        {fun} fun_def |
+        {dec} fun_dec |
+        {var} var_def;
 
     fun_dec =
-        {fun_dec} header semi;
+        header semi;
 
     block =
-        {block} l_ag stmt* r_ag;
+        l_ag stmt* r_ag;
 
     stmt =
-        {stmt1} semi | 
-        {stmt2} assignment |   //<---- assignment
-        {stmt3} block | 
-        {stmt4} fun_cal semi |
+        {semi} semi | 
+        {assignment} assignment |   //<---- assignment
+        {block} block | 
+        {fun_cal} fun_cal semi |
         {ifstmt} ifstmt | 
         {whilestmt} whilestmt |
         {returnstmt} returnstmt;
@@ -153,24 +153,24 @@ Productions
         l_val arrow expr semi;
 
     l_val =
-        {l_val1} identifier | 
-        {l_val2} string_literal | 
-        {l_val3} identifier l_br expr r_br;  // Paizetai malakia
+        {id} identifier | 
+        {string} string_literal | 
+        {id_brackets} identifier l_br expr r_br;  // Paizetai malakia string brackets??? l_val
 
     fun_cal =
-        {fun_cal1} identifier l_par expr_list r_par;
+        identifier l_par expr_list r_par;
 
     expr_list =
-        {expr_list1} expr |
-        {expr_list2} expr_list comma expr |
-        {expr_list3} ; 
+        {simple} expr |
+        {list} expr_list comma expr |
+        {none} ; 
 
     var_def =
-        {var_def1} var var_ids colon types semi;
+        var var_ids colon types semi;
 
     var_ids =
-        {var_ids1} identifier |
-        {var_ids2} identifier comma var_ids;
+        {id} identifier |
+        {list} identifier comma var_ids;
 
     /* ----------------- IF & WHILE  ---------------------- */
 
@@ -233,27 +233,27 @@ Productions
     /* ---------------------------------------------------- */
 
     returnstmt =
-        {returnstmt1} return semi |
-        {returnstmt2} return expr semi;
+        {semi} return semi |
+        {expr} return expr semi;
 
     expr =
-        {expr1} factor |
-        {expr2} expr plus factor |
-        {expr3} expr minus factor;
+        {factor} factor |
+        {add} expr plus factor |
+        {sub} expr minus factor;
 
 
     factor =
-        {factor1} term |
-        {factor4} factor star term |
-        {factor6} factor mod term |
-        {factor7} factor div term;
+        {term} term |
+        {mult} factor star term |
+        {mod} factor mod term |
+        {div} factor div term;
 
     term =
-        {term1} plus_or_minus? integers |
-        {term2} char_const |
-        {term3} plus_or_minus? l_val |
-        {term4} fun_cal |
-        {term5} l_par expr r_par;
+        {int} plus_or_minus? integers |
+        {char} char_const |
+        {l_val} plus_or_minus? l_val |
+        {fun_cal} fun_cal |
+        {par} l_par expr r_par;
         //{term2} l_val | //pros suzhthsh
         //{term3} l_par expr r_par;
 

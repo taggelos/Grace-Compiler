@@ -81,139 +81,139 @@ public class AnalysisAdapter implements Analysis
     }
 
     @Override
-    public void caseAFunDef1FunDef(AFunDef1FunDef node)
+    public void caseAFunDef(AFunDef node)
     {
         defaultCase(node);
     }
 
     @Override
-    public void caseAHeader1Header(AHeader1Header node)
+    public void caseAHeader(AHeader node)
     {
         defaultCase(node);
     }
 
     @Override
-    public void caseAFparDef1FparDef(AFparDef1FparDef node)
+    public void caseASimpleParFparDef(ASimpleParFparDef node)
     {
         defaultCase(node);
     }
 
     @Override
-    public void caseAFparDef2FparDef(AFparDef2FparDef node)
+    public void caseAMultParFparDef(AMultParFparDef node)
     {
         defaultCase(node);
     }
 
     @Override
-    public void caseAFparDef3FparDef(AFparDef3FparDef node)
+    public void caseAMultTypesFparDef(AMultTypesFparDef node)
     {
         defaultCase(node);
     }
 
     @Override
-    public void caseAFparDef4FparDef(AFparDef4FparDef node)
+    public void caseASemiParFparDef(ASemiParFparDef node)
     {
         defaultCase(node);
     }
 
     @Override
-    public void caseAFparDef5FparDef(AFparDef5FparDef node)
+    public void caseANoneFparDef(ANoneFparDef node)
     {
         defaultCase(node);
     }
 
     @Override
-    public void caseADataTypes1DataTypes(ADataTypes1DataTypes node)
+    public void caseAIntDataTypes(AIntDataTypes node)
     {
         defaultCase(node);
     }
 
     @Override
-    public void caseADataTypes2DataTypes(ADataTypes2DataTypes node)
+    public void caseACharDataTypes(ACharDataTypes node)
     {
         defaultCase(node);
     }
 
     @Override
-    public void caseAArrayTypes1ArrayTypes(AArrayTypes1ArrayTypes node)
+    public void caseABracketsArrayTypes(ABracketsArrayTypes node)
     {
         defaultCase(node);
     }
 
     @Override
-    public void caseATypes1Types(ATypes1Types node)
+    public void caseASimpleTypes(ASimpleTypes node)
     {
         defaultCase(node);
     }
 
     @Override
-    public void caseATypes2Types(ATypes2Types node)
+    public void caseAArrayTypes(AArrayTypes node)
     {
         defaultCase(node);
     }
 
     @Override
-    public void caseAReturnType1ReturnType(AReturnType1ReturnType node)
+    public void caseASimpleReturnType(ASimpleReturnType node)
     {
         defaultCase(node);
     }
 
     @Override
-    public void caseAReturnType2ReturnType(AReturnType2ReturnType node)
+    public void caseANoneReturnType(ANoneReturnType node)
     {
         defaultCase(node);
     }
 
     @Override
-    public void caseALocalDef1LocalDef(ALocalDef1LocalDef node)
+    public void caseAFunLocalDef(AFunLocalDef node)
     {
         defaultCase(node);
     }
 
     @Override
-    public void caseALocalDef2LocalDef(ALocalDef2LocalDef node)
+    public void caseADecLocalDef(ADecLocalDef node)
     {
         defaultCase(node);
     }
 
     @Override
-    public void caseALocalDef3LocalDef(ALocalDef3LocalDef node)
+    public void caseAVarLocalDef(AVarLocalDef node)
     {
         defaultCase(node);
     }
 
     @Override
-    public void caseAFunDecFunDec(AFunDecFunDec node)
+    public void caseAFunDec(AFunDec node)
     {
         defaultCase(node);
     }
 
     @Override
-    public void caseABlockBlock(ABlockBlock node)
+    public void caseABlock(ABlock node)
     {
         defaultCase(node);
     }
 
     @Override
-    public void caseAStmt1Stmt(AStmt1Stmt node)
+    public void caseASemiStmt(ASemiStmt node)
     {
         defaultCase(node);
     }
 
     @Override
-    public void caseAStmt2Stmt(AStmt2Stmt node)
+    public void caseAAssignmentStmt(AAssignmentStmt node)
     {
         defaultCase(node);
     }
 
     @Override
-    public void caseAStmt3Stmt(AStmt3Stmt node)
+    public void caseABlockStmt(ABlockStmt node)
     {
         defaultCase(node);
     }
 
     @Override
-    public void caseAStmt4Stmt(AStmt4Stmt node)
+    public void caseAFunCalStmt(AFunCalStmt node)
     {
         defaultCase(node);
     }
@@ -243,61 +243,61 @@ public class AnalysisAdapter implements Analysis
     }
 
     @Override
-    public void caseALVal1LVal(ALVal1LVal node)
+    public void caseAIdLVal(AIdLVal node)
     {
         defaultCase(node);
     }
 
     @Override
-    public void caseALVal2LVal(ALVal2LVal node)
+    public void caseAStringLVal(AStringLVal node)
     {
         defaultCase(node);
     }
 
     @Override
-    public void caseALVal3LVal(ALVal3LVal node)
+    public void caseAIdBracketsLVal(AIdBracketsLVal node)
     {
         defaultCase(node);
     }
 
     @Override
-    public void caseAFunCal1FunCal(AFunCal1FunCal node)
+    public void caseAFunCal(AFunCal node)
     {
         defaultCase(node);
     }
 
     @Override
-    public void caseAExprList1ExprList(AExprList1ExprList node)
+    public void caseASimpleExprList(ASimpleExprList node)
     {
         defaultCase(node);
     }
 
     @Override
-    public void caseAExprList2ExprList(AExprList2ExprList node)
+    public void caseAListExprList(AListExprList node)
     {
         defaultCase(node);
     }
 
     @Override
-    public void caseAExprList3ExprList(AExprList3ExprList node)
+    public void caseANoneExprList(ANoneExprList node)
     {
         defaultCase(node);
     }
 
     @Override
-    public void caseAVarDef1VarDef(AVarDef1VarDef node)
+    public void caseAVarDef(AVarDef node)
     {
         defaultCase(node);
     }
 
     @Override
-    public void caseAVarIds1VarIds(AVarIds1VarIds node)
+    public void caseAIdVarIds(AIdVarIds node)
     {
         defaultCase(node);
     }
 
     @Override
-    public void caseAVarIds2VarIds(AVarIds2VarIds node)
+    public void caseAListVarIds(AListVarIds node)
     {
         defaultCase(node);
     }
@@ -471,91 +471,97 @@ public class AnalysisAdapter implements Analysis
     }
 
     @Override
-    public void caseAReturnstmt1Returnstmt(AReturnstmt1Returnstmt node)
+    public void caseASemiReturnstmt(ASemiReturnstmt node)
     {
         defaultCase(node);
     }
 
     @Override
-    public void caseAReturnstmt2Returnstmt(AReturnstmt2Returnstmt node)
+    public void caseAExprReturnstmt(AExprReturnstmt node)
     {
         defaultCase(node);
     }
 
     @Override
-    public void caseAExpr1Expr(AExpr1Expr node)
+    public void caseAFactorExpr(AFactorExpr node)
     {
         defaultCase(node);
     }
 
     @Override
-    public void caseAExpr2Expr(AExpr2Expr node)
+    public void caseAAddExpr(AAddExpr node)
     {
         defaultCase(node);
     }
 
     @Override
-    public void caseAExpr3Expr(AExpr3Expr node)
+    public void caseASubExpr(ASubExpr node)
     {
         defaultCase(node);
     }
 
     @Override
-    public void caseAFactor1Factor(AFactor1Factor node)
+    public void caseATermFactor(ATermFactor node)
     {
         defaultCase(node);
     }
 
     @Override
-    public void caseAFactor2Factor(AFactor2Factor node)
+    public void caseAMultFactor(AMultFactor node)
     {
         defaultCase(node);
     }
 
     @Override
-    public void caseAFactor3Factor(AFactor3Factor node)
+    public void caseAModFactor(AModFactor node)
     {
         defaultCase(node);
     }
 
     @Override
-    public void caseAFactor4Factor(AFactor4Factor node)
+    public void caseADivFactor(ADivFactor node)
     {
         defaultCase(node);
     }
 
     @Override
-    public void caseAFactor5Factor(AFactor5Factor node)
+    public void caseAIntTerm(AIntTerm node)
     {
         defaultCase(node);
     }
 
     @Override
-    public void caseATerm1Term(ATerm1Term node)
+    public void caseACharTerm(ACharTerm node)
     {
         defaultCase(node);
     }
 
     @Override
-    public void caseATerm2Term(ATerm2Term node)
+    public void caseALValTerm(ALValTerm node)
     {
         defaultCase(node);
     }
 
     @Override
-    public void caseATerm3Term(ATerm3Term node)
+    public void caseAFunCalTerm(AFunCalTerm node)
     {
         defaultCase(node);
     }
 
     @Override
-    public void caseATerm4Term(ATerm4Term node)
+    public void caseAParTerm(AParTerm node)
     {
         defaultCase(node);
     }
 
     @Override
-    public void caseATerm5Term(ATerm5Term node)
+    public void caseAPlusPlusOrMinus(APlusPlusOrMinus node)
+    {
+        defaultCase(node);
+    }
+
+    @Override
+    public void caseAMinusPlusOrMinus(AMinusPlusOrMinus node)
     {
         defaultCase(node);
     }
@@ -568,6 +574,12 @@ public class AnalysisAdapter implements Analysis
 
     @Override
     public void caseTEscapeSeq(TEscapeSeq node)
+    {
+        defaultCase(node);
+    }
+
+    @Override
+    public void caseTComment(TComment node)
     {
         defaultCase(node);
     }
@@ -675,13 +687,13 @@ public class AnalysisAdapter implements Analysis
     }
 
     @Override
-    public void caseTIntegers(TIntegers node)
+    public void caseTIdentifier(TIdentifier node)
     {
         defaultCase(node);
     }
 
     @Override
-    public void caseTStringLiteral(TStringLiteral node)
+    public void caseTIntegers(TIntegers node)
     {
         defaultCase(node);
     }
@@ -693,7 +705,7 @@ public class AnalysisAdapter implements Analysis
     }
 
     @Override
-    public void caseTIdentifier(TIdentifier node)
+    public void caseTStringLiteral(TStringLiteral node)
     {
         defaultCase(node);
     }
@@ -712,12 +724,6 @@ public class AnalysisAdapter implements Analysis
 
     @Override
     public void caseTStar(TStar node)
-    {
-        defaultCase(node);
-    }
-
-    @Override
-    public void caseTSlash(TSlash node)
     {
         defaultCase(node);
     }
@@ -814,12 +820,6 @@ public class AnalysisAdapter implements Analysis
 
     @Override
     public void caseTArrow(TArrow node)
-    {
-        defaultCase(node);
-    }
-
-    @Override
-    public void caseTComment(TComment node)
     {
         defaultCase(node);
     }

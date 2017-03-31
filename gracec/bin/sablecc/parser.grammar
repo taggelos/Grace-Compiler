@@ -14,25 +14,27 @@ Helpers
 
     digit = ['0' .. '9'];
 
-    escape_seq = '\n' | '\t' | '\r' | '\0'  | '\\' | '\' ''' | '\"' | '\xnn'; //<--
+    hexdig = digit | ['a' .. 'f'] | ['A' .. 'F'];
+    hexcode = hexdig hexdig;
+
+    escape_seq = '\n' | '\t' | '\r' | '\0'  | '\\' | '\' ''' | '\"' | '\x' hexcode;
 
     latin_letter = ['a' .. 'z'] | ['A' .. 'Z']; 
 
-    char_literal = ' ' | '!' | '"' | '#' | '$' | '%' | '&' | '(' | ')' 
+    char_literal = ' ' | '!' | '#' | '$' | '%' | '&' | '(' | ')' 
         | '*' | '+' | ',' | '-' | '.' | '/' | ':' | ';' | '<' | '=' | '>' 
         | '?' | '@' | '[' | ']' | '^' | '_' | '`' | '{' | '|' | '}' | '~'
-        | ['a' .. 'z'] | ['A' .. 'Z'] | digit | escape_seq;  //(escape_seq | ([_A-Za-z][_A-Za-z0-9])*)*
+        | latin_letter | digit | escape_seq;
 
     not_dollar = [all - '$'];
-    //not_doubledollar = [all - '$$'];
 
     simple_comment = '$' (not_dollar input_character*)? line_terminator?;
-    //multi_comment = '$$' not_dollar* ('$' (not_dollar+))* '$$';
     multi_comment = '$$' ('$'? not_dollar)* '$$';
 
 Tokens
     white_space = white_space;
     escape_seq = escape_seq;
+    comment = simple_comment | multi_comment;
 
     and     = 'and'; 
     char    = 'char';
@@ -52,28 +54,27 @@ Tokens
     var     = 'var';
     while   = 'while';
 
-    
+    identifier = latin_letter (latin_letter | digit | '_' )*;
+
     integers = digit+;
 
-    string_literal = '"' char_literal* '"'; //<--
+    char_const = ''' char_literal ''';
 
-    identifier = latin_letter (latin_letter | digit | '_' )*;
+    string_literal = '"' char_literal* '"';
+
 
     //operators
 
     minus   = '-';
     plus    = '+';
     star    = '*';
-    slash   = '/';
-    htag    = '#';
+    neq     = '#';
     eq      = '=';
-    neq     = '<>';
     lt      = '<';
     gt      = '>';
     lteq    = '<=';
     gteq    = '>=';
-    
-  
+
     //separators
 
     l_par   = '(';
@@ -85,53 +86,177 @@ Tokens
     comma   = ',';
     semi    = ';';
     colon   = ':';
-    arrow   = '<-';  
-
-    
-    comment = simple_comment | multi_comment;
-
+    arrow   = '<-';
 
 Ignored Tokens
     white_space,
     comment;
 
-
 Productions
-    expr_list = line+;
-    line = 
-        {karatse} expr | 
-        {lefterhs} var_dec;
-    
-    expr =
-        {expr1} factor |
-        {expr2} expr plus factor |
-        {expr3} expr minus factor ;
+    /* program = line+;
+    line =
+        {line1} expr | 
+        {line2} var_def |
+        {line3} fun_def;
+    */
+    program = fun_def;   // Na bgaloume to +
 
-    factor =
-        {factor1} term |
-        {factor2} factor star term |
-        {factor3} factor slash term;
+    fun_def =
+        header local_def* block;
 
-    term =
-        {term1} integers |
-        {term2} l_par expr r_par;
-    
-    
-    var_dec =
-        {var_dec1} var var_ids colon var_type semi;
+    header =
+        fun identifier l_par fpar_def r_par colon return_type;
+
+    fpar_def =
+        {simple_par} ref? identifier colon types fpar_def |
+        {mult_par} ref? identifier comma fpar_def |
+        {mult_types} ref? identifier colon types comma fpar_def |
+        {semi_par} semi fpar_def |
+        {none} ;
+
+    data_types =
+        {int} int |
+        {char} char;
+
+    array_types =
+        {brackets} l_br integers? r_br;
+
+    types =
+        {simple} data_types |
+        {array} data_types array_types+;
+
+    return_type =
+        {simple} data_types |
+        {none} nothing;
+
+    local_def =
+        {fun} fun_def |
+        {dec} fun_dec |
+        {var} var_def;
+
+    fun_dec =
+        header semi;
+
+    block =
+        l_ag stmt* r_ag;
+
+    stmt =
+        {semi} semi | 
+        {assignment} assignment |   //<---- assignment
+        {block} block | 
+        {fun_cal} fun_cal semi |
+        {ifstmt} ifstmt | 
+        {whilestmt} whilestmt |
+        {returnstmt} returnstmt;
+
+    assignment =
+        l_val arrow expr semi;
+
+    l_val =
+        {id} identifier | 
+        {string} string_literal | 
+        {id_brackets} identifier l_br expr r_br;  // Paizetai malakia string brackets??? l_val
+
+    fun_cal =
+        identifier l_par expr_list r_par;
+
+    expr_list =
+        {simple} expr |
+        {list} expr_list comma expr |
+        {none} ; 
+
+    var_def =
+        var var_ids colon types semi;
 
     var_ids =
-        {var_ids1} identifier |
-        {var_ids2} identifier comma var_ids;  //{var_ids2} var_ids comma identifier;
-    
-    /*var_ids = 
-        {var_ids1} identifier (comma identifier)* ;
-*/
-    var_type =
-        {var_type1} int |
-        {var_type2} char |
-        {var_type3} int l_br integers r_br |
-        {var_type4} char l_br integers r_br;
-    
-    
-    
+        {id} identifier |
+        {list} identifier comma var_ids;
+
+    /* ----------------- IF & WHILE  ---------------------- */
+
+    whilestmt =
+        while cond do stmt ;
+
+    while_with_else =
+        while cond do stmt_with_else ;
+
+    ifstmt =
+        if_header if_trail ;
+
+    if_header =
+        if cond then;
+
+    if_trail  =
+        {no_else} [then]:stmt | 
+        {with_else} [then]:stmt_with_else else [else_st]:stmt ;
+
+    stmt_with_else =
+        {semi} semi | 
+        {assignment} assignment | 
+        {stmt_returnstmt} returnstmt |
+        {stmt_funcal} fun_cal semi |
+        {block} block | 
+        {if} if_else | 
+        {while} while_with_else ;
+
+    if_else =
+        if_header [then]:stmt_with_else else [else_st]:stmt_with_else ;
+
+    /* ---------------------------------------------------- */
+
+    /* ----------------- CONDITION  ---------------------- */
+
+    cond =
+        {cond_not} not cond |
+        {cond_or_and} conditional_or_expression;
+
+    conditional_or_expression =
+        {cond_and} conditional_and_expression |
+        {cond_or} [left]:conditional_or_expression or [right]:conditional_and_expression;
+
+    conditional_and_expression =
+        {comparative} comparative_expression |
+        {and_expr} [left]:conditional_and_expression and [right]:comparative_expression;
+
+    comparative_expression =
+        {relational} relational_expression |
+        {equal} [left]:comparative_expression eq [right]:relational_expression |
+        {not_equal} [left]:comparative_expression neq [right]:relational_expression ;
+
+    relational_expression =
+        {additive} expr |
+        {less_than} [left]:relational_expression lt [right]:expr |
+        {greater_than} [left]:relational_expression gt [right]:expr |
+        {greater_equal_than} [left]:relational_expression gteq [right]:expr |
+        {less_equal_than} [left]:relational_expression lteq [right]:expr ;
+
+    /* ---------------------------------------------------- */
+
+    returnstmt =
+        {semi} return semi |
+        {expr} return expr semi;
+
+    expr =
+        {factor} factor |
+        {add} expr plus factor |
+        {sub} expr minus factor;
+
+
+    factor =
+        {term} term |
+        {mult} factor star term |
+        {mod} factor mod term |
+        {div} factor div term;
+
+    term =
+        {int} plus_or_minus? integers |
+        {char} char_const |
+        {l_val} plus_or_minus? l_val |
+        {fun_cal} fun_cal |
+        {par} l_par expr r_par;
+        //{term2} l_val | //pros suzhthsh
+        //{term3} l_par expr r_par;
+
+    plus_or_minus =
+        {plus} plus | 
+        {minus} minus;
