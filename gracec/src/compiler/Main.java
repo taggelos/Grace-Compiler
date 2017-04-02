@@ -52,6 +52,8 @@ public class Main {
                 try {
                     Start tree = p.parse();
                     System.out.println(tree.toString());
+                    
+                    tree.apply(new Printer());
                 } catch (Exception e) {
                     e.printStackTrace();
                 } 

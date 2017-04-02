@@ -1752,31 +1752,6 @@ public class ReversedDepthFirstAdapter extends AnalysisAdapter
         {
             node.getSemi().apply(this);
         }
-        if(node.getReturn() != null)
-        {
-            node.getReturn().apply(this);
-        }
-        outASemiReturnstmt(node);
-    }
-
-    public void inAExprReturnstmt(AExprReturnstmt node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAExprReturnstmt(AExprReturnstmt node)
-    {
-        defaultOut(node);
-    }
-
-    @Override
-    public void caseAExprReturnstmt(AExprReturnstmt node)
-    {
-        inAExprReturnstmt(node);
-        if(node.getSemi() != null)
-        {
-            node.getSemi().apply(this);
-        }
         if(node.getExpr() != null)
         {
             node.getExpr().apply(this);
@@ -1785,7 +1760,7 @@ public class ReversedDepthFirstAdapter extends AnalysisAdapter
         {
             node.getReturn().apply(this);
         }
-        outAExprReturnstmt(node);
+        outASemiReturnstmt(node);
     }
 
     public void inAFactorExpr(AFactorExpr node)

@@ -477,12 +477,6 @@ public class AnalysisAdapter implements Analysis
     }
 
     @Override
-    public void caseAExprReturnstmt(AExprReturnstmt node)
-    {
-        defaultCase(node);
-    }
-
-    @Override
     public void caseAFactorExpr(AFactorExpr node)
     {
         defaultCase(node);

@@ -79,7 +79,6 @@ public interface Analysis extends Switch
     void caseAGreaterEqualThanRelationalExpression(AGreaterEqualThanRelationalExpression node);
     void caseALessEqualThanRelationalExpression(ALessEqualThanRelationalExpression node);
     void caseASemiReturnstmt(ASemiReturnstmt node);
-    void caseAExprReturnstmt(AExprReturnstmt node);
     void caseAFactorExpr(AFactorExpr node);
     void caseAAddExpr(AAddExpr node);
     void caseASubExpr(ASubExpr node);
