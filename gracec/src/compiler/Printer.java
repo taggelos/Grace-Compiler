@@ -196,6 +196,24 @@ public class Printer extends DepthFirstAdapter
     public void caseASemiParFparDef(ASemiParFparDef node)
     {
         inASemiParFparDef(node);
+        if(node.getRef() != null)
+        {
+            node.getRef().apply(this);
+        }
+        if(node.getIdentifier() != null)
+        {
+            output.append(tabs+"Parameter Name: " + node.getIdentifier() + "\n");
+            node.getIdentifier().apply(this);
+        }
+        if(node.getColon() != null)
+        {
+            node.getColon().apply(this);
+        }
+        if(node.getTypes() != null)
+        {
+            output.append(tabs+"Parameter Type: " + node.getTypes() + "\n\n");
+            node.getTypes().apply(this);
+        }
         if(node.getSemi() != null)
         {
             node.getSemi().apply(this);
@@ -464,9 +482,16 @@ public class Printer extends DepthFirstAdapter
     public void caseAAssignment(AAssignment node)
     {
         inAAssignment(node);
+        addtab();
+        output.append(tabs+"Assignment: "+ node + "\n");
+        subtab();
         if(node.getLVal() != null)
         {
+            //addtab();
+            //output.append(tabs+"Left Assignment: ");
             node.getLVal().apply(this);
+            //output.append(node.getLVal() + "\n");
+            //subtab();
         }
         if(node.getArrow() != null)
         {
@@ -474,12 +499,17 @@ public class Printer extends DepthFirstAdapter
         }
         if(node.getExpr() != null)
         {
+            //addtab();
+            //output.append(tabs+"Right Assignment: ");
             node.getExpr().apply(this);
+            //output.append(node.getExpr() + "\n");
+            //subtab();
         }
         if(node.getSemi() != null)
         {
             node.getSemi().apply(this);
         }
+        
         outAAssignment(node);
     }
 
@@ -490,8 +520,9 @@ public class Printer extends DepthFirstAdapter
         if(node.getIdentifier() != null)
         {
             addtab();
-        	if(node.parent().toString().equals(node.getIdentifier().toString()))
-        		output.append(tabs+"Name: " + node.parent() + "\n\n");
+            //System.out.println(node.parent().toString() + " "+(node.getIdentifier().toString()));
+        	//if(node.parent().toString().equals(node.getIdentifier().toString()))
+        		//output.append(tabs+"Name: ");
             node.getIdentifier().apply(this);
             subtab();
             //output.append("---> " + node.parent() );
@@ -508,11 +539,11 @@ public class Printer extends DepthFirstAdapter
         inAStringLVal(node);
         if(node.getStringLiteral() != null)
         {
-            addtab();
-            output.append(tabs+"Type: char[]" + '\n');
-            output.append(tabs+"Value: " + node.getStringLiteral() + "\n\n");
+            //addtab();
+            //output.append(tabs+"Type: char[]" + '\n');
+            //output.append(tabs+"Value: " + node.getStringLiteral() + "\n\n");
             node.getStringLiteral().apply(this);
-            subtab();
+            //subtab();
         }
         outAStringLVal(node);
     }
@@ -616,13 +647,20 @@ public class Printer extends DepthFirstAdapter
     public void caseAVarDef(AVarDef node)
     {
         inAVarDef(node);
+        addtab();
+        output.append(tabs+"Variable Definition: \n");
+
         if(node.getVar() != null)
         {
             node.getVar().apply(this);
         }
         if(node.getVarIds() != null)
         {
+            addtab();
+            output.append(tabs+"Name: ");
+            output.append(node.getVarIds() + "\n");
             node.getVarIds().apply(this);
+            subtab();
         }
         if(node.getColon() != null)
         {
@@ -630,7 +668,11 @@ public class Printer extends DepthFirstAdapter
         }
         if(node.getTypes() != null)
         {
+            addtab();
+            output.append(tabs+"Type: ");
+            output.append(node.getTypes() + "\n\n");
             node.getTypes().apply(this);
+            subtab();
         }
         if(node.getSemi() != null)
         {
@@ -1139,6 +1181,9 @@ public class Printer extends DepthFirstAdapter
     public void caseAAddExpr(AAddExpr node)
     {
         inAAddExpr(node);
+        addtab();
+        output.append(tabs+"Name: " + node + "\n");
+        subtab();
         if(node.getExpr() != null)
         {
             node.getExpr().apply(this);
@@ -1158,6 +1203,9 @@ public class Printer extends DepthFirstAdapter
     public void caseASubExpr(ASubExpr node)
     {
         inASubExpr(node);
+        addtab();
+        output.append(tabs+"Name: " + node + "\n");
+        subtab();
         if(node.getExpr() != null)
         {
             node.getExpr().apply(this);
@@ -1271,6 +1319,9 @@ public class Printer extends DepthFirstAdapter
     public void caseALValTerm(ALValTerm node)
     {
         inALValTerm(node);
+        addtab();
+        output.append(tabs+"L_Val Name: " + node + "\n");
+        subtab();
         if(node.getPlusOrMinus() != null)
         {
             node.getPlusOrMinus().apply(this);
@@ -1286,6 +1337,7 @@ public class Printer extends DepthFirstAdapter
     public void caseAFunCalTerm(AFunCalTerm node)
     {
         inAFunCalTerm(node);
+        //output.append(node + "\n");
         if(node.getFunCal() != null)
         {
             node.getFunCal().apply(this);
