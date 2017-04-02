@@ -93,13 +93,7 @@ Ignored Tokens
     comment;
 
 Productions
-    /* program = line+;
-    line =
-        {line1} expr | 
-        {line2} var_def |
-        {line3} fun_def;
-    */
-    program = fun_def;   // Na bgaloume to +
+    program = fun_def;
 
     fun_def =
         header local_def* block;
@@ -108,10 +102,10 @@ Productions
         fun identifier l_par fpar_def r_par colon return_type;
 
     fpar_def =
-        {simple_par} ref? identifier colon types fpar_def |
+        {simple_par} ref? identifier colon types |
         {mult_par} ref? identifier comma fpar_def |
         {mult_types} ref? identifier colon types comma fpar_def |
-        {semi_par} semi fpar_def |
+        {semi_par} ref? identifier colon types semi fpar_def |
         {none} ;
 
     data_types =
@@ -155,7 +149,7 @@ Productions
     l_val =
         {id} identifier | 
         {string} string_literal | 
-        {id_brackets} identifier l_br expr r_br;  // Paizetai malakia string brackets??? l_val
+        {id_brackets} l_val l_br expr r_br;  // Paizetai malakia string brackets??? l_val
 
     fun_cal =
         identifier l_par expr_list r_par;
@@ -233,14 +227,12 @@ Productions
     /* ---------------------------------------------------- */
 
     returnstmt =
-        {semi} return semi |
-        {expr} return expr semi;
+        {semi} return expr? semi;
 
     expr =
         {factor} factor |
         {add} expr plus factor |
         {sub} expr minus factor;
-
 
     factor =
         {term} term |
@@ -254,8 +246,6 @@ Productions
         {l_val} plus_or_minus? l_val |
         {fun_cal} fun_cal |
         {par} l_par expr r_par;
-        //{term2} l_val | //pros suzhthsh
-        //{term3} l_par expr r_par;
 
     plus_or_minus =
         {plus} plus | 

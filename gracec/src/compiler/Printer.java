@@ -10,15 +10,14 @@ import compiler.node.*;
 public class Printer extends DepthFirstAdapter
 {
     StringBuffer output = new StringBuffer();
-
-    public void inStart(Start node)
+    String tabs = "";
+    public void addtab()
     {
-        defaultIn(node);
+        tabs+='\t';
     }
-
-    public void outStart(Start node)
+    public void subtab()
     {
-        defaultOut(node);
+        tabs = tabs.substring(1);
     }
 
     @Override
@@ -30,16 +29,6 @@ public class Printer extends DepthFirstAdapter
         outStart(node);
     }
 
-    public void inAProgram(AProgram node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAProgram(AProgram node)
-    {
-        defaultOut(node);
-        System.out.println(output);
-    }
 
     @Override
     public void caseAProgram(AProgram node)
@@ -50,16 +39,7 @@ public class Printer extends DepthFirstAdapter
             node.getFunDef().apply(this);
         }
         outAProgram(node);
-    }
-
-    public void inAFunDef(AFunDef node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAFunDef(AFunDef node)
-    {
-        defaultOut(node);
+        System.out.println(output);
     }
 
     @Override
@@ -84,29 +64,19 @@ public class Printer extends DepthFirstAdapter
         outAFunDef(node);
     }
 
-    public void inAHeader(AHeader node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAHeader(AHeader node)
-    {
-        defaultOut(node);
-
-    }
-
     @Override
     public void caseAHeader(AHeader node)
     {
         inAHeader(node);
         if(node.getFun() != null)
         {
-            output.append("Function Definition: \n");
+            output.append(tabs+"Function Definition: \n");
+            addtab();
             node.getFun().apply(this);            
         }
         if(node.getIdentifier() != null)
         {
-            output.append("\tName: " + node.getIdentifier() +'\n');
+            output.append(tabs+"Name: " + node.getIdentifier() +'\n');
             node.getIdentifier().apply(this);            
         }
         if(node.getLPar() != null)
@@ -115,8 +85,10 @@ public class Printer extends DepthFirstAdapter
         }
         if(node.getFparDef() != null)
         {
-            output.append("\tParameters: \n");
+            output.append(tabs+"Parameters: \n");
+            addtab();
             node.getFparDef().apply(this); 
+            subtab();
         }
         if(node.getRPar() != null)
         {
@@ -128,37 +100,27 @@ public class Printer extends DepthFirstAdapter
         }
         if(node.getReturnType() != null)
         {
-            output.append("\tReturn Type: ");
+            output.append(tabs+"Return Type: ");
             node.getReturnType().apply(this);
             output.append(node.getReturnType());
             output.append('\n');
         }
         outAHeader(node);
-    }
 
-    public void inASimpleParFparDef(ASimpleParFparDef node)
-    {
-        defaultIn(node);
-    }
-
-    public void outASimpleParFparDef(ASimpleParFparDef node)
-    {
-        defaultOut(node);
     }
 
     @Override
     public void caseASimpleParFparDef(ASimpleParFparDef node)
-    {
-        inASimpleParFparDef(node);
+    {	
+    	inASimpleParFparDef(node);
         if(node.getRef() != null)
         {
-            //output.append("Ref ");
-            node.getRef().apply(this);           
+            node.getRef().apply(this);
         }
         if(node.getIdentifier() != null)
         {
-            output.append("\t\tParameter Name: " + node.getIdentifier() + '\n');
-            node.getIdentifier().apply(this);           
+        	output.append(tabs+"Parameter Name: " + node.getIdentifier() + '\n');
+            node.getIdentifier().apply(this);
         }
         if(node.getColon() != null)
         {
@@ -166,24 +128,10 @@ public class Printer extends DepthFirstAdapter
         }
         if(node.getTypes() != null)
         {
-            output.append("\t\tParameter Type: " + node.getTypes() + "\n\n");
+        	output.append(tabs+"Parameter Type: " + node.getTypes() + "\n\n");
             node.getTypes().apply(this);
         }
-        if(node.getFparDef() != null)
-        {
-            node.getFparDef().apply(this);
-        }
         outASimpleParFparDef(node);
-    }
-
-    public void inAMultParFparDef(AMultParFparDef node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAMultParFparDef(AMultParFparDef node)
-    {
-        defaultOut(node);
     }
 
     @Override
@@ -197,7 +145,7 @@ public class Printer extends DepthFirstAdapter
         }
         if(node.getIdentifier() != null)
         {
-            output.append("\t\tParameter Name: " + node.getIdentifier() + "\n");
+            output.append(tabs+"Parameter Name: " + node.getIdentifier() + "\n");
             node.getIdentifier().apply(this);
         }
         if(node.getComma() != null)
@@ -211,16 +159,6 @@ public class Printer extends DepthFirstAdapter
         outAMultParFparDef(node);
     }
 
-    public void inAMultTypesFparDef(AMultTypesFparDef node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAMultTypesFparDef(AMultTypesFparDef node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseAMultTypesFparDef(AMultTypesFparDef node)
     {
@@ -231,7 +169,7 @@ public class Printer extends DepthFirstAdapter
         }
         if(node.getIdentifier() != null)
         {
-            output.append("\t\tParameter Name: " + node.getIdentifier() + "\n");
+            output.append(tabs+"Parameter Name: " + node.getIdentifier() + "\n");
             node.getIdentifier().apply(this);
         }
         if(node.getColon() != null)
@@ -240,7 +178,7 @@ public class Printer extends DepthFirstAdapter
         }
         if(node.getTypes() != null)
         {
-            output.append("\t\tParameter Type: " + node.getTypes() + "\n\n");
+            output.append(tabs+"Parameter Type: " + node.getTypes() + "\n\n");
             node.getTypes().apply(this);
         }
         if(node.getComma() != null)
@@ -252,16 +190,6 @@ public class Printer extends DepthFirstAdapter
             node.getFparDef().apply(this);
         }
         outAMultTypesFparDef(node);
-    }
-
-    public void inASemiParFparDef(ASemiParFparDef node)
-    {
-        defaultIn(node);
-    }
-
-    public void outASemiParFparDef(ASemiParFparDef node)
-    {
-        defaultOut(node);
     }
 
     @Override
@@ -279,31 +207,11 @@ public class Printer extends DepthFirstAdapter
         outASemiParFparDef(node);
     }
 
-    public void inANoneFparDef(ANoneFparDef node)
-    {
-        defaultIn(node);
-    }
-
-    public void outANoneFparDef(ANoneFparDef node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseANoneFparDef(ANoneFparDef node)
     {
         inANoneFparDef(node);
         outANoneFparDef(node);
-    }
-
-    public void inAIntDataTypes(AIntDataTypes node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAIntDataTypes(AIntDataTypes node)
-    {
-        defaultOut(node);
     }
 
     @Override
@@ -317,16 +225,6 @@ public class Printer extends DepthFirstAdapter
         outAIntDataTypes(node);
     }
 
-    public void inACharDataTypes(ACharDataTypes node)
-    {
-        defaultIn(node);
-    }
-
-    public void outACharDataTypes(ACharDataTypes node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseACharDataTypes(ACharDataTypes node)
     {
@@ -336,16 +234,6 @@ public class Printer extends DepthFirstAdapter
             node.getChar().apply(this);
         }
         outACharDataTypes(node);
-    }
-
-    public void inABracketsArrayTypes(ABracketsArrayTypes node)
-    {
-        defaultIn(node);
-    }
-
-    public void outABracketsArrayTypes(ABracketsArrayTypes node)
-    {
-        defaultOut(node);
     }
 
     @Override
@@ -367,16 +255,6 @@ public class Printer extends DepthFirstAdapter
         outABracketsArrayTypes(node);
     }
 
-    public void inASimpleTypes(ASimpleTypes node)
-    {
-        defaultIn(node);
-    }
-
-    public void outASimpleTypes(ASimpleTypes node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseASimpleTypes(ASimpleTypes node)
     {
@@ -386,16 +264,6 @@ public class Printer extends DepthFirstAdapter
             node.getDataTypes().apply(this);
         }
         outASimpleTypes(node);
-    }
-
-    public void inAArrayTypes(AArrayTypes node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAArrayTypes(AArrayTypes node)
-    {
-        defaultOut(node);
     }
 
     @Override
@@ -416,16 +284,6 @@ public class Printer extends DepthFirstAdapter
         outAArrayTypes(node);
     }
 
-    public void inASimpleReturnType(ASimpleReturnType node)
-    {
-        defaultIn(node);
-    }
-
-    public void outASimpleReturnType(ASimpleReturnType node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseASimpleReturnType(ASimpleReturnType node)
     {
@@ -435,16 +293,6 @@ public class Printer extends DepthFirstAdapter
             node.getDataTypes().apply(this);
         }
         outASimpleReturnType(node);
-    }
-
-    public void inANoneReturnType(ANoneReturnType node)
-    {
-        defaultIn(node);
-    }
-
-    public void outANoneReturnType(ANoneReturnType node)
-    {
-        defaultOut(node);
     }
 
     @Override
@@ -458,36 +306,16 @@ public class Printer extends DepthFirstAdapter
         outANoneReturnType(node);
     }
 
-    public void inAFunLocalDef(AFunLocalDef node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAFunLocalDef(AFunLocalDef node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseAFunLocalDef(AFunLocalDef node)
     {
         inAFunLocalDef(node);
         if(node.getFunDef() != null)
         {
-            output.append("\tFunction Definition: \n");
+            //output.append("\tFunction Definition: \n");
             node.getFunDef().apply(this);
         }
         outAFunLocalDef(node);
-    }
-
-    public void inADecLocalDef(ADecLocalDef node)
-    {
-        defaultIn(node);
-    }
-
-    public void outADecLocalDef(ADecLocalDef node)
-    {
-        defaultOut(node);
     }
 
     @Override
@@ -501,16 +329,6 @@ public class Printer extends DepthFirstAdapter
         outADecLocalDef(node);
     }
 
-    public void inAVarLocalDef(AVarLocalDef node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAVarLocalDef(AVarLocalDef node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseAVarLocalDef(AVarLocalDef node)
     {
@@ -520,16 +338,6 @@ public class Printer extends DepthFirstAdapter
             node.getVarDef().apply(this);
         }
         outAVarLocalDef(node);
-    }
-
-    public void inAFunDec(AFunDec node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAFunDec(AFunDec node)
-    {
-        defaultOut(node);
     }
 
     @Override
@@ -547,20 +355,11 @@ public class Printer extends DepthFirstAdapter
         outAFunDec(node);
     }
 
-    public void inABlock(ABlock node)
-    {
-        defaultIn(node);
-    }
-
-    public void outABlock(ABlock node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseABlock(ABlock node)
     {
-        output.append("\tBody: \n\t");
+        output.append(tabs+"Body: \n");
+        //addtab();
         inABlock(node);
         if(node.getLAg() != null)
         {
@@ -580,16 +379,6 @@ public class Printer extends DepthFirstAdapter
         outABlock(node);
     }
 
-    public void inASemiStmt(ASemiStmt node)
-    {
-        defaultIn(node);
-    }
-
-    public void outASemiStmt(ASemiStmt node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseASemiStmt(ASemiStmt node)
     {
@@ -599,16 +388,6 @@ public class Printer extends DepthFirstAdapter
             node.getSemi().apply(this);
         }
         outASemiStmt(node);
-    }
-
-    public void inAAssignmentStmt(AAssignmentStmt node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAAssignmentStmt(AAssignmentStmt node)
-    {
-        defaultOut(node);
     }
 
     @Override
@@ -622,16 +401,6 @@ public class Printer extends DepthFirstAdapter
         outAAssignmentStmt(node);
     }
 
-    public void inABlockStmt(ABlockStmt node)
-    {
-        defaultIn(node);
-    }
-
-    public void outABlockStmt(ABlockStmt node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseABlockStmt(ABlockStmt node)
     {
@@ -641,16 +410,6 @@ public class Printer extends DepthFirstAdapter
             node.getBlock().apply(this);
         }
         outABlockStmt(node);
-    }
-
-    public void inAFunCalStmt(AFunCalStmt node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAFunCalStmt(AFunCalStmt node)
-    {
-        defaultOut(node);
     }
 
     @Override
@@ -668,16 +427,6 @@ public class Printer extends DepthFirstAdapter
         outAFunCalStmt(node);
     }
 
-    public void inAIfstmtStmt(AIfstmtStmt node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAIfstmtStmt(AIfstmtStmt node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseAIfstmtStmt(AIfstmtStmt node)
     {
@@ -687,16 +436,6 @@ public class Printer extends DepthFirstAdapter
             node.getIfstmt().apply(this);
         }
         outAIfstmtStmt(node);
-    }
-
-    public void inAWhilestmtStmt(AWhilestmtStmt node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAWhilestmtStmt(AWhilestmtStmt node)
-    {
-        defaultOut(node);
     }
 
     @Override
@@ -710,16 +449,6 @@ public class Printer extends DepthFirstAdapter
         outAWhilestmtStmt(node);
     }
 
-    public void inAReturnstmtStmt(AReturnstmtStmt node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAReturnstmtStmt(AReturnstmtStmt node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseAReturnstmtStmt(AReturnstmtStmt node)
     {
@@ -729,16 +458,6 @@ public class Printer extends DepthFirstAdapter
             node.getReturnstmt().apply(this);
         }
         outAReturnstmtStmt(node);
-    }
-
-    public void inAAssignment(AAssignment node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAAssignment(AAssignment node)
-    {
-        defaultOut(node);
     }
 
     @Override
@@ -764,35 +483,23 @@ public class Printer extends DepthFirstAdapter
         outAAssignment(node);
     }
 
-    public void inAIdLVal(AIdLVal node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAIdLVal(AIdLVal node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseAIdLVal(AIdLVal node)
     {
         inAIdLVal(node);
         if(node.getIdentifier() != null)
         {
+            addtab();
+        	if(node.parent().toString().equals(node.getIdentifier().toString()))
+        		output.append(tabs+"Name: " + node.parent() + "\n\n");
             node.getIdentifier().apply(this);
+            subtab();
+            //output.append("---> " + node.parent() );
+            
+        	//else
+        		//output.append("\t\t\tName: " + node.parent() + "\n\n");
         }
         outAIdLVal(node);
-    }
-
-    public void inAStringLVal(AStringLVal node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAStringLVal(AStringLVal node)
-    {
-        defaultOut(node);
     }
 
     @Override
@@ -801,30 +508,25 @@ public class Printer extends DepthFirstAdapter
         inAStringLVal(node);
         if(node.getStringLiteral() != null)
         {
-            output.append("\t\t\tArgument Type: char[]" + '\n');
-            output.append("\t\t\tArgument Value: " + node.getStringLiteral() + '\n');
+            addtab();
+            output.append(tabs+"Type: char[]" + '\n');
+            output.append(tabs+"Value: " + node.getStringLiteral() + "\n\n");
             node.getStringLiteral().apply(this);
+            subtab();
         }
         outAStringLVal(node);
-    }
-
-    public void inAIdBracketsLVal(AIdBracketsLVal node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAIdBracketsLVal(AIdBracketsLVal node)
-    {
-        defaultOut(node);
     }
 
     @Override
     public void caseAIdBracketsLVal(AIdBracketsLVal node)
     {
         inAIdBracketsLVal(node);
-        if(node.getIdentifier() != null)
+        if(node.getLVal() != null)
         {
-            node.getIdentifier().apply(this);
+            addtab();
+            output.append(tabs+"Name: " + node + "\n");
+            subtab();
+            node.getLVal().apply(this);
         }
         if(node.getLBr() != null)
         {
@@ -841,24 +543,17 @@ public class Printer extends DepthFirstAdapter
         outAIdBracketsLVal(node);
     }
 
-    public void inAFunCal(AFunCal node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAFunCal(AFunCal node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseAFunCal(AFunCal node)
     {
-        output.append("\tFunction Call: \n\t");
+        addtab();
+        output.append(tabs+"Function Call: \n");
         inAFunCal(node);
         if(node.getIdentifier() != null)
         {
-            output.append("\t\tName: " + node.getIdentifier() + '\n');
+            addtab();
+            output.append(tabs+"Name: " + node.getIdentifier() + '\n');
+            subtab();
             node.getIdentifier().apply(this);
         }
         if(node.getLPar() != null)
@@ -867,24 +562,17 @@ public class Printer extends DepthFirstAdapter
         }
         if(node.getExprList() != null)
         {
-            output.append("\t\tArguments: \n");
+            addtab();
+            output.append(tabs+"Arguments: \n");
             node.getExprList().apply(this);
+            subtab();
         }
         if(node.getRPar() != null)
         {
             node.getRPar().apply(this);
         }
+        subtab();
         outAFunCal(node);
-    }
-
-    public void inASimpleExprList(ASimpleExprList node)
-    {
-        defaultIn(node);
-    }
-
-    public void outASimpleExprList(ASimpleExprList node)
-    {
-        defaultOut(node);
     }
 
     @Override
@@ -896,16 +584,6 @@ public class Printer extends DepthFirstAdapter
             node.getExpr().apply(this);
         }
         outASimpleExprList(node);
-    }
-
-    public void inAListExprList(AListExprList node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAListExprList(AListExprList node)
-    {
-        defaultOut(node);
     }
 
     @Override
@@ -927,31 +605,11 @@ public class Printer extends DepthFirstAdapter
         outAListExprList(node);
     }
 
-    public void inANoneExprList(ANoneExprList node)
-    {
-        defaultIn(node);
-    }
-
-    public void outANoneExprList(ANoneExprList node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseANoneExprList(ANoneExprList node)
     {
         inANoneExprList(node);
         outANoneExprList(node);
-    }
-
-    public void inAVarDef(AVarDef node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAVarDef(AVarDef node)
-    {
-        defaultOut(node);
     }
 
     @Override
@@ -981,16 +639,6 @@ public class Printer extends DepthFirstAdapter
         outAVarDef(node);
     }
 
-    public void inAIdVarIds(AIdVarIds node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAIdVarIds(AIdVarIds node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseAIdVarIds(AIdVarIds node)
     {
@@ -1000,16 +648,6 @@ public class Printer extends DepthFirstAdapter
             node.getIdentifier().apply(this);
         }
         outAIdVarIds(node);
-    }
-
-    public void inAListVarIds(AListVarIds node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAListVarIds(AListVarIds node)
-    {
-        defaultOut(node);
     }
 
     @Override
@@ -1029,16 +667,6 @@ public class Printer extends DepthFirstAdapter
             node.getVarIds().apply(this);
         }
         outAListVarIds(node);
-    }
-
-    public void inAWhilestmt(AWhilestmt node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAWhilestmt(AWhilestmt node)
-    {
-        defaultOut(node);
     }
 
     @Override
@@ -1064,16 +692,6 @@ public class Printer extends DepthFirstAdapter
         outAWhilestmt(node);
     }
 
-    public void inAWhileWithElse(AWhileWithElse node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAWhileWithElse(AWhileWithElse node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseAWhileWithElse(AWhileWithElse node)
     {
@@ -1097,16 +715,6 @@ public class Printer extends DepthFirstAdapter
         outAWhileWithElse(node);
     }
 
-    public void inAIfstmt(AIfstmt node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAIfstmt(AIfstmt node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseAIfstmt(AIfstmt node)
     {
@@ -1120,16 +728,6 @@ public class Printer extends DepthFirstAdapter
             node.getIfTrail().apply(this);
         }
         outAIfstmt(node);
-    }
-
-    public void inAIfHeader(AIfHeader node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAIfHeader(AIfHeader node)
-    {
-        defaultOut(node);
     }
 
     @Override
@@ -1151,16 +749,6 @@ public class Printer extends DepthFirstAdapter
         outAIfHeader(node);
     }
 
-    public void inANoElseIfTrail(ANoElseIfTrail node)
-    {
-        defaultIn(node);
-    }
-
-    public void outANoElseIfTrail(ANoElseIfTrail node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseANoElseIfTrail(ANoElseIfTrail node)
     {
@@ -1170,16 +758,6 @@ public class Printer extends DepthFirstAdapter
             node.getThen().apply(this);
         }
         outANoElseIfTrail(node);
-    }
-
-    public void inAWithElseIfTrail(AWithElseIfTrail node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAWithElseIfTrail(AWithElseIfTrail node)
-    {
-        defaultOut(node);
     }
 
     @Override
@@ -1201,16 +779,6 @@ public class Printer extends DepthFirstAdapter
         outAWithElseIfTrail(node);
     }
 
-    public void inASemiStmtWithElse(ASemiStmtWithElse node)
-    {
-        defaultIn(node);
-    }
-
-    public void outASemiStmtWithElse(ASemiStmtWithElse node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseASemiStmtWithElse(ASemiStmtWithElse node)
     {
@@ -1220,16 +788,6 @@ public class Printer extends DepthFirstAdapter
             node.getSemi().apply(this);
         }
         outASemiStmtWithElse(node);
-    }
-
-    public void inAAssignmentStmtWithElse(AAssignmentStmtWithElse node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAAssignmentStmtWithElse(AAssignmentStmtWithElse node)
-    {
-        defaultOut(node);
     }
 
     @Override
@@ -1243,16 +801,6 @@ public class Printer extends DepthFirstAdapter
         outAAssignmentStmtWithElse(node);
     }
 
-    public void inAStmtReturnstmtStmtWithElse(AStmtReturnstmtStmtWithElse node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAStmtReturnstmtStmtWithElse(AStmtReturnstmtStmtWithElse node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseAStmtReturnstmtStmtWithElse(AStmtReturnstmtStmtWithElse node)
     {
@@ -1262,16 +810,6 @@ public class Printer extends DepthFirstAdapter
             node.getReturnstmt().apply(this);
         }
         outAStmtReturnstmtStmtWithElse(node);
-    }
-
-    public void inAStmtFuncalStmtWithElse(AStmtFuncalStmtWithElse node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAStmtFuncalStmtWithElse(AStmtFuncalStmtWithElse node)
-    {
-        defaultOut(node);
     }
 
     @Override
@@ -1289,16 +827,6 @@ public class Printer extends DepthFirstAdapter
         outAStmtFuncalStmtWithElse(node);
     }
 
-    public void inABlockStmtWithElse(ABlockStmtWithElse node)
-    {
-        defaultIn(node);
-    }
-
-    public void outABlockStmtWithElse(ABlockStmtWithElse node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseABlockStmtWithElse(ABlockStmtWithElse node)
     {
@@ -1308,16 +836,6 @@ public class Printer extends DepthFirstAdapter
             node.getBlock().apply(this);
         }
         outABlockStmtWithElse(node);
-    }
-
-    public void inAIfStmtWithElse(AIfStmtWithElse node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAIfStmtWithElse(AIfStmtWithElse node)
-    {
-        defaultOut(node);
     }
 
     @Override
@@ -1331,16 +849,6 @@ public class Printer extends DepthFirstAdapter
         outAIfStmtWithElse(node);
     }
 
-    public void inAWhileStmtWithElse(AWhileStmtWithElse node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAWhileStmtWithElse(AWhileStmtWithElse node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseAWhileStmtWithElse(AWhileStmtWithElse node)
     {
@@ -1350,16 +858,6 @@ public class Printer extends DepthFirstAdapter
             node.getWhileWithElse().apply(this);
         }
         outAWhileStmtWithElse(node);
-    }
-
-    public void inAIfElse(AIfElse node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAIfElse(AIfElse node)
-    {
-        defaultOut(node);
     }
 
     @Override
@@ -1385,16 +883,6 @@ public class Printer extends DepthFirstAdapter
         outAIfElse(node);
     }
 
-    public void inACondNotCond(ACondNotCond node)
-    {
-        defaultIn(node);
-    }
-
-    public void outACondNotCond(ACondNotCond node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseACondNotCond(ACondNotCond node)
     {
@@ -1410,16 +898,6 @@ public class Printer extends DepthFirstAdapter
         outACondNotCond(node);
     }
 
-    public void inACondOrAndCond(ACondOrAndCond node)
-    {
-        defaultIn(node);
-    }
-
-    public void outACondOrAndCond(ACondOrAndCond node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseACondOrAndCond(ACondOrAndCond node)
     {
@@ -1431,16 +909,6 @@ public class Printer extends DepthFirstAdapter
         outACondOrAndCond(node);
     }
 
-    public void inACondAndConditionalOrExpression(ACondAndConditionalOrExpression node)
-    {
-        defaultIn(node);
-    }
-
-    public void outACondAndConditionalOrExpression(ACondAndConditionalOrExpression node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseACondAndConditionalOrExpression(ACondAndConditionalOrExpression node)
     {
@@ -1450,16 +918,6 @@ public class Printer extends DepthFirstAdapter
             node.getConditionalAndExpression().apply(this);
         }
         outACondAndConditionalOrExpression(node);
-    }
-
-    public void inACondOrConditionalOrExpression(ACondOrConditionalOrExpression node)
-    {
-        defaultIn(node);
-    }
-
-    public void outACondOrConditionalOrExpression(ACondOrConditionalOrExpression node)
-    {
-        defaultOut(node);
     }
 
     @Override
@@ -1481,16 +939,6 @@ public class Printer extends DepthFirstAdapter
         outACondOrConditionalOrExpression(node);
     }
 
-    public void inAComparativeConditionalAndExpression(AComparativeConditionalAndExpression node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAComparativeConditionalAndExpression(AComparativeConditionalAndExpression node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseAComparativeConditionalAndExpression(AComparativeConditionalAndExpression node)
     {
@@ -1500,16 +948,6 @@ public class Printer extends DepthFirstAdapter
             node.getComparativeExpression().apply(this);
         }
         outAComparativeConditionalAndExpression(node);
-    }
-
-    public void inAAndExprConditionalAndExpression(AAndExprConditionalAndExpression node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAAndExprConditionalAndExpression(AAndExprConditionalAndExpression node)
-    {
-        defaultOut(node);
     }
 
     @Override
@@ -1531,16 +969,6 @@ public class Printer extends DepthFirstAdapter
         outAAndExprConditionalAndExpression(node);
     }
 
-    public void inARelationalComparativeExpression(ARelationalComparativeExpression node)
-    {
-        defaultIn(node);
-    }
-
-    public void outARelationalComparativeExpression(ARelationalComparativeExpression node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseARelationalComparativeExpression(ARelationalComparativeExpression node)
     {
@@ -1550,16 +978,6 @@ public class Printer extends DepthFirstAdapter
             node.getRelationalExpression().apply(this);
         }
         outARelationalComparativeExpression(node);
-    }
-
-    public void inAEqualComparativeExpression(AEqualComparativeExpression node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAEqualComparativeExpression(AEqualComparativeExpression node)
-    {
-        defaultOut(node);
     }
 
     @Override
@@ -1581,16 +999,6 @@ public class Printer extends DepthFirstAdapter
         outAEqualComparativeExpression(node);
     }
 
-    public void inANotEqualComparativeExpression(ANotEqualComparativeExpression node)
-    {
-        defaultIn(node);
-    }
-
-    public void outANotEqualComparativeExpression(ANotEqualComparativeExpression node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseANotEqualComparativeExpression(ANotEqualComparativeExpression node)
     {
@@ -1610,16 +1018,6 @@ public class Printer extends DepthFirstAdapter
         outANotEqualComparativeExpression(node);
     }
 
-    public void inAAdditiveRelationalExpression(AAdditiveRelationalExpression node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAAdditiveRelationalExpression(AAdditiveRelationalExpression node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseAAdditiveRelationalExpression(AAdditiveRelationalExpression node)
     {
@@ -1629,16 +1027,6 @@ public class Printer extends DepthFirstAdapter
             node.getExpr().apply(this);
         }
         outAAdditiveRelationalExpression(node);
-    }
-
-    public void inALessThanRelationalExpression(ALessThanRelationalExpression node)
-    {
-        defaultIn(node);
-    }
-
-    public void outALessThanRelationalExpression(ALessThanRelationalExpression node)
-    {
-        defaultOut(node);
     }
 
     @Override
@@ -1660,16 +1048,6 @@ public class Printer extends DepthFirstAdapter
         outALessThanRelationalExpression(node);
     }
 
-    public void inAGreaterThanRelationalExpression(AGreaterThanRelationalExpression node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAGreaterThanRelationalExpression(AGreaterThanRelationalExpression node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseAGreaterThanRelationalExpression(AGreaterThanRelationalExpression node)
     {
@@ -1687,16 +1065,6 @@ public class Printer extends DepthFirstAdapter
             node.getRight().apply(this);
         }
         outAGreaterThanRelationalExpression(node);
-    }
-
-    public void inAGreaterEqualThanRelationalExpression(AGreaterEqualThanRelationalExpression node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAGreaterEqualThanRelationalExpression(AGreaterEqualThanRelationalExpression node)
-    {
-        defaultOut(node);
     }
 
     @Override
@@ -1718,16 +1086,6 @@ public class Printer extends DepthFirstAdapter
         outAGreaterEqualThanRelationalExpression(node);
     }
 
-    public void inALessEqualThanRelationalExpression(ALessEqualThanRelationalExpression node)
-    {
-        defaultIn(node);
-    }
-
-    public void outALessEqualThanRelationalExpression(ALessEqualThanRelationalExpression node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseALessEqualThanRelationalExpression(ALessEqualThanRelationalExpression node)
     {
@@ -1745,16 +1103,6 @@ public class Printer extends DepthFirstAdapter
             node.getRight().apply(this);
         }
         outALessEqualThanRelationalExpression(node);
-    }
-
-    public void inASemiReturnstmt(ASemiReturnstmt node)
-    {
-        defaultIn(node);
-    }
-
-    public void outASemiReturnstmt(ASemiReturnstmt node)
-    {
-        defaultOut(node);
     }
 
     @Override
@@ -1776,16 +1124,6 @@ public class Printer extends DepthFirstAdapter
         outASemiReturnstmt(node);
     }
 
-    public void inAFactorExpr(AFactorExpr node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAFactorExpr(AFactorExpr node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseAFactorExpr(AFactorExpr node)
     {
@@ -1795,16 +1133,6 @@ public class Printer extends DepthFirstAdapter
             node.getFactor().apply(this);
         }
         outAFactorExpr(node);
-    }
-
-    public void inAAddExpr(AAddExpr node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAAddExpr(AAddExpr node)
-    {
-        defaultOut(node);
     }
 
     @Override
@@ -1826,16 +1154,6 @@ public class Printer extends DepthFirstAdapter
         outAAddExpr(node);
     }
 
-    public void inASubExpr(ASubExpr node)
-    {
-        defaultIn(node);
-    }
-
-    public void outASubExpr(ASubExpr node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseASubExpr(ASubExpr node)
     {
@@ -1855,16 +1173,6 @@ public class Printer extends DepthFirstAdapter
         outASubExpr(node);
     }
 
-    public void inATermFactor(ATermFactor node)
-    {
-        defaultIn(node);
-    }
-
-    public void outATermFactor(ATermFactor node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseATermFactor(ATermFactor node)
     {
@@ -1874,16 +1182,6 @@ public class Printer extends DepthFirstAdapter
             node.getTerm().apply(this);
         }
         outATermFactor(node);
-    }
-
-    public void inAMultFactor(AMultFactor node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAMultFactor(AMultFactor node)
-    {
-        defaultOut(node);
     }
 
     @Override
@@ -1905,16 +1203,6 @@ public class Printer extends DepthFirstAdapter
         outAMultFactor(node);
     }
 
-    public void inAModFactor(AModFactor node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAModFactor(AModFactor node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseAModFactor(AModFactor node)
     {
@@ -1932,16 +1220,6 @@ public class Printer extends DepthFirstAdapter
             node.getTerm().apply(this);
         }
         outAModFactor(node);
-    }
-
-    public void inADivFactor(ADivFactor node)
-    {
-        defaultIn(node);
-    }
-
-    public void outADivFactor(ADivFactor node)
-    {
-        defaultOut(node);
     }
 
     @Override
@@ -1963,16 +1241,6 @@ public class Printer extends DepthFirstAdapter
         outADivFactor(node);
     }
 
-    public void inAIntTerm(AIntTerm node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAIntTerm(AIntTerm node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseAIntTerm(AIntTerm node)
     {
@@ -1988,16 +1256,6 @@ public class Printer extends DepthFirstAdapter
         outAIntTerm(node);
     }
 
-    public void inACharTerm(ACharTerm node)
-    {
-        defaultIn(node);
-    }
-
-    public void outACharTerm(ACharTerm node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseACharTerm(ACharTerm node)
     {
@@ -2007,16 +1265,6 @@ public class Printer extends DepthFirstAdapter
             node.getCharConst().apply(this);
         }
         outACharTerm(node);
-    }
-
-    public void inALValTerm(ALValTerm node)
-    {
-        defaultIn(node);
-    }
-
-    public void outALValTerm(ALValTerm node)
-    {
-        defaultOut(node);
     }
 
     @Override
@@ -2034,16 +1282,6 @@ public class Printer extends DepthFirstAdapter
         outALValTerm(node);
     }
 
-    public void inAFunCalTerm(AFunCalTerm node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAFunCalTerm(AFunCalTerm node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseAFunCalTerm(AFunCalTerm node)
     {
@@ -2053,16 +1291,6 @@ public class Printer extends DepthFirstAdapter
             node.getFunCal().apply(this);
         }
         outAFunCalTerm(node);
-    }
-
-    public void inAParTerm(AParTerm node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAParTerm(AParTerm node)
-    {
-        defaultOut(node);
     }
 
     @Override
@@ -2084,16 +1312,6 @@ public class Printer extends DepthFirstAdapter
         outAParTerm(node);
     }
 
-    public void inAPlusPlusOrMinus(APlusPlusOrMinus node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAPlusPlusOrMinus(APlusPlusOrMinus node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseAPlusPlusOrMinus(APlusPlusOrMinus node)
     {
@@ -2103,17 +1321,6 @@ public class Printer extends DepthFirstAdapter
             node.getPlus().apply(this);
         }
         outAPlusPlusOrMinus(node);
-    }
-
-    public void inAMinusPlusOrMinus(AMinusPlusOrMinus node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAMinusPlusOrMinus(AMinusPlusOrMinus node)
-    {
-        defaultOut(node);
-    	
     }
 
     @Override
