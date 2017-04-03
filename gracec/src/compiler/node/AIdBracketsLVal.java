@@ -7,7 +7,7 @@ import compiler.analysis.*;
 @SuppressWarnings("nls")
 public final class AIdBracketsLVal extends PLVal
 {
-    private TIdentifier _identifier_;
+    private PLVal _lVal_;
     private TLBr _lBr_;
     private PExpr _expr_;
     private TRBr _rBr_;
@@ -18,13 +18,13 @@ public final class AIdBracketsLVal extends PLVal
     }
 
     public AIdBracketsLVal(
-        @SuppressWarnings("hiding") TIdentifier _identifier_,
+        @SuppressWarnings("hiding") PLVal _lVal_,
         @SuppressWarnings("hiding") TLBr _lBr_,
         @SuppressWarnings("hiding") PExpr _expr_,
         @SuppressWarnings("hiding") TRBr _rBr_)
     {
         // Constructor
-        setIdentifier(_identifier_);
+        setLVal(_lVal_);
 
         setLBr(_lBr_);
 
@@ -38,7 +38,7 @@ public final class AIdBracketsLVal extends PLVal
     public Object clone()
     {
         return new AIdBracketsLVal(
-            cloneNode(this._identifier_),
+            cloneNode(this._lVal_),
             cloneNode(this._lBr_),
             cloneNode(this._expr_),
             cloneNode(this._rBr_));
@@ -50,16 +50,16 @@ public final class AIdBracketsLVal extends PLVal
         ((Analysis) sw).caseAIdBracketsLVal(this);
     }
 
-    public TIdentifier getIdentifier()
+    public PLVal getLVal()
     {
-        return this._identifier_;
+        return this._lVal_;
     }
 
-    public void setIdentifier(TIdentifier node)
+    public void setLVal(PLVal node)
     {
-        if(this._identifier_ != null)
+        if(this._lVal_ != null)
         {
-            this._identifier_.parent(null);
+            this._lVal_.parent(null);
         }
 
         if(node != null)
@@ -72,7 +72,7 @@ public final class AIdBracketsLVal extends PLVal
             node.parent(this);
         }
 
-        this._identifier_ = node;
+        this._lVal_ = node;
     }
 
     public TLBr getLBr()
@@ -154,7 +154,7 @@ public final class AIdBracketsLVal extends PLVal
     public String toString()
     {
         return ""
-            + toString(this._identifier_)
+            + toString(this._lVal_)
             + toString(this._lBr_)
             + toString(this._expr_)
             + toString(this._rBr_);
@@ -164,9 +164,9 @@ public final class AIdBracketsLVal extends PLVal
     void removeChild(@SuppressWarnings("unused") Node child)
     {
         // Remove child
-        if(this._identifier_ == child)
+        if(this._lVal_ == child)
         {
-            this._identifier_ = null;
+            this._lVal_ = null;
             return;
         }
 
@@ -195,9 +195,9 @@ public final class AIdBracketsLVal extends PLVal
     void replaceChild(@SuppressWarnings("unused") Node oldChild, @SuppressWarnings("unused") Node newChild)
     {
         // Replace child
-        if(this._identifier_ == oldChild)
+        if(this._lVal_ == oldChild)
         {
-            setIdentifier((TIdentifier) newChild);
+            setLVal((PLVal) newChild);
             return;
         }
 

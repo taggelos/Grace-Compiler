@@ -13,6 +13,10 @@ public class Printer extends DepthFirstAdapter
     String tabs = "";
     boolean flag = false;
     boolean flagbr = false;
+    boolean flagif = false;
+
+   // boolean flagelse= false;
+   // boolean while= false;
 
     public void addtab()
     {
@@ -464,7 +468,10 @@ public class Printer extends DepthFirstAdapter
         inAWhilestmtStmt(node);
         if(node.getWhilestmt() != null)
         {
+            addtab();
+            output.append(tabs+"While statement: \n" );
             node.getWhilestmt().apply(this);
+            subtab();
         }
         outAWhilestmtStmt(node);
     }
@@ -539,7 +546,7 @@ public class Printer extends DepthFirstAdapter
                 output.append(tabs+"Value: " + node.getStringLiteral() + "\n");
             }
             
-            if(flag && !flagbr) output.append(node);
+            ////////if(flag && !flagbr) output.append(node);
 
             node.getStringLiteral().apply(this);
             subtab();
@@ -557,8 +564,8 @@ public class Printer extends DepthFirstAdapter
             addtab();
             if(!flag) 
                 output.append(tabs+"Name: " + node + "\n\t");
-            else
-                output.append(node);
+            /////else
+            /////    output.append(node);
             subtab();
             node.getLVal().apply(this);
 
@@ -745,14 +752,17 @@ public class Printer extends DepthFirstAdapter
         inAWhileWithElse(node);
         if(node.getWhile() != null)
         {
+            output.append(tabs+"While else statement: \n" );
             node.getWhile().apply(this);
         }
         if(node.getCond() != null)
         {
+            output.append(tabs+"cond (else) statement: \n" );
             node.getCond().apply(this);
         }
         if(node.getDo() != null)
         {
+            output.append(tabs+"do (else) statement: \n" );
             node.getDo().apply(this);
         }
         if(node.getStmtWithElse() != null)
@@ -766,9 +776,13 @@ public class Printer extends DepthFirstAdapter
     public void caseAIfstmt(AIfstmt node)
     {
         inAIfstmt(node);
+        flagif = true;
         if(node.getIfHeader() != null)
         {
+            addtab();
+            output.append(tabs+"if statement: \n" );
             node.getIfHeader().apply(this);
+            subtab();
         }
         if(node.getIfTrail() != null)
         {
@@ -812,11 +826,13 @@ public class Printer extends DepthFirstAdapter
     {
         inAWithElseIfTrail(node);
         if(node.getThen() != null)
-        {
+        {            
+            output.append(tabs+"Then"+"\n");
             node.getThen().apply(this);
         }
         if(node.getElse() != null)
         {
+            output.append(tabs+"Else"+"\n");
             node.getElse().apply(this);
         }
         if(node.getElseSt() != null)
@@ -912,15 +928,18 @@ public class Printer extends DepthFirstAdapter
     {
         inAIfElse(node);
         if(node.getIfHeader() != null)
-        {
+        {            
+            output.append(tabs+"if else"+"\n");
             node.getIfHeader().apply(this);
         }
         if(node.getThen() != null)
         {
+            output.append(tabs+"then (ifelse)"+"\n");
             node.getThen().apply(this);
         }
         if(node.getElse() != null)
         {
+            output.append(tabs+"else (ifelse)"+"\n");
             node.getElse().apply(this);
         }
         if(node.getElseSt() != null)
@@ -1033,15 +1052,20 @@ public class Printer extends DepthFirstAdapter
         inAEqualComparativeExpression(node);
         if(node.getLeft() != null)
         {
+            output.append(tabs + "Left (" );
             node.getLeft().apply(this);
+            output.append(tabs + ")" + "\n");
         }
         if(node.getEq() != null)
         {
+            output.append(tabs + "equals"  + "\n");
             node.getEq().apply(this);
         }
         if(node.getRight() != null)
         {
+            output.append(tabs + "Right (" );
             node.getRight().apply(this);
+            output.append(tabs + ")" );
         }
         outAEqualComparativeExpression(node);
     }
@@ -1052,15 +1076,20 @@ public class Printer extends DepthFirstAdapter
         inANotEqualComparativeExpression(node);
         if(node.getLeft() != null)
         {
+            output.append(tabs + "Left (" );
             node.getLeft().apply(this);
+            output.append(tabs + ")" + "\n");
         }
         if(node.getNeq() != null)
         {
+            output.append(tabs + "not equals"  + "\n");
             node.getNeq().apply(this);
         }
         if(node.getRight() != null)
         {
+            output.append(tabs + "Right (" );
             node.getRight().apply(this);
+            output.append(tabs + ")" );
         }
         outANotEqualComparativeExpression(node);
     }
@@ -1082,15 +1111,20 @@ public class Printer extends DepthFirstAdapter
         inALessThanRelationalExpression(node);
         if(node.getLeft() != null)
         {
+            output.append(tabs + "Left (" );
             node.getLeft().apply(this);
+            output.append(tabs + ")" + "\n");
         }
         if(node.getLt() != null)
         {
+            output.append(tabs + "less than"  + "\n");
             node.getLt().apply(this);
         }
         if(node.getRight() != null)
         {
+            output.append(tabs + "Right (" );
             node.getRight().apply(this);
+            output.append(tabs + ")" + "\n");
         }
         outALessThanRelationalExpression(node);
     }
@@ -1101,15 +1135,20 @@ public class Printer extends DepthFirstAdapter
         inAGreaterThanRelationalExpression(node);
         if(node.getLeft() != null)
         {
+            output.append(tabs + "Left (" );
             node.getLeft().apply(this);
+            output.append(tabs + ")" + "\n");
         }
         if(node.getGt() != null)
         {
+            output.append(tabs + "greater than"  + "\n");
             node.getGt().apply(this);
         }
         if(node.getRight() != null)
         {
-            node.getRight().apply(this);
+            output.append(tabs + "Right (" );
+            node.getRight().apply(this);            
+            output.append(tabs + ")" + "\n");
         }
         outAGreaterThanRelationalExpression(node);
     }
@@ -1119,16 +1158,21 @@ public class Printer extends DepthFirstAdapter
     {
         inAGreaterEqualThanRelationalExpression(node);
         if(node.getLeft() != null)
-        {
+        {            
+            output.append(tabs + "Left (" );
             node.getLeft().apply(this);
+            output.append(tabs + ")" + "\n");
         }
         if(node.getGteq() != null)
         {
+            output.append(tabs + "greater-equal than"  + "\n");
             node.getGteq().apply(this);
         }
         if(node.getRight() != null)
         {
-            node.getRight().apply(this);
+            output.append(tabs + "Right (" );
+            node.getRight().apply(this);      
+            output.append(tabs + ")" + "\n");
         }
         outAGreaterEqualThanRelationalExpression(node);
     }
@@ -1139,15 +1183,20 @@ public class Printer extends DepthFirstAdapter
         inALessEqualThanRelationalExpression(node);
         if(node.getLeft() != null)
         {
-            node.getLeft().apply(this);
+            output.append(tabs + "Left (" );
+            node.getLeft().apply(this);            
+            output.append(tabs + ")" + "\n");
         }
         if(node.getLteq() != null)
         {
+            output.append(tabs + "less-equal than"  + "\n");
             node.getLteq().apply(this);
         }
         if(node.getRight() != null)
         {
-            node.getRight().apply(this);
+            output.append(tabs + "Right (" );
+            node.getRight().apply(this);            
+            output.append(tabs + ")" + "\n");
         }
         outALessEqualThanRelationalExpression(node);
     }
@@ -1162,7 +1211,10 @@ public class Printer extends DepthFirstAdapter
         }
         if(node.getExpr() != null)
         {
+            addtab();
+            output.append(tabs+"Return Expression: " + node.getExpr() +"\n");
             node.getExpr().apply(this);
+            subtab();
         }
         if(node.getSemi() != null)
         {
@@ -1326,14 +1378,15 @@ public class Printer extends DepthFirstAdapter
     public void caseAIntTerm(AIntTerm node)
     {
         inAIntTerm(node);
+        output.append(tabs + "Integer: " );
         if(node.getPlusOrMinus() != null)
-        {
+        {   
             output.append(node.getPlusOrMinus() );
             node.getPlusOrMinus().apply(this);
         }
         if(node.getIntegers() != null)
         {
-            output.append(node.getIntegers() );
+            output.append(node.getIntegers()+ "\n"  );
             node.getIntegers().apply(this);
         }
         //if(flag) output.append(node);
@@ -1346,6 +1399,7 @@ public class Printer extends DepthFirstAdapter
         inACharTerm(node);
         if(node.getCharConst() != null)
         {
+            output.append(tabs +"CharTerm: "+ node.getCharConst()+ "\n"  );
             node.getCharConst().apply(this);
         }
         //if(flag) output.append(node);
@@ -1359,13 +1413,11 @@ public class Printer extends DepthFirstAdapter
         addtab();
         subtab();
         if(node.getPlusOrMinus() != null)
-        {
-
+        {        	
             node.getPlusOrMinus().apply(this);
         }
         if(node.getLVal() != null)
         {
-            //output.append(node.getLVal());
             node.getLVal().apply(this);
         }
         outALValTerm(node);

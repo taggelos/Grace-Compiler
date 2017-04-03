@@ -164,10 +164,6 @@ public class DepthFirstAdapter extends AnalysisAdapter
         {
             node.getTypes().apply(this);
         }
-        if(node.getFparDef() != null)
-        {
-            node.getFparDef().apply(this);
-        }
         outASimpleParFparDef(node);
     }
 
@@ -259,6 +255,22 @@ public class DepthFirstAdapter extends AnalysisAdapter
     public void caseASemiParFparDef(ASemiParFparDef node)
     {
         inASemiParFparDef(node);
+        if(node.getRef() != null)
+        {
+            node.getRef().apply(this);
+        }
+        if(node.getIdentifier() != null)
+        {
+            node.getIdentifier().apply(this);
+        }
+        if(node.getColon() != null)
+        {
+            node.getColon().apply(this);
+        }
+        if(node.getTypes() != null)
+        {
+            node.getTypes().apply(this);
+        }
         if(node.getSemi() != null)
         {
             node.getSemi().apply(this);
@@ -809,9 +821,9 @@ public class DepthFirstAdapter extends AnalysisAdapter
     public void caseAIdBracketsLVal(AIdBracketsLVal node)
     {
         inAIdBracketsLVal(node);
-        if(node.getIdentifier() != null)
+        if(node.getLVal() != null)
         {
-            node.getIdentifier().apply(this);
+            node.getLVal().apply(this);
         }
         if(node.getLBr() != null)
         {

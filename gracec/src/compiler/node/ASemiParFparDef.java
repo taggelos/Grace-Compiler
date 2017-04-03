@@ -7,6 +7,10 @@ import compiler.analysis.*;
 @SuppressWarnings("nls")
 public final class ASemiParFparDef extends PFparDef
 {
+    private TRef _ref_;
+    private TIdentifier _identifier_;
+    private TColon _colon_;
+    private PTypes _types_;
     private TSemi _semi_;
     private PFparDef _fparDef_;
 
@@ -16,10 +20,22 @@ public final class ASemiParFparDef extends PFparDef
     }
 
     public ASemiParFparDef(
+        @SuppressWarnings("hiding") TRef _ref_,
+        @SuppressWarnings("hiding") TIdentifier _identifier_,
+        @SuppressWarnings("hiding") TColon _colon_,
+        @SuppressWarnings("hiding") PTypes _types_,
         @SuppressWarnings("hiding") TSemi _semi_,
         @SuppressWarnings("hiding") PFparDef _fparDef_)
     {
         // Constructor
+        setRef(_ref_);
+
+        setIdentifier(_identifier_);
+
+        setColon(_colon_);
+
+        setTypes(_types_);
+
         setSemi(_semi_);
 
         setFparDef(_fparDef_);
@@ -30,6 +46,10 @@ public final class ASemiParFparDef extends PFparDef
     public Object clone()
     {
         return new ASemiParFparDef(
+            cloneNode(this._ref_),
+            cloneNode(this._identifier_),
+            cloneNode(this._colon_),
+            cloneNode(this._types_),
             cloneNode(this._semi_),
             cloneNode(this._fparDef_));
     }
@@ -38,6 +58,106 @@ public final class ASemiParFparDef extends PFparDef
     public void apply(Switch sw)
     {
         ((Analysis) sw).caseASemiParFparDef(this);
+    }
+
+    public TRef getRef()
+    {
+        return this._ref_;
+    }
+
+    public void setRef(TRef node)
+    {
+        if(this._ref_ != null)
+        {
+            this._ref_.parent(null);
+        }
+
+        if(node != null)
+        {
+            if(node.parent() != null)
+            {
+                node.parent().removeChild(node);
+            }
+
+            node.parent(this);
+        }
+
+        this._ref_ = node;
+    }
+
+    public TIdentifier getIdentifier()
+    {
+        return this._identifier_;
+    }
+
+    public void setIdentifier(TIdentifier node)
+    {
+        if(this._identifier_ != null)
+        {
+            this._identifier_.parent(null);
+        }
+
+        if(node != null)
+        {
+            if(node.parent() != null)
+            {
+                node.parent().removeChild(node);
+            }
+
+            node.parent(this);
+        }
+
+        this._identifier_ = node;
+    }
+
+    public TColon getColon()
+    {
+        return this._colon_;
+    }
+
+    public void setColon(TColon node)
+    {
+        if(this._colon_ != null)
+        {
+            this._colon_.parent(null);
+        }
+
+        if(node != null)
+        {
+            if(node.parent() != null)
+            {
+                node.parent().removeChild(node);
+            }
+
+            node.parent(this);
+        }
+
+        this._colon_ = node;
+    }
+
+    public PTypes getTypes()
+    {
+        return this._types_;
+    }
+
+    public void setTypes(PTypes node)
+    {
+        if(this._types_ != null)
+        {
+            this._types_.parent(null);
+        }
+
+        if(node != null)
+        {
+            if(node.parent() != null)
+            {
+                node.parent().removeChild(node);
+            }
+
+            node.parent(this);
+        }
+
+        this._types_ = node;
     }
 
     public TSemi getSemi()
@@ -94,6 +214,10 @@ public final class ASemiParFparDef extends PFparDef
     public String toString()
     {
         return ""
+            + toString(this._ref_)
+            + toString(this._identifier_)
+            + toString(this._colon_)
+            + toString(this._types_)
             + toString(this._semi_)
             + toString(this._fparDef_);
     }
@@ -102,6 +226,30 @@ public final class ASemiParFparDef extends PFparDef
     void removeChild(@SuppressWarnings("unused") Node child)
     {
         // Remove child
+        if(this._ref_ == child)
+        {
+            this._ref_ = null;
+            return;
+        }
+
+        if(this._identifier_ == child)
+        {
+            this._identifier_ = null;
+            return;
+        }
+
+        if(this._colon_ == child)
+        {
+            this._colon_ = null;
+            return;
+        }
+
+        if(this._types_ == child)
+        {
+            this._types_ = null;
+            return;
+        }
+
         if(this._semi_ == child)
         {
             this._semi_ = null;
@@ -121,6 +269,30 @@ public final class ASemiParFparDef extends PFparDef
     void replaceChild(@SuppressWarnings("unused") Node oldChild, @SuppressWarnings("unused") Node newChild)
     {
         // Replace child
+        if(this._ref_ == oldChild)
+        {
+            setRef((TRef) newChild);
+            return;
+        }
+
+        if(this._identifier_ == oldChild)
+        {
+            setIdentifier((TIdentifier) newChild);
+            return;
+        }
+
+        if(this._colon_ == oldChild)
+        {
+            setColon((TColon) newChild);
+            return;
+        }
+
+        if(this._types_ == oldChild)
+        {
+            setTypes((PTypes) newChild);
+            return;
+        }
+
         if(this._semi_ == oldChild)
         {
             setSemi((TSemi) newChild);

@@ -149,10 +149,6 @@ public class ReversedDepthFirstAdapter extends AnalysisAdapter
     public void caseASimpleParFparDef(ASimpleParFparDef node)
     {
         inASimpleParFparDef(node);
-        if(node.getFparDef() != null)
-        {
-            node.getFparDef().apply(this);
-        }
         if(node.getTypes() != null)
         {
             node.getTypes().apply(this);
@@ -267,6 +263,22 @@ public class ReversedDepthFirstAdapter extends AnalysisAdapter
         if(node.getSemi() != null)
         {
             node.getSemi().apply(this);
+        }
+        if(node.getTypes() != null)
+        {
+            node.getTypes().apply(this);
+        }
+        if(node.getColon() != null)
+        {
+            node.getColon().apply(this);
+        }
+        if(node.getIdentifier() != null)
+        {
+            node.getIdentifier().apply(this);
+        }
+        if(node.getRef() != null)
+        {
+            node.getRef().apply(this);
         }
         outASemiParFparDef(node);
     }
@@ -824,9 +836,9 @@ public class ReversedDepthFirstAdapter extends AnalysisAdapter
         {
             node.getLBr().apply(this);
         }
-        if(node.getIdentifier() != null)
+        if(node.getLVal() != null)
         {
-            node.getIdentifier().apply(this);
+            node.getLVal().apply(this);
         }
         outAIdBracketsLVal(node);
     }

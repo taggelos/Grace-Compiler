@@ -11,7 +11,6 @@ public final class ASimpleParFparDef extends PFparDef
     private TIdentifier _identifier_;
     private TColon _colon_;
     private PTypes _types_;
-    private PFparDef _fparDef_;
 
     public ASimpleParFparDef()
     {
@@ -22,8 +21,7 @@ public final class ASimpleParFparDef extends PFparDef
         @SuppressWarnings("hiding") TRef _ref_,
         @SuppressWarnings("hiding") TIdentifier _identifier_,
         @SuppressWarnings("hiding") TColon _colon_,
-        @SuppressWarnings("hiding") PTypes _types_,
-        @SuppressWarnings("hiding") PFparDef _fparDef_)
+        @SuppressWarnings("hiding") PTypes _types_)
     {
         // Constructor
         setRef(_ref_);
@@ -34,8 +32,6 @@ public final class ASimpleParFparDef extends PFparDef
 
         setTypes(_types_);
 
-        setFparDef(_fparDef_);
-
     }
 
     @Override
@@ -45,8 +41,7 @@ public final class ASimpleParFparDef extends PFparDef
             cloneNode(this._ref_),
             cloneNode(this._identifier_),
             cloneNode(this._colon_),
-            cloneNode(this._types_),
-            cloneNode(this._fparDef_));
+            cloneNode(this._types_));
     }
 
     @Override
@@ -155,31 +150,6 @@ public final class ASimpleParFparDef extends PFparDef
         this._types_ = node;
     }
 
-    public PFparDef getFparDef()
-    {
-        return this._fparDef_;
-    }
-
-    public void setFparDef(PFparDef node)
-    {
-        if(this._fparDef_ != null)
-        {
-            this._fparDef_.parent(null);
-        }
-
-        if(node != null)
-        {
-            if(node.parent() != null)
-            {
-                node.parent().removeChild(node);
-            }
-
-            node.parent(this);
-        }
-
-        this._fparDef_ = node;
-    }
-
     @Override
     public String toString()
     {
@@ -187,8 +157,7 @@ public final class ASimpleParFparDef extends PFparDef
             + toString(this._ref_)
             + toString(this._identifier_)
             + toString(this._colon_)
-            + toString(this._types_)
-            + toString(this._fparDef_);
+            + toString(this._types_);
     }
 
     @Override
@@ -216,12 +185,6 @@ public final class ASimpleParFparDef extends PFparDef
         if(this._types_ == child)
         {
             this._types_ = null;
-            return;
-        }
-
-        if(this._fparDef_ == child)
-        {
-            this._fparDef_ = null;
             return;
         }
 
@@ -253,12 +216,6 @@ public final class ASimpleParFparDef extends PFparDef
         if(this._types_ == oldChild)
         {
             setTypes((PTypes) newChild);
-            return;
-        }
-
-        if(this._fparDef_ == oldChild)
-        {
-            setFparDef((PFparDef) newChild);
             return;
         }
 

@@ -8,6 +8,7 @@ import compiler.analysis.*;
 public final class ASemiReturnstmt extends PReturnstmt
 {
     private TReturn _return_;
+    private PExpr _expr_;
     private TSemi _semi_;
 
     public ASemiReturnstmt()
@@ -17,10 +18,13 @@ public final class ASemiReturnstmt extends PReturnstmt
 
     public ASemiReturnstmt(
         @SuppressWarnings("hiding") TReturn _return_,
+        @SuppressWarnings("hiding") PExpr _expr_,
         @SuppressWarnings("hiding") TSemi _semi_)
     {
         // Constructor
         setReturn(_return_);
+
+        setExpr(_expr_);
 
         setSemi(_semi_);
 
@@ -31,6 +35,7 @@ public final class ASemiReturnstmt extends PReturnstmt
     {
         return new ASemiReturnstmt(
             cloneNode(this._return_),
+            cloneNode(this._expr_),
             cloneNode(this._semi_));
     }
 
@@ -65,6 +70,31 @@ public final class ASemiReturnstmt extends PReturnstmt
         this._return_ = node;
     }
 
+    public PExpr getExpr()
+    {
+        return this._expr_;
+    }
+
+    public void setExpr(PExpr node)
+    {
+        if(this._expr_ != null)
+        {
+            this._expr_.parent(null);
+        }
+
+        if(node != null)
+        {
+            if(node.parent() != null)
+            {
+                node.parent().removeChild(node);
+            }
+
+            node.parent(this);
+        }
+
+        this._expr_ = node;
+    }
+
     public TSemi getSemi()
     {
         return this._semi_;
@@ -95,6 +125,7 @@ public final class ASemiReturnstmt extends PReturnstmt
     {
         return ""
             + toString(this._return_)
+            + toString(this._expr_)
             + toString(this._semi_);
     }
 
@@ -105,6 +136,12 @@ public final class ASemiReturnstmt extends PReturnstmt
         if(this._return_ == child)
         {
             this._return_ = null;
+            return;
+        }
+
+        if(this._expr_ == child)
+        {
+            this._expr_ = null;
             return;
         }
 
@@ -124,6 +161,12 @@ public final class ASemiReturnstmt extends PReturnstmt
         if(this._return_ == oldChild)
         {
             setReturn((TReturn) newChild);
+            return;
+        }
+
+        if(this._expr_ == oldChild)
+        {
+            setExpr((PExpr) newChild);
             return;
         }
 
