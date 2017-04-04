@@ -533,15 +533,14 @@ public class Printer extends DepthFirstAdapter
             addtab();
             //System.out.println(node+ " "+flag +" "+  flagbr);
             //if(flag && !flagbr) output.append(node);
-        	if(node.parent().toString().equals(node.getIdentifier().toString()) && !flag && !flagif || 
-                (!flagbr && !flagif && !node.parent().toString().equals(node.getIdentifier().toString())))
-        		output.append(tabs+"LVal Name: " + node.getIdentifier() + "\n");
+        	if(node.parent().toString().equals(node.getIdentifier().toString()) && !flag && !flagif )
+        		output.append("\n"+tabs+"LVal Name: " + node.getIdentifier() + "\n");
                 //else output.append(" LVal Name: " + node.getIdentifier() + " ");
             else if(flagass || flagfun) 
             {
                 output.append(node.getIdentifier());
             }
-            else if(flagif && !flagfun) output.append("LVal Name: " + node.getIdentifier() + " ");
+            else if(flagif && !flagfun) output.append("\n"+tabs+"LVal Name: " + node.getIdentifier() + " ");
             //else if(flagfun) output.append(node.getIdentifier());
             subtab();
             node.getIdentifier().apply(this);
@@ -582,8 +581,8 @@ public class Printer extends DepthFirstAdapter
             flagbr = true;
             addtab();
             if(!flag) 
-                output.append(tabs+"LVal Name: " + node + "\n\t");
-            else if(flagass)
+                output.append("\n"+tabs+"LVal Name: " + node + "\n\t");
+            else
             {
                 output.append(node);
             }
@@ -616,8 +615,8 @@ public class Printer extends DepthFirstAdapter
     {
         addtab();
         flagfun = true;
-        output.append("\n"+tabs+"Function Call: \n");
-        
+        if(!flag && !flagif) output.append(tabs+"Function Call: \n");
+        else if(flagif) output.append("Function Call: \n");
 
         inAFunCal(node);
         if(node.getIdentifier() != null)
@@ -636,7 +635,7 @@ public class Printer extends DepthFirstAdapter
             addtab();
             if(!flag) output.append(tabs+"Arguments: \n");
             node.getExprList().apply(this);
-            subtab();            
+            subtab();
         }
         if(node.getRPar() != null)
         {
@@ -674,6 +673,7 @@ public class Printer extends DepthFirstAdapter
         if(node.getExpr() != null)
         {
             node.getExpr().apply(this);
+            output.append("\n");
         }
         outAListExprList(node);
     }
@@ -1447,8 +1447,9 @@ public class Printer extends DepthFirstAdapter
     {
         inAIntTerm(node);
         if((flagass && flag)|| flagif) output.append("Integer: " );
-        else if((flagfun && !flag) || (flagass && !flag)) output.append(tabs+"\tInteger: " );
-        
+        else if(flagfun && !flag || (flagass && !flag)) output.append(tabs+"\tInteger: " );
+        //else output.append("Integer: " );
+
         if(node.getPlusOrMinus() != null)
         {   
             if(flagass || flagif || flagfun) output.append(node.getPlusOrMinus() );
