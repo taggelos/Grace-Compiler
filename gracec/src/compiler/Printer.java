@@ -616,8 +616,8 @@ public class Printer extends DepthFirstAdapter
     {
         addtab();
         flagfun = true;
-        if(!flag && !flagif) output.append(tabs+"Function Call: \n");
-        else if(flagif) output.append("Function Call: \n");
+        output.append("\n"+tabs+"Function Call: \n");
+        
 
         inAFunCal(node);
         if(node.getIdentifier() != null)
@@ -636,7 +636,7 @@ public class Printer extends DepthFirstAdapter
             addtab();
             if(!flag) output.append(tabs+"Arguments: \n");
             node.getExprList().apply(this);
-            subtab();
+            subtab();            
         }
         if(node.getRPar() != null)
         {
@@ -665,6 +665,7 @@ public class Printer extends DepthFirstAdapter
         if(node.getExprList() != null)
         {
             node.getExprList().apply(this);
+            output.append("\n");
         }
         if(node.getComma() != null)
         {
@@ -1297,19 +1298,19 @@ public class Printer extends DepthFirstAdapter
         if(node.getExpr() != null)
         {
             //System.out.println(node.getExpr());
-            if(flagass || flagif) output.append(" ( ");
+            if(flagass || flagif || flagfun) output.append(" ( ");
             node.getExpr().apply(this);
         }
         if(node.getPlus() != null)
         {
-            if(flagass || flagif) output.append(" + ");
+            if(flagass || flagif || flagfun) output.append(" + ");
             node.getPlus().apply(this);
         }
         if(node.getFactor() != null)
         {
             
             node.getFactor().apply(this);
-            if(flagass || flagif) output.append(" ) ");
+            if(flagass || flagif || flagfun) output.append(" ) ");
         }
         //output.append("\n");
         flag = false;
@@ -1328,19 +1329,19 @@ public class Printer extends DepthFirstAdapter
         if(node.getExpr() != null)
         {
             //System.out.println(node.getExpr());
-            if(flagass || flagif) output.append(" ( ");
+            if(flagass || flagif || flagfun) output.append(" ( ");
             node.getExpr().apply(this);
         }
         if(node.getMinus() != null)
         {
-            if(flagass || flagif) output.append(" - ");
+            if(flagass || flagif || flagfun) output.append(" - ");
             node.getMinus().apply(this);
         }
         if(node.getFactor() != null)
         {
             
             node.getFactor().apply(this);
-            if(flagass || flagif) output.append(" ) ");
+            if(flagass || flagif || flagfun) output.append(" ) ");
         }
         
         flag = false;
@@ -1372,18 +1373,18 @@ public class Printer extends DepthFirstAdapter
         flag = true;
         if(node.getFactor() != null)
         {
-            if(flagass || flagif) output.append(" ( ");
+            if(flagass || flagif || flagfun) output.append(" ( ");
             node.getFactor().apply(this);
         }
         if(node.getStar() != null)
         {
-            if(flagass || flagif) output.append(" * ");
+            if(flagass || flagif || flagfun) output.append(" * ");
             node.getStar().apply(this);
         }
         if(node.getTerm() != null)
         {
             node.getTerm().apply(this);
-            if(flagass || flagif) output.append(" ) ");
+            if(flagass || flagif || flagfun) output.append(" ) ");
         }
         flag = false;
         outAMultFactor(node);
@@ -1398,18 +1399,18 @@ public class Printer extends DepthFirstAdapter
         flag = true;
         if(node.getFactor() != null)
         {
-            if(flagass || flagif) output.append(" ( ");
+            if(flagass || flagif || flagfun) output.append(" ( ");
             node.getFactor().apply(this);
         }
         if(node.getMod() != null)
         {
-            if(flagass || flagif) output.append(" mod ");
+            if(flagass || flagif || flagfun) output.append(" mod ");
             node.getMod().apply(this);
         }
         if(node.getTerm() != null)
         {
             node.getTerm().apply(this);
-            if(flagass || flagif) output.append(" ) ");
+            if(flagass || flagif || flagfun) output.append(" ) ");
         }
         flag = false;
         outAModFactor(node);
@@ -1424,18 +1425,18 @@ public class Printer extends DepthFirstAdapter
         flag = true;
         if(node.getFactor() != null)
         {
-            if(flagass || flagif) output.append(" ( ");
+            if(flagass || flagif || flagfun) output.append(" ( ");
             node.getFactor().apply(this);
         }
         if(node.getDiv() != null)
         {
-            if(flagass || flagif) output.append(" / ");
+            if(flagass || flagif || flagfun) output.append(" / ");
             node.getDiv().apply(this);
         }
         if(node.getTerm() != null)
         {
             node.getTerm().apply(this);
-            if(flagass || flagif) output.append(" ) ");
+            if(flagass || flagif || flagfun) output.append(" ) ");
         }
         flag = false;
         outADivFactor(node);
@@ -1446,7 +1447,7 @@ public class Printer extends DepthFirstAdapter
     {
         inAIntTerm(node);
         if((flagass && flag)|| flagif) output.append("Integer: " );
-        else if(flagfun || (flagass && !flag)) output.append(tabs+"\tInteger: " );
+        else if((flagfun && !flag) || (flagass && !flag)) output.append(tabs+"\tInteger: " );
         
         if(node.getPlusOrMinus() != null)
         {   
@@ -1469,7 +1470,7 @@ public class Printer extends DepthFirstAdapter
         inACharTerm(node);
         if(node.getCharConst() != null)
         {
-            if(flagass || flagif) output.append(" CharTerm: "+ node.getCharConst()+ "\n"  );
+            if(flagass || flagif || flagfun) output.append(" CharTerm: "+ node.getCharConst()+ "\n"  );
             node.getCharConst().apply(this);
         }
         //if(flag) output.append(node);
@@ -1513,9 +1514,9 @@ public class Printer extends DepthFirstAdapter
         }
         if(node.getExpr() != null)
         {
-            if(flagass || flagif) output.append(" ( ");
+            if(flagass || flagif || flagfun) output.append(" ( ");
             node.getExpr().apply(this);
-            if(flagass || flagif) output.append(" ) ");
+            if(flagass || flagif || flagfun) output.append(" ) ");
         }
         if(node.getRPar() != null)
         {
