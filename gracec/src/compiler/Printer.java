@@ -501,7 +501,7 @@ public class Printer extends DepthFirstAdapter
         if(node.getLVal() != null)
         {
             node.getLVal().apply(this);
-            //output.append("\n");
+            output.append("\n");
         }
         if(node.getArrow() != null)
         {
