@@ -497,7 +497,7 @@ public class Printer extends DepthFirstAdapter
         inAAssignment(node);
         addtab();
         output.append(tabs+"Assignment: "+ node + "\n");
-        flagass = false;
+        flagass = true;
         if(node.getLVal() != null)
         {
             node.getLVal().apply(this);
@@ -509,7 +509,7 @@ public class Printer extends DepthFirstAdapter
         }
         if(node.getExpr() != null)
         {
-            flagass = true;
+            //flagass = true;
             node.getExpr().apply(this);
             flagass = false;
         }
@@ -536,9 +536,9 @@ public class Printer extends DepthFirstAdapter
         	if(node.parent().toString().equals(node.getIdentifier().toString()) && !flag && !flagif )
         		output.append("\n"+tabs+"LVal Name: " + node.getIdentifier() + "\n");
                 //else output.append(" LVal Name: " + node.getIdentifier() + " ");
-            else if(flagass || flagfun) 
+            else if((flagass && !flagbr )|| (flagfun && !flagbr) )
             {
-                output.append(node.getIdentifier());
+                output.append("\n"+tabs+"LVal Name: " + node.getIdentifier() + " ");
             }
             else if(flagif && !flagfun) output.append("\n"+tabs+"LVal Name: " + node.getIdentifier() + " ");
             //else if(flagfun) output.append(node.getIdentifier());
@@ -615,8 +615,10 @@ public class Printer extends DepthFirstAdapter
     {
         addtab();
         flagfun = true;
-        if(!flag && !flagif) output.append(tabs+"Function Call: \n");
-        else if(flagif) output.append("Function Call: \n");
+        //if(!flag && !flagif) output.append("\n"+tabs+"Function Call: \n");
+        //else if(flagif) output.append("\nFunction Call: \n");
+
+        output.append("\n"+tabs+"Function Call: \n");
 
         inAFunCal(node);
         if(node.getIdentifier() != null)
@@ -690,7 +692,7 @@ public class Printer extends DepthFirstAdapter
     {
         inAVarDef(node);
         addtab();
-        output.append(tabs+"Variable Definition: \n");
+        output.append("\n"+tabs+"Variable Definition: \n");
 
         if(node.getVar() != null)
         {
@@ -823,7 +825,7 @@ public class Printer extends DepthFirstAdapter
             node.getIfTrail().apply(this);
             subtab();
         }
-        subtab();
+        if(tabs.length() > 4) subtab();
         outAIfstmt(node);
     }
 
@@ -868,6 +870,7 @@ public class Printer extends DepthFirstAdapter
         }
         if(node.getElse() != null)
         {
+            subtab();
             output.append(tabs+"Else"+"\n");
             node.getElse().apply(this);
         }
@@ -963,11 +966,13 @@ public class Printer extends DepthFirstAdapter
     public void caseAIfElse(AIfElse node)
     {
         inAIfElse(node);
+        flagif = true;
         if(node.getIfHeader() != null)
         {            
             output.append(tabs+"if else"+"\n");
             node.getIfHeader().apply(this);
         }
+        flagif = false;
         if(node.getThen() != null)
         {
             output.append(tabs+"then (ifelse)"+"\n");
@@ -1261,7 +1266,7 @@ public class Printer extends DepthFirstAdapter
         if(node.getExpr() != null)
         {
             addtab();
-            output.append(tabs+"Return Expression: " + node.getExpr() +"\n");
+            output.append(tabs+"Return Expression: ");
             node.getExpr().apply(this);
             subtab();
         }
@@ -1276,7 +1281,7 @@ public class Printer extends DepthFirstAdapter
     public void caseAFactorExpr(AFactorExpr node)
     {
         inAFactorExpr(node);
-        //if(!flag && flagass) output.append(tabs+"Expr: ");
+        //if(!flag && flagass) output.append("\n"+tabs+"Expr: ");
         //flag = true;
         if(node.getFactor() != null)
         {
@@ -1291,7 +1296,7 @@ public class Printer extends DepthFirstAdapter
     {
         inAAddExpr(node);
         addtab();
-        if(!flag && flagass) output.append(tabs+"Expr: ");
+        if(!flag && flagass) output.append("\n"+tabs+"Expr: ");
         if(flagfun) output.append(tabs);
         flag = true;
         subtab();
@@ -1322,7 +1327,7 @@ public class Printer extends DepthFirstAdapter
     {
         inASubExpr(node);
         addtab();
-        if(!flag && flagass) output.append(tabs+"Expr: ");
+        if(!flag && flagass) output.append("\n"+tabs+"Expr: ");
         if(flagfun) output.append(tabs);
         flag = true;
         subtab();
@@ -1353,7 +1358,7 @@ public class Printer extends DepthFirstAdapter
     public void caseATermFactor(ATermFactor node)
     {
         inATermFactor(node);
-        //if(!flag && flagass) output.append(tabs+"Expr: ");
+        //if(!flag && flagass) output.append("\n"+tabs+"Expr: ");
         //flag = true;
         if(node.getTerm() != null)
         {
@@ -1368,9 +1373,11 @@ public class Printer extends DepthFirstAdapter
     public void caseAMultFactor(AMultFactor node)
     {
         inAMultFactor(node);
-        if(!flag && flagass) output.append(tabs+"Expr: ");
+        addtab();
+        if(!flag && flagass) output.append("\n"+tabs+"Expr: ");
         if(flagfun) output.append(tabs);
         flag = true;
+        subtab();
         if(node.getFactor() != null)
         {
             if(flagass || flagif || flagfun) output.append(" ( ");
@@ -1394,9 +1401,11 @@ public class Printer extends DepthFirstAdapter
     public void caseAModFactor(AModFactor node)
     {
         inAModFactor(node);
-        if(!flag && flagass) output.append(tabs+"Expr: ");
+        addtab();
+        if(!flag && flagass) output.append("\n"+tabs+"Expr: ");
         if(flagfun) output.append(tabs);
         flag = true;
+        subtab();
         if(node.getFactor() != null)
         {
             if(flagass || flagif || flagfun) output.append(" ( ");
@@ -1420,9 +1429,11 @@ public class Printer extends DepthFirstAdapter
     public void caseADivFactor(ADivFactor node)
     {
         inADivFactor(node);
-        if(!flag && flagass) output.append(tabs+"Expr: ");
+        addtab();
+        if(!flag && flagass) output.append("\n"+tabs+"Expr: ");
         if(flagfun) output.append(tabs);
         flag = true;
+        subtab();
         if(node.getFactor() != null)
         {
             if(flagass || flagif || flagfun) output.append(" ( ");
@@ -1446,22 +1457,25 @@ public class Printer extends DepthFirstAdapter
     public void caseAIntTerm(AIntTerm node)
     {
         inAIntTerm(node);
-        if((flagass && flag)|| flagif) output.append("Integer: " );
-        else if(flagfun && !flag || (flagass && !flag)) output.append(tabs+"\tInteger: " );
+        //if((flagass && flag && !flagif)|| flagif) output.append("Integer: " );
+        //else if(flagfun && !flag || (flagass && !flag)) output.append(tabs+"\tInteger: " );
         //else output.append("Integer: " );
+
+        output.append("\n"+tabs+"\tInteger: " );
 
         if(node.getPlusOrMinus() != null)
         {   
-            if(flagass || flagif || flagfun) output.append(node.getPlusOrMinus() );
+            output.append(node.getPlusOrMinus() );
             node.getPlusOrMinus().apply(this);
         }
         if(node.getIntegers() != null)
         {
-            if(flagass || flagif || flagfun) output.append(node.getIntegers() );
+            output.append(node.getIntegers() );
             node.getIntegers().apply(this);
         }
-        if(flagfun && !flag) output.append("\n");
+        //if(flagfun && !flag) output.append("\n");
         //if(flagfun || (flagass && !flag)) output.append("\n" );
+        if(!flag && !flagif) output.append("\n" );
         outAIntTerm(node);
     }
 
@@ -1471,7 +1485,7 @@ public class Printer extends DepthFirstAdapter
         inACharTerm(node);
         if(node.getCharConst() != null)
         {
-            if(flagass || flagif || flagfun) output.append(" CharTerm: "+ node.getCharConst()+ "\n"  );
+            if(flagass || flagif || flagfun) output.append(tabs+"\tCharTerm: "+ node.getCharConst()+ "\n"  );
             node.getCharConst().apply(this);
         }
         //if(flag) output.append(node);
