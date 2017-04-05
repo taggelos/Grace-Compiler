@@ -50,7 +50,11 @@ public class Printer extends DepthFirstAdapter
         outAProgram(node);
         System.out.println(output);
     }
-
+    
+    public StringBuffer getoutput(){
+    	return output;
+    }
+    
     @Override
     public void caseAFunDef(AFunDef node)
     {
