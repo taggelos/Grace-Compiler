@@ -1303,19 +1303,19 @@ public class Printer extends DepthFirstAdapter
         if(node.getExpr() != null)
         {
             //System.out.println(node.getExpr());
-            if(flagass || flagif || flagfun) output.append(" ( ");
+            output.append(" ( ");
             node.getExpr().apply(this);
         }
         if(node.getPlus() != null)
         {
-            if(flagass || flagif || flagfun) output.append(" + ");
+            output.append(" + ");
             node.getPlus().apply(this);
         }
         if(node.getFactor() != null)
         {
             
             node.getFactor().apply(this);
-            if(flagass || flagif || flagfun) output.append(" ) ");
+            output.append(" ) ");
         }
         //output.append("\n");
         flag = false;
@@ -1334,19 +1334,19 @@ public class Printer extends DepthFirstAdapter
         if(node.getExpr() != null)
         {
             //System.out.println(node.getExpr());
-            if(flagass || flagif || flagfun) output.append(" ( ");
+            output.append(" ( ");
             node.getExpr().apply(this);
         }
         if(node.getMinus() != null)
         {
-            if(flagass || flagif || flagfun) output.append(" - ");
+            output.append(" - ");
             node.getMinus().apply(this);
         }
         if(node.getFactor() != null)
         {
             
             node.getFactor().apply(this);
-            if(flagass || flagif || flagfun) output.append(" ) ");
+            output.append(" ) ");
         }
         
         flag = false;
@@ -1380,18 +1380,18 @@ public class Printer extends DepthFirstAdapter
         subtab();
         if(node.getFactor() != null)
         {
-            if(flagass || flagif || flagfun) output.append(" ( ");
+            output.append(" ( ");
             node.getFactor().apply(this);
         }
         if(node.getStar() != null)
         {
-            if(flagass || flagif || flagfun) output.append(" * ");
+            output.append(" * ");
             node.getStar().apply(this);
         }
         if(node.getTerm() != null)
         {
             node.getTerm().apply(this);
-            if(flagass || flagif || flagfun) output.append(" ) ");
+            output.append(" ) ");
         }
         flag = false;
         outAMultFactor(node);
@@ -1408,18 +1408,18 @@ public class Printer extends DepthFirstAdapter
         subtab();
         if(node.getFactor() != null)
         {
-            if(flagass || flagif || flagfun) output.append(" ( ");
+            output.append(" ( ");
             node.getFactor().apply(this);
         }
         if(node.getMod() != null)
         {
-            if(flagass || flagif || flagfun) output.append(" mod ");
+            output.append(" mod ");
             node.getMod().apply(this);
         }
         if(node.getTerm() != null)
         {
             node.getTerm().apply(this);
-            if(flagass || flagif || flagfun) output.append(" ) ");
+            output.append(" ) ");
         }
         flag = false;
         outAModFactor(node);
@@ -1436,18 +1436,18 @@ public class Printer extends DepthFirstAdapter
         subtab();
         if(node.getFactor() != null)
         {
-            if(flagass || flagif || flagfun) output.append(" ( ");
+            output.append(" ( ");
             node.getFactor().apply(this);
         }
         if(node.getDiv() != null)
         {
-            if(flagass || flagif || flagfun) output.append(" / ");
+            output.append(" / ");
             node.getDiv().apply(this);
         }
         if(node.getTerm() != null)
         {
             node.getTerm().apply(this);
-            if(flagass || flagif || flagfun) output.append(" ) ");
+            output.append(" ) ");
         }
         flag = false;
         outADivFactor(node);
@@ -1485,7 +1485,7 @@ public class Printer extends DepthFirstAdapter
         inACharTerm(node);
         if(node.getCharConst() != null)
         {
-            if(flagass || flagif || flagfun) output.append(tabs+"\tCharTerm: "+ node.getCharConst()+ "\n"  );
+            output.append(tabs+"\tCharTerm: "+ node.getCharConst()+ "\n"  );
             node.getCharConst().apply(this);
         }
         //if(flag) output.append(node);
@@ -1529,9 +1529,9 @@ public class Printer extends DepthFirstAdapter
         }
         if(node.getExpr() != null)
         {
-            if(flagass || flagif || flagfun) output.append(" ( ");
+            output.append(" ( ");
             node.getExpr().apply(this);
-            if(flagass || flagif || flagfun) output.append(" ) ");
+            output.append(" ) ");
         }
         if(node.getRPar() != null)
         {
