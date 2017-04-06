@@ -537,7 +537,7 @@ public class Printer extends DepthFirstAdapter
             addtab();
             //System.out.println(node+ " "+flag +" "+  flagbr);
             //if(flag && !flagbr) output.append(node);
-        	if(node.parent().toString().equals(node.getIdentifier().toString()) && !flag && !flagif )
+        	if(node.parent().toString().equals(node.getIdentifier().toString()) && !flag && !flagif && !flagbr)
         		output.append("\n"+tabs+"LVal Name: " + node.getIdentifier() + "\n");
                 //else output.append(" LVal Name: " + node.getIdentifier() + " ");
             else if((flagass && !flagbr )|| (flagfun && !flagbr) )
@@ -1456,6 +1456,22 @@ public class Printer extends DepthFirstAdapter
         flag = false;
         outADivFactor(node);
     }
+    
+    @Override
+    public void caseAPlusOrMinusTerm(APlusOrMinusTerm node)
+    {
+        inAPlusOrMinusTerm(node);
+        if(node.getPlusOrMinus() != null)
+        {
+        	//output.append(node.getPlusOrMinus());
+            node.getPlusOrMinus().apply(this);
+        }
+        if(node.getTerm() != null)
+        {
+            node.getTerm().apply(this);
+        }
+        outAPlusOrMinusTerm(node);
+    }
 
     @Override
     public void caseAIntTerm(AIntTerm node)
@@ -1467,11 +1483,6 @@ public class Printer extends DepthFirstAdapter
 
         output.append("\n"+tabs+"\tInteger: " );
 
-        if(node.getPlusOrMinus() != null)
-        {   
-            output.append(node.getPlusOrMinus() );
-            node.getPlusOrMinus().apply(this);
-        }
         if(node.getIntegers() != null)
         {
             output.append(node.getIntegers() );
@@ -1479,7 +1490,7 @@ public class Printer extends DepthFirstAdapter
         }
         //if(flagfun && !flag) output.append("\n");
         //if(flagfun || (flagass && !flag)) output.append("\n" );
-        if(!flag && !flagif) output.append("\n" );
+        //if(!flag && !flagif) output.append("\n" );
         outAIntTerm(node);
     }
 
@@ -1500,10 +1511,6 @@ public class Printer extends DepthFirstAdapter
     public void caseALValTerm(ALValTerm node)
     {
         inALValTerm(node);
-        if(node.getPlusOrMinus() != null)
-        {        	
-            node.getPlusOrMinus().apply(this);
-        }
         if(node.getLVal() != null)
         {
             node.getLVal().apply(this);
@@ -1551,6 +1558,7 @@ public class Printer extends DepthFirstAdapter
         inAPlusPlusOrMinus(node);
         if(node.getPlus() != null)
         {
+            output.append("+");
             node.getPlus().apply(this);
         }
         outAPlusPlusOrMinus(node);
@@ -1562,6 +1570,7 @@ public class Printer extends DepthFirstAdapter
         inAMinusPlusOrMinus(node);
         if(node.getMinus() != null)
         {
+            output.append("-");
             node.getMinus().apply(this);
         }
         outAMinusPlusOrMinus(node);
