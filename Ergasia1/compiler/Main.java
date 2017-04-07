@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.io.PushbackReader;
 
 import compiler.lexer.Lexer;
+import compiler.lexer.LexerException;
 import compiler.node.EOF;
 import compiler.node.Start;
 import compiler.node.Token;
@@ -34,21 +35,6 @@ public class Main {
     			if (!file.exists()) {
     				file.createNewFile();
     			}
-                /*PushbackReader reader = new PushbackReader(new InputStreamReader(fis));   
-                Lexer lexer = new Lexer(reader);
-
-                while(true) {
-                    try {
-                        Token t = lexer.next();
-
-                        if (t instanceof EOF)
-                        break;
-                        System.out.println(t.toString());
-                    } 
-                    catch (Exception e) {
-                        System.err.println(e.getMessage());
-                    }
-                } */
                 Parser p = new Parser(
                         new Lexer(
                             new PushbackReader(
@@ -58,7 +44,6 @@ public class Main {
                 );
                 try {
                     Start tree = p.parse();
-                    System.out.println(tree.toString());
                     
                     Printer pr = new Printer();
                     tree.apply(pr);
@@ -67,12 +52,14 @@ public class Main {
         			fop.write(contentInBytes);
         			fop.flush();
         			fop.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                } 
-            }
-            catch(FileNotFoundException ex) {
-                System.err.println(ex.getMessage());
+                } catch (LexerException e) {
+            	    System.err.printf("Lexing error: %s\n", e.getMessage());
+                } catch (ParserException e) {
+                	System.err.printf("Parsing error: %s\n", e.getMessage());
+                }
+            } catch(FileNotFoundException ex) {
+                	System.err.printf("I/O error: %s\n", ex.getMessage());
+                	ex.printStackTrace();
             } 
             finally {
                 try {
@@ -81,10 +68,12 @@ public class Main {
                     	fop.close();
                 } 
                 catch(IOException ex) {
-                    System.err.println(ex.getMessage());
+                	System.err.printf("I/O error: %s\n", ex.getMessage());
+                	ex.printStackTrace();
                 }
             }
             System.out.println("--------------"+ args[i] +"--------------");
+            System.out.println("\t---------------------- Programm Parsed Successfully ----------------------");
         }
         System.exit(0);
     }

@@ -43,7 +43,6 @@ public class Printer extends DepthFirstAdapter
             node.getFunDef().apply(this);
         }
         outAProgram(node);
-        System.out.println(output);
     }
     
     public StringBuffer getoutput(){
