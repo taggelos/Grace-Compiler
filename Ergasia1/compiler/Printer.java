@@ -1,3 +1,5 @@
+package compiler;
+
 import java.util.*;
 
 import compiler.analysis.DepthFirstAdapter;
@@ -12,9 +14,6 @@ public class Printer extends DepthFirstAdapter
     boolean flagif = false;
     boolean flagass = false;
     boolean flagfun = false;
-
-   // boolean flagelse= false;
-   // boolean while= false;
 
     public void addtab()
     {
@@ -46,7 +45,11 @@ public class Printer extends DepthFirstAdapter
         outAProgram(node);
         System.out.println(output);
     }
-
+    
+    public StringBuffer getoutput(){
+    	return output;
+    }
+    
     @Override
     public void caseAFunDef(AFunDef node)
     {
@@ -145,7 +148,6 @@ public class Printer extends DepthFirstAdapter
         inAMultParFparDef(node);
         if(node.getRef() != null)
         {
-            //output.append("Ref ");
             node.getRef().apply(this);
         }
         if(node.getIdentifier() != null)
@@ -380,8 +382,7 @@ public class Printer extends DepthFirstAdapter
     @Override
     public void caseABlock(ABlock node)
     {
-        output.append(tabs+"Body: \n");
-        //addtab();
+        output.append(tabs+"Body { \n");
         inABlock(node);
         if(node.getLAg() != null)
         {
@@ -397,6 +398,7 @@ public class Printer extends DepthFirstAdapter
         if(node.getRAg() != null)
         {
             node.getRAg().apply(this);
+            output.append("\n"+tabs+"} \n");
         }
         outABlock(node);
     }
@@ -492,7 +494,7 @@ public class Printer extends DepthFirstAdapter
     {
         inAAssignment(node);
         addtab();
-        output.append(tabs+"Assignment: "+ node + "\n");
+        output.append(tabs+"\n"+tabs+"Assignment: "+ node + "\n");
         flagass = true;
         if(node.getLVal() != null)
         {
@@ -505,7 +507,6 @@ public class Printer extends DepthFirstAdapter
         }
         if(node.getExpr() != null)
         {
-            //flagass = true;
             node.getExpr().apply(this);
             flagass = false;
         }
@@ -527,17 +528,13 @@ public class Printer extends DepthFirstAdapter
         if(node.getIdentifier() != null)
         {
             addtab();
-            //System.out.println(node+ " "+flag +" "+  flagbr);
-            //if(flag && !flagbr) output.append(node);
-        	if(node.parent().toString().equals(node.getIdentifier().toString()) && !flag && !flagif )
+        	if(node.parent().toString().equals(node.getIdentifier().toString()) && !flag && !flagif && !flagbr)
         		output.append("\n"+tabs+"LVal Name: " + node.getIdentifier() + "\n");
-                //else output.append(" LVal Name: " + node.getIdentifier() + " ");
             else if((flagass && !flagbr )|| (flagfun && !flagbr) )
             {
                 output.append("\n"+tabs+"LVal Name: " + node.getIdentifier() + " ");
             }
-            else if(flagif && !flagfun) output.append("\n"+tabs+"LVal Name: " + node.getIdentifier() + " ");
-            //else if(flagfun) output.append(node.getIdentifier());
+            else if(flagif && !flagfun && !flagbr) output.append("\n"+tabs+"LVal Name: " + node.getIdentifier() + " ");
             subtab();
             node.getIdentifier().apply(this);
             
@@ -558,8 +555,6 @@ public class Printer extends DepthFirstAdapter
                 output.append(tabs+"Type: char[]" + '\n');
                 output.append(tabs+"Value: " + node.getStringLiteral() + "\n");
             }
-            
-            ////////if(flag && !flagbr) output.append(node);
 
             node.getStringLiteral().apply(this);
             subtab();
@@ -577,14 +572,12 @@ public class Printer extends DepthFirstAdapter
             flagbr = true;
             addtab();
             if(!flag) 
-                output.append("\n"+tabs+"LVal Name: " + node + "\n\t");
+                output.append("\n"+tabs+"LVal Name: " + node);
             else
             {
                 output.append(node);
             }
             flagass = false;
-            /////else
-            /////    output.append(node);
             subtab();
             node.getLVal().apply(this);
 
@@ -611,9 +604,6 @@ public class Printer extends DepthFirstAdapter
     {
         addtab();
         flagfun = true;
-        //if(!flag && !flagif) output.append("\n"+tabs+"Function Call: \n");
-        //else if(flagif) output.append("\nFunction Call: \n");
-
         output.append("\n"+tabs+"Function Call: \n");
 
         inAFunCal(node);
@@ -861,13 +851,12 @@ public class Printer extends DepthFirstAdapter
         inAWithElseIfTrail(node);
         if(node.getThen() != null)
         {            
-            //output.append(tabs+"Then"+"\n");
             node.getThen().apply(this);
         }
         if(node.getElse() != null)
         {
             subtab();
-            output.append(tabs+"Else"+"\n");
+            output.append("\n"+tabs+"Else"+"\n");
             node.getElse().apply(this);
         }
         if(node.getElseSt() != null)
@@ -987,51 +976,20 @@ public class Printer extends DepthFirstAdapter
     }
 
     @Override
-    public void caseACondNotCond(ACondNotCond node)
+    public void caseACondAndCond(ACondAndCond node)
     {
-        inACondNotCond(node);
-        if(node.getNot() != null)
-        {
-            output.append(tabs+"NOT ["+"\n");
-            addtab();
-            node.getNot().apply(this);
-
-        }
-        if(node.getCond() != null)
-        {
-            node.getCond().apply(this);
-            subtab();
-            output.append(tabs+"]\n");
-        }
-        outACondNotCond(node);
-    }
-
-    @Override
-    public void caseACondOrAndCond(ACondOrAndCond node)
-    {
-        inACondOrAndCond(node);
-        if(node.getConditionalOrExpression() != null)
-        {
-            node.getConditionalOrExpression().apply(this);
-        }
-        outACondOrAndCond(node);
-    }
-
-    @Override
-    public void caseACondAndConditionalOrExpression(ACondAndConditionalOrExpression node)
-    {
-        inACondAndConditionalOrExpression(node);
+        inACondAndCond(node);
         if(node.getConditionalAndExpression() != null)
         {
             node.getConditionalAndExpression().apply(this);
         }
-        outACondAndConditionalOrExpression(node);
+        outACondAndCond(node);
     }
 
     @Override
-    public void caseACondOrConditionalOrExpression(ACondOrConditionalOrExpression node)
+    public void caseAOrExprCond(AOrExprCond node)
     {
-        inACondOrConditionalOrExpression(node);
+        inAOrExprCond(node);
         if(node.getLeft() != null)
         {
             node.getLeft().apply(this);
@@ -1048,18 +1006,18 @@ public class Printer extends DepthFirstAdapter
             subtab();
             output.append(tabs+"]\n");
         }
-        outACondOrConditionalOrExpression(node);
+        outAOrExprCond(node);
     }
 
     @Override
-    public void caseAComparativeConditionalAndExpression(AComparativeConditionalAndExpression node)
+    public void caseACondNotConditionalAndExpression(ACondNotConditionalAndExpression node)
     {
-        inAComparativeConditionalAndExpression(node);
-        if(node.getComparativeExpression() != null)
+        inACondNotConditionalAndExpression(node);
+        if(node.getConditionalNotExpression() != null)
         {
-            node.getComparativeExpression().apply(this);
+            node.getConditionalNotExpression().apply(this);
         }
-        outAComparativeConditionalAndExpression(node);
+        outACondNotConditionalAndExpression(node);
     }
 
     @Override
@@ -1083,6 +1041,36 @@ public class Printer extends DepthFirstAdapter
             output.append(tabs+"]\n");
         }
         outAAndExprConditionalAndExpression(node);
+    }
+
+    @Override
+    public void caseANotExprConditionalNotExpression(ANotExprConditionalNotExpression node)
+    {
+        inANotExprConditionalNotExpression(node);
+        if(node.getNot() != null)
+        {
+            output.append(tabs+"NOT ["+"\n");
+            addtab();
+            node.getNot().apply(this);
+        }
+        if(node.getConditionalNotExpression() != null)
+        {
+            node.getConditionalNotExpression().apply(this);
+            subtab();
+            output.append(tabs+"]\n");
+        }
+        outANotExprConditionalNotExpression(node);
+    }
+
+    @Override
+    public void caseAComparativeConditionalNotExpression(AComparativeConditionalNotExpression node)
+    {
+        inAComparativeConditionalNotExpression(node);
+        if(node.getComparativeExpression() != null)
+        {
+            node.getComparativeExpression().apply(this);
+        }
+        outAComparativeConditionalNotExpression(node);
     }
 
     @Override
@@ -1277,14 +1265,11 @@ public class Printer extends DepthFirstAdapter
     public void caseAFactorExpr(AFactorExpr node)
     {
         inAFactorExpr(node);
-        //if(!flag && flagass) output.append("\n"+tabs+"Expr: ");
-        //flag = true;
         if(node.getFactor() != null)
         {
             node.getFactor().apply(this);
         }
         outAFactorExpr(node);
-        //flag = false;
     }
 
     @Override
@@ -1298,22 +1283,20 @@ public class Printer extends DepthFirstAdapter
         subtab();
         if(node.getExpr() != null)
         {
-            //System.out.println(node.getExpr());
-            output.append(" ( ");
+            if(!flagbr) output.append(" ( ");
             node.getExpr().apply(this);
         }
         if(node.getPlus() != null)
         {
-            output.append(" + ");
+            if(!flagbr) output.append(" + ");
             node.getPlus().apply(this);
         }
         if(node.getFactor() != null)
         {
             
             node.getFactor().apply(this);
-            output.append(" ) ");
+            if(!flagbr) output.append(" ) ");
         }
-        //output.append("\n");
         flag = false;
         outAAddExpr(node);
     }
@@ -1329,39 +1312,33 @@ public class Printer extends DepthFirstAdapter
         subtab();
         if(node.getExpr() != null)
         {
-            //System.out.println(node.getExpr());
-            output.append(" ( ");
+            if(!flagbr) output.append(" ( ");
             node.getExpr().apply(this);
         }
         if(node.getMinus() != null)
         {
-            output.append(" - ");
+            if(!flagbr) output.append(" - ");
             node.getMinus().apply(this);
         }
         if(node.getFactor() != null)
         {
             
             node.getFactor().apply(this);
-            output.append(" ) ");
+            if(!flagbr) output.append(" ) ");
         }
         
         flag = false;
         outASubExpr(node);
-        //output.append("\n");
     }
 
     @Override
     public void caseATermFactor(ATermFactor node)
     {
         inATermFactor(node);
-        //if(!flag && flagass) output.append("\n"+tabs+"Expr: ");
-        //flag = true;
         if(node.getTerm() != null)
         {
-            //if(flag) output.append(node.getTerm());
             node.getTerm().apply(this);
         }
-        //flag = false;
         outATermFactor(node);
     }
 
@@ -1376,18 +1353,18 @@ public class Printer extends DepthFirstAdapter
         subtab();
         if(node.getFactor() != null)
         {
-            output.append(" ( ");
+            if(!flagbr) output.append(" ( ");
             node.getFactor().apply(this);
         }
         if(node.getStar() != null)
         {
-            output.append(" * ");
+            if(!flagbr) output.append(" * ");
             node.getStar().apply(this);
         }
         if(node.getTerm() != null)
         {
             node.getTerm().apply(this);
-            output.append(" ) ");
+            if(!flagbr) output.append(" ) ");
         }
         flag = false;
         outAMultFactor(node);
@@ -1404,18 +1381,18 @@ public class Printer extends DepthFirstAdapter
         subtab();
         if(node.getFactor() != null)
         {
-            output.append(" ( ");
+            if(!flagbr) output.append(" ( ");
             node.getFactor().apply(this);
         }
         if(node.getMod() != null)
         {
-            output.append(" mod ");
+            if(!flagbr) output.append(" mod ");
             node.getMod().apply(this);
         }
         if(node.getTerm() != null)
         {
             node.getTerm().apply(this);
-            output.append(" ) ");
+            if(!flagbr) output.append(" ) ");
         }
         flag = false;
         outAModFactor(node);
@@ -1432,46 +1409,49 @@ public class Printer extends DepthFirstAdapter
         subtab();
         if(node.getFactor() != null)
         {
-            output.append(" ( ");
+            if(!flagbr) output.append(" ( ");
             node.getFactor().apply(this);
         }
         if(node.getDiv() != null)
         {
-            output.append(" / ");
+            if(!flagbr) output.append(" / ");
             node.getDiv().apply(this);
         }
         if(node.getTerm() != null)
         {
             node.getTerm().apply(this);
-            output.append(" ) ");
+            if(!flagbr) output.append(" ) ");
         }
         flag = false;
         outADivFactor(node);
+    }
+    
+    @Override
+    public void caseAPlusOrMinusTerm(APlusOrMinusTerm node)
+    {
+        inAPlusOrMinusTerm(node);
+        if(node.getPlusOrMinus() != null)
+        {
+            node.getPlusOrMinus().apply(this);
+        }
+        if(node.getTerm() != null)
+        {
+            node.getTerm().apply(this);
+        }
+        outAPlusOrMinusTerm(node);
     }
 
     @Override
     public void caseAIntTerm(AIntTerm node)
     {
         inAIntTerm(node);
-        //if((flagass && flag && !flagif)|| flagif) output.append("Integer: " );
-        //else if(flagfun && !flag || (flagass && !flag)) output.append(tabs+"\tInteger: " );
-        //else output.append("Integer: " );
+        if(!flagbr) output.append("\n"+tabs+"\tInteger: " );
 
-        output.append("\n"+tabs+"\tInteger: " );
-
-        if(node.getPlusOrMinus() != null)
-        {   
-            output.append(node.getPlusOrMinus() );
-            node.getPlusOrMinus().apply(this);
-        }
         if(node.getIntegers() != null)
         {
-            output.append(node.getIntegers() );
+            if(!flagbr) output.append(node.getIntegers() );
             node.getIntegers().apply(this);
         }
-        //if(flagfun && !flag) output.append("\n");
-        //if(flagfun || (flagass && !flag)) output.append("\n" );
-        if(!flag && !flagif) output.append("\n" );
         outAIntTerm(node);
     }
 
@@ -1484,7 +1464,6 @@ public class Printer extends DepthFirstAdapter
             output.append(tabs+"\tCharTerm: "+ node.getCharConst()+ "\n"  );
             node.getCharConst().apply(this);
         }
-        //if(flag) output.append(node);
         outACharTerm(node);
     }
 
@@ -1492,10 +1471,6 @@ public class Printer extends DepthFirstAdapter
     public void caseALValTerm(ALValTerm node)
     {
         inALValTerm(node);
-        if(node.getPlusOrMinus() != null)
-        {        	
-            node.getPlusOrMinus().apply(this);
-        }
         if(node.getLVal() != null)
         {
             node.getLVal().apply(this);
@@ -1511,7 +1486,6 @@ public class Printer extends DepthFirstAdapter
         {
             node.getFunCal().apply(this);
         }
-        //if(flag) output.append(node);
         outAFunCalTerm(node);
     }
 
@@ -1533,7 +1507,6 @@ public class Printer extends DepthFirstAdapter
         {
             node.getRPar().apply(this);
         }
-        //if(flag) output.append(" ( "+node.getExpr()+" ) ");
         outAParTerm(node);
     }
 
@@ -1543,6 +1516,8 @@ public class Printer extends DepthFirstAdapter
         inAPlusPlusOrMinus(node);
         if(node.getPlus() != null)
         {
+            if(!flag && !flagass) output.append(tabs+"\t");
+            output.append("+");
             node.getPlus().apply(this);
         }
         outAPlusPlusOrMinus(node);
@@ -1554,6 +1529,8 @@ public class Printer extends DepthFirstAdapter
         inAMinusPlusOrMinus(node);
         if(node.getMinus() != null)
         {
+            if(!flag && !flagass) output.append(tabs+"\t");
+            output.append("-");
             node.getMinus().apply(this);
         }
         outAMinusPlusOrMinus(node);

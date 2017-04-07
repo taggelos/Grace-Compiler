@@ -1,7 +1,6 @@
 all:
 	java -jar sablecc.jar parser.grammar
-	javac compiler/*/*.java *.java
+	javac compiler/*/*.java compiler/*.java
 
 clean:
-	rm -f *.class *~
-	rm -rf compiler/* *~
+	rm -rf compiler/analysis compiler/lexer compiler/node compiler/parser compiler/*.class *~
