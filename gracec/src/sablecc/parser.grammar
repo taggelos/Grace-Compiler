@@ -201,16 +201,16 @@ Productions
     /* ----------------- CONDITION  ---------------------- */
 
     cond =
-        {cond_not} not cond |
-        {cond_or_and} conditional_or_expression;
-
-    conditional_or_expression =
         {cond_and} conditional_and_expression |
-        {cond_or} [left]:conditional_or_expression or [right]:conditional_and_expression;
+        {or_expr} [left]:cond or [right]:conditional_and_expression;
 
     conditional_and_expression =
-        {comparative} comparative_expression |
+        {cond_not} conditional_not_expression |
         {and_expr} [left]:conditional_and_expression and [right]:comparative_expression;
+
+    conditional_not_expression =
+        {not_expr} not conditional_not_expression |
+        {comparative} comparative_expression;
 
     comparative_expression =
         {relational} relational_expression |
@@ -241,9 +241,10 @@ Productions
         {div} factor div term;
 
     term =
-        {int} plus_or_minus? integers |
+        {plus_or_minus} plus_or_minus term |
+        {int} integers |
         {char} char_const |
-        {l_val} plus_or_minus? l_val |
+        {l_val} l_val |
         {fun_cal} fun_cal |
         {par} l_par expr r_par;
 
