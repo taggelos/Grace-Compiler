@@ -206,7 +206,7 @@ Productions
 
     conditional_and_expression =
         {cond_not} conditional_not_expression |
-        {and_expr} [left]:conditional_and_expression and [right]:comparative_expression;
+        {and_expr} [left]:conditional_and_expression and [right]:conditional_not_expression;
 
     conditional_not_expression =
         {not_expr} not conditional_not_expression |
