@@ -131,20 +131,20 @@ Productions
     fun_dec =
         header semi;
 
-    block =
-        l_ag stmt* r_ag;
+    block {-> stmt*} =
+        l_ag stmt* r_ag {-> New stmt.block([stmt])};  //<--
 
     stmt =
-        {semi} semi | 
-        {assignment} assignment |
-        {block} block | 
-        {fun_cal} fun_cal semi |
-        {ifstmt} ifstmt | 
-        {whilestmt} whilestmt |
-        {returnstmt} returnstmt;
+        {semi} semi {-> []} |
+        {assignment} assignment {-> [assignment.stmt]} |
+        {block} block {-> [block.stmt]} | 
+        {fun_cal} fun_cal semi {-> [fun_cal.stmt]} | 
+        {ifstmt} ifstmt {-> [ifstmt.stmt]} |
+        {whilestmt} whilestmt {-> [whilestmt.stmt]} | 
+        {returnstmt} returnstmt {-> [returnstmt.stmt]};
 
-    assignment =
-        l_val arrow expr semi;
+    assignment {-> stmt} =  //<--
+        l_val arrow expr semi {-> New stmt.assignment(l_val, expr)};
 
     l_val =
         {id} identifier | 
@@ -154,47 +154,48 @@ Productions
     fun_cal =
         identifier l_par expr_list r_par;
 
-    expr_list =
-        {simple} expr |
-        {list} expr_list comma expr |
+    expr_list {-> expr*} =
+        {simple} expr {-> expr} |
+        {list} expr_list comma expr {-> [expr_list.expr, expr]} |
         {none} ; 
 
     var_def =
-        var var_ids colon types semi;
+        var var_ids colon types semi {-> New([var_ids.identifier], types)};
 
-    var_ids =
-        {id} identifier |
-        {list} identifier comma var_ids;
+    var_ids {-> identifier*} =
+        {id} identifier {-> [identifier]} |
+        {list} identifier comma var_ids {-> [identifier, var_ids.identifier]};
 
     /* ----------------- IF & WHILE  ---------------------- */
 
-    whilestmt =
-        while cond do stmt ;
+    whilestmt {-> stmt} =
+        while cond do stmt {-> New stmt.whilestmt([stmt.stmt])};
 
-    while_with_else =
-        while cond do stmt_with_else ;
+    while_with_else {-> stmt} =
+        while cond do stmt_with_else {-> New stmt.whilestmt([stmt_with_else.stmt])};
 
-    ifstmt =
+    ifstmt {-> stmt*} =
         if_header if_trail ;
 
     if_header =
         if cond then;
 
-    if_trail  =
-        {no_else} [then]:stmt | 
-        {with_else} [then]:stmt_with_else else [else_st]:stmt ;
+    if_trail {-> stmt} =
+        {no_else} [then]:stmt {-> New stmt.ifstmt([then.stmt], [])} | 
+        {with_else} [then]:stmt_with_else else [else_st]:stmt {-> New stmt.ifstmt([then.stmt], [else_st.stmt])};
 
-    stmt_with_else =
-        {semi} semi | 
-        {assignment} assignment | 
-        {stmt_returnstmt} returnstmt |
-        {stmt_funcal} fun_cal semi |
-        {block} block | 
-        {if} if_else | 
-        {while} while_with_else ;
+    stmt_with_else {-> stmt*} =
+        {semi} semi {-> []} | 
+        {assignment} assignment {-> [assignment.stmt]} | 
+        {stmt_returnstmt} returnstmt {-> [returnstmt.stmt]} |
+        {stmt_funcal} fun_cal semi {-> [fun_cal.stmt]} |
+        {block} block {-> [block.stmt]} | 
+        {if} if_else {-> [if_else.stmt]} | 
+        {while} while_with_else {-> [while_with_else.stmt]};
 
-    if_else =
-        if_header [then]:stmt_with_else else [else_st]:stmt_with_else ;
+    if_else {-> stmt} =
+        if_header [then]:stmt_with_else else [else_st]:stmt_with_else 
+        {-> New stmt.ifstmt([then.stmt], [else_st.stmt])};
 
     /* ---------------------------------------------------- */
 
@@ -230,24 +231,50 @@ Productions
         {semi} return expr? semi;
 
     expr =
-        {factor} factor |
-        {add} expr plus factor |
-        {sub} expr minus factor;
+        {factor} factor {-> factor.expr} |
+        {add} expr plus factor {-> New expr.plus(expr, factor.expr)} |
+        {sub} expr minus factor {-> New expr.minus(expr, factor.expr)};
 
-    factor =
-        {term} term |
-        {mult} factor star term |
-        {mod} factor mod term |
-        {div} factor div term;
+    factor {-> expr} =
+        {term} term {-> term.expr} |
+        {mult} factor star term {-> New expr.mult(factor.expr, term.expr)} |
+        {mod} factor mod term {-> New expr.mod(factor.expr, term.expr)} |
+        {div} factor div term {-> New expr.div(factor.expr, term.expr)};
 
-    term =
-        {plus_or_minus} plus_or_minus term |
-        {int} integers |
+    term {-> expr} =
+        {plus_or_minus} plus_or_minus term {-> term.expr} |
+        {int} integers {-> New expr.int(integers)} |
         {char} char_const |
         {l_val} l_val |
         {fun_cal} fun_cal |
-        {par} l_par expr r_par;
+        {par} l_par expr r_par {-> expr};
 
     plus_or_minus =
         {plus} plus | 
         {minus} minus;
+
+Abstract Syntax Tree
+    
+
+    stmt = 
+        {assignment} [name]:identifier assign [value]:expr | 
+        {array_assign} [name]:identifier [index]:expr assign [value]:expr |
+        {if} [then]:stmt* [else]:stmt* | 
+        {while} [body]:stmt* |
+        {block} [block]:stmt* | //<--
+        {fun_cal} fun_cal | //<--
+        {returnstmt} returnstmt;  //<--
+
+    expr_list = [exprs]:expr*;
+
+    expr = 
+        {add} [expr1]:expr [expr2]:expr |
+        {sub} [expr1]:expr [expr2]:expr |
+        {mult} [expr1]:expr [expr2]:expr |
+        {mod} [expr1]:expr [expr2]:expr |
+        {div} [expr1]:expr [expr2]:expr |
+        {int} integers |
+        {char} char_const |  //<--
+        {l_val} l_val |      //<--
+        {fun_cal} fun_cal |  //<--
+        {expr} expr;

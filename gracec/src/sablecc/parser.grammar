@@ -136,7 +136,7 @@ Productions
 
     stmt =
         {semi} semi | 
-        {assignment} assignment |   //<---- assignment
+        {assignment} assignment |
         {block} block | 
         {fun_cal} fun_cal semi |
         {ifstmt} ifstmt | 
@@ -149,7 +149,7 @@ Productions
     l_val =
         {id} identifier | 
         {string} string_literal | 
-        {id_brackets} l_val l_br expr r_br;  // Paizetai malakia string brackets??? l_val
+        {id_brackets} l_val l_br expr r_br;
 
     fun_cal =
         identifier l_par expr_list r_par;
