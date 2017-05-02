@@ -131,123 +131,177 @@ Productions
     fun_dec =
         header semi;
 
-    block =
-        l_ag stmt* r_ag;
+    block {-> stmt*} =
+        l_ag stmt* r_ag {-> New stmt.block([stmt])};  //<--
 
     stmt =
-        {semi} semi | 
-        {assignment} assignment |
-        {block} block | 
-        {fun_cal} fun_cal semi |
-        {ifstmt} ifstmt | 
-        {whilestmt} whilestmt |
-        {returnstmt} returnstmt;
+        {semi} semi {-> []} |
+        {assignment} assignment {-> [assignment.stmt]} |
+        {block} block {-> [block.stmt]} | 
+        {fun_cal} fun_cal semi {-> fun_cal} | 
+        {ifstmt} ifstmt {-> [ifstmt.stmt]} |
+        {whilestmt} whilestmt {-> [whilestmt.stmt]} | 
+        {returnstmt} returnstmt {-> [returnstmt.expr]};
 
-    assignment =
-        l_val arrow expr semi;
+    assignment {-> stmt} =  //<--
+        l_val arrow expr semi {-> New stmt.assignment(l_val.expr, expr)};
 
-    l_val =
-        {id} identifier | 
-        {string} string_literal | 
-        {id_brackets} l_val l_br expr r_br;
+    l_val {-> expr} =
+        {id} identifier {-> New expr.id(identifier)} | 
+        {string} string_literal {-> New expr.string(string_literal)} | 
+        {id_brackets} l_val l_br expr r_br {-> New expr.id_brackets(l_val.expr, expr)};
 
     fun_cal =
-        identifier l_par expr_list r_par;
+        [name]:identifier l_par [exprs]:expr_list r_par {-> New fun_cal(name, [exprs.expr])};
 
-    expr_list =
-        {simple} expr |
-        {list} expr_list comma expr |
-        {none} ; 
+    expr_list {-> expr*} =
+        {simple} expr {-> [expr]} |
+        {list} expr_list comma expr {-> [expr_list.expr, expr]} |
+        {none} {-> []}; 
 
     var_def =
-        var var_ids colon types semi;
+        var var_ids colon types semi {-> New var_def([var_ids.identifier], types)};
 
-    var_ids =
-        {id} identifier |
-        {list} identifier comma var_ids;
+    var_ids {-> identifier*} =
+        {id} identifier {-> [identifier]} |
+        {list} identifier comma var_ids {-> [identifier, var_ids.identifier]};
 
     /* ----------------- IF & WHILE  ---------------------- */
 
-    whilestmt =
-        while cond do stmt ;
+    whilestmt {-> stmt} =
+        while cond do stmt {-> New stmt.whilestmt([stmt.stmt])};
 
-    while_with_else =
-        while cond do stmt_with_else ;
+    while_with_else {-> stmt} =
+        while cond do stmt_with_else {-> New stmt.whilestmt([stmt_with_else.stmt])};
 
-    ifstmt =
+    ifstmt {-> stmt*} =
         if_header if_trail ;
 
     if_header =
         if cond then;
 
-    if_trail  =
-        {no_else} [then]:stmt | 
-        {with_else} [then]:stmt_with_else else [else_st]:stmt ;
+    if_trail {-> stmt} =
+        {no_else} [then]:stmt {-> New stmt.ifstmt([then.stmt], [])} | 
+        {with_else} [then]:stmt_with_else else [else_st]:stmt {-> New stmt.ifstmt([then.stmt], [else_st.stmt])};
 
-    stmt_with_else =
-        {semi} semi | 
-        {assignment} assignment | 
-        {stmt_returnstmt} returnstmt |
-        {stmt_funcal} fun_cal semi |
-        {block} block | 
-        {if} if_else | 
-        {while} while_with_else ;
+    stmt_with_else {-> stmt*} =
+        {semi} semi {-> []} | 
+        {assignment} assignment {-> [assignment.stmt]} | 
+        {stmt_returnstmt} returnstmt {-> [returnstmt.stmt]} |
+        {stmt_funcal} fun_cal semi {-> [fun_cal]} |
+        {block} block {-> [block.stmt]} | 
+        {if} if_else {-> [if_else.stmt]} | 
+        {while} while_with_else {-> [while_with_else.stmt]};
 
-    if_else =
-        if_header [then]:stmt_with_else else [else_st]:stmt_with_else ;
+    if_else {-> stmt} =
+        if_header [then]:stmt_with_else else [else_st]:stmt_with_else 
+        {-> New stmt.ifstmt([then.stmt], [else_st.stmt])};
 
     /* ---------------------------------------------------- */
 
     /* ----------------- CONDITION  ---------------------- */
 
-    cond =
-        {cond_and} conditional_and_expression |
-        {or_expr} [left]:cond or [right]:conditional_and_expression;
+    cond {-> expr} =
+        {cond_and} conditional_and_expression {-> conditional_and_expression.expr} |
+        {or_expr} [left]:cond or [right]:conditional_and_expression {-> New expr.or_expr(left.expr, right.expr)};
 
-    conditional_and_expression =
-        {cond_not} conditional_not_expression |
-        {and_expr} [left]:conditional_and_expression and [right]:conditional_not_expression;
+    conditional_and_expression {-> expr} =
+        {cond_not} conditional_not_expression {-> conditional_not_expression.expr} |
+        {and_expr} [left]:conditional_and_expression and [right]:conditional_not_expression {-> New expr.and_expr(left.expr, and, right.expr)};
 
-    conditional_not_expression =
-        {not_expr} not conditional_not_expression |
-        {comparative} comparative_expression;
+    conditional_not_expression {-> expr} =
+        {not_expr} not conditional_not_expression {-> New expr.not_expr(conditional_not_expression)} |
+        {comparative} comparative_expression {-> comparative_expression.expr};
 
-    comparative_expression =
-        {relational} relational_expression |
-        {equal} [left]:comparative_expression eq [right]:relational_expression |
-        {not_equal} [left]:comparative_expression neq [right]:relational_expression ;
+    comparative_expression {-> expr} =
+        {relational} relational_expression {-> relational_expression.expr} |
+        {equal} [left]:comparative_expression eq [right]:relational_expression {-> New expr.equal(left.expr, right.expr)} |
+        {not_equal} [left]:comparative_expression neq [right]:relational_expression {-> New expr.not_equal(left.expr, right.expr)};
 
-    relational_expression =
-        {additive} expr |
-        {less_than} [left]:relational_expression lt [right]:expr |
-        {greater_than} [left]:relational_expression gt [right]:expr |
-        {greater_equal_than} [left]:relational_expression gteq [right]:expr |
-        {less_equal_than} [left]:relational_expression lteq [right]:expr ;
+    relational_expression {-> expr} =
+        {additive} expr {-> expr.expr} |
+        {less_than} [left]:relational_expression lt [right]:expr {-> New expr.less_than(left.expr, right.expr)} |
+        {greater_than} [left]:relational_expression gt [right]:expr {-> New expr.greater_than(left.expr, right.expr)} |
+        {greater_equal_than} [left]:relational_expression gteq [right]:expr {-> New expr.greater_equal_than(left.expr, right.expr)} |
+        {less_equal_than} [left]:relational_expression lteq [right]:expr {-> New expr.less_equal_than(left.expr, right.expr)};
 
     /* ---------------------------------------------------- */
 
-    returnstmt =
+    returnstmt {-> expr?} =
         {semi} return expr? semi;
 
     expr =
-        {factor} factor |
-        {add} expr plus factor |
-        {sub} expr minus factor;
+        {factor} factor {-> factor.expr} |
+        {add} expr plus factor {-> New expr.plus(expr, factor.expr)} |
+        {sub} expr minus factor {-> New expr.minus(expr, factor.expr)};
 
-    factor =
-        {term} term |
-        {mult} factor star term |
-        {mod} factor mod term |
-        {div} factor div term;
+    factor {-> expr} =
+        {term} term {-> term.expr} |
+        {mult} factor star term {-> New expr.mult(factor.expr, term.expr)} |
+        {mod} factor mod term {-> New expr.mod(factor.expr, term.expr)} |
+        {div} factor div term {-> New expr.div(factor.expr, term.expr)};
 
-    term =
-        {plus_or_minus} plus_or_minus term |
-        {int} integers |
+    term {-> expr} =
+        {plus_or_minus} plus_or_minus term {-> term.expr} |
+        {int} integers {-> New expr.int(integers)} |
         {char} char_const |
         {l_val} l_val |
-        {fun_cal} fun_cal |
-        {par} l_par expr r_par;
+        {fun_cal} fun_cal {-> fun_cal} |
+        {par} l_par expr r_par {-> expr};
 
     plus_or_minus =
         {plus} plus | 
         {minus} minus;
+
+Abstract Syntax Tree
+    
+    data_types =
+        {int} int |
+        {char} char;
+
+    array_types =
+        {brackets} l_br integers? r_br;
+
+    types =
+        {simple} data_types |
+        {array} data_types array_types+;
+
+
+    var_def = [name]:identifier* [type]:types;
+
+    //returnstmt = expr?;
+
+    fun_cal = [name]:identifier [exprs]:expr*;
+
+    expr = 
+        {and_expr} [left]:expr [right]:expr |
+        {or_expr} [left]:expr [right]:expr |
+        {not_expr} [expr]:expr |
+        {less_than} [left]:expr [right]:expr |
+        {greater_than} [left]:expr [right]:expr |
+        {greater_equal_than} [left]:expr [right]:expr |
+        {less_equal_than} [left]:expr [right]:expr |
+        {equal} [left]:expr [right]:expr |
+        {not_equal} [left]:expr [right]:expr |
+        {add} [expr1]:expr [expr2]:expr |
+        {sub} [expr1]:expr [expr2]:expr |
+        {mult} [expr1]:expr [expr2]:expr |
+        {mod} [expr1]:expr [expr2]:expr |
+        {div} [expr1]:expr [expr2]:expr |
+        {int} integers |
+        {char} char_const |  //<--
+        {l_val} [left]:expr [right]:expr |      //<--
+        {id} identifier | 
+        {string} string_literal | 
+        {id_brackets} [left]:expr [right]:expr |
+        {fun_cal} fun_cal |  //<--
+        {expr} expr;
+
+
+    stmt =   
+        {assignment} [left]:expr [right]:expr |
+        {ifstmt} [then]:stmt* [else]:stmt* | 
+        {whilestmt} [body]:stmt* |
+        {fun_cal} [name]:identifier [exprs]:expr* |
+        {block} [block]:stmt* ; //<--
+        //{returnstmt} returnstmt;  //<--
