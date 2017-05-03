@@ -93,16 +93,18 @@ Ignored Tokens
     comment;
 
 Productions
-    program = fun_def;
+    program = fun_def {-> New program(fun_def)};
 
     fun_def =
-        header local_def* block;
+        header local_def* block
+        {-> New fun_def(header, [local_def], [block.stmt])};
 
     header =
-        fun identifier l_par fpar_def r_par colon return_type;
+        fun identifier l_par fpar_def r_par colon return_type
+        {-> New header(identifier, [fpar_def], return_type)};
 
     fpar_def =
-        {simple_par} ref? identifier colon types |
+        {simple_par} ref? identifier colon types {-> New fpar_def(identifier, types)} |
         {mult_par} ref? identifier comma fpar_def |
         {mult_types} ref? identifier colon types comma fpar_def |
         {semi_par} ref? identifier colon types semi fpar_def |
@@ -169,25 +171,25 @@ Productions
     /* ----------------- IF & WHILE  ---------------------- */
 
     whilestmt {-> stmt} =
-        while cond do stmt {-> New stmt.whilestmt([stmt.stmt])};
+        while cond do stmt {-> New stmt.whilestmt(cond.expr, [stmt.stmt])};
 
     while_with_else {-> stmt} =
-        while cond do stmt_with_else {-> New stmt.whilestmt([stmt_with_else.stmt])};
+        while cond do stmt_with_else {-> New stmt.whilestmt(cond.expr, [stmt_with_else.stmt])};
 
     ifstmt {-> stmt*} =
-        if_header if_trail ;
+        if_header if_trail {-> [if_trail.stmt]};
 
-    if_header =
-        if cond then;
+    if_header {-> expr} =
+        if cond then {-> cond.expr};
 
-    if_trail {-> stmt} =
+    if_trail {-> stmt*} =
         {no_else} [then]:stmt {-> New stmt.ifstmt([then.stmt], [])} | 
         {with_else} [then]:stmt_with_else else [else_st]:stmt {-> New stmt.ifstmt([then.stmt], [else_st.stmt])};
 
     stmt_with_else {-> stmt*} =
         {semi} semi {-> []} | 
         {assignment} assignment {-> [assignment.stmt]} | 
-        {stmt_returnstmt} returnstmt {-> [returnstmt.stmt]} |
+        {stmt_returnstmt} returnstmt {-> [returnstmt.expr]} |
         {stmt_funcal} fun_cal semi {-> [fun_cal]} |
         {block} block {-> [block.stmt]} | 
         {if} if_else {-> [if_else.stmt]} | 
@@ -207,10 +209,10 @@ Productions
 
     conditional_and_expression {-> expr} =
         {cond_not} conditional_not_expression {-> conditional_not_expression.expr} |
-        {and_expr} [left]:conditional_and_expression and [right]:conditional_not_expression {-> New expr.and_expr(left.expr, and, right.expr)};
+        {and_expr} [left]:conditional_and_expression and [right]:conditional_not_expression {-> New expr.and_expr(left.expr, right.expr)};
 
     conditional_not_expression {-> expr} =
-        {not_expr} not conditional_not_expression {-> New expr.not_expr(conditional_not_expression)} |
+        {not_expr} not conditional_not_expression {-> New expr.not_expr(conditional_not_expression.expr)} |
         {comparative} comparative_expression {-> comparative_expression.expr};
 
     comparative_expression {-> expr} =
@@ -228,12 +230,12 @@ Productions
     /* ---------------------------------------------------- */
 
     returnstmt {-> expr?} =
-        {semi} return expr? semi;
+        {semi} return expr? semi {-> expr};
 
     expr =
         {factor} factor {-> factor.expr} |
-        {add} expr plus factor {-> New expr.plus(expr, factor.expr)} |
-        {sub} expr minus factor {-> New expr.minus(expr, factor.expr)};
+        {add} expr plus factor {-> New expr.add(expr, factor.expr)} |
+        {sub} expr minus factor {-> New expr.sub(expr, factor.expr)};
 
     factor {-> expr} =
         {term} term {-> term.expr} |
@@ -244,16 +246,39 @@ Productions
     term {-> expr} =
         {plus_or_minus} plus_or_minus term {-> term.expr} |
         {int} integers {-> New expr.int(integers)} |
-        {char} char_const |
-        {l_val} l_val |
+        {char} char_const {-> New expr.char(char_const)} |
+        {l_val} l_val {-> l_val.expr} |
         {fun_cal} fun_cal {-> fun_cal} |
-        {par} l_par expr r_par {-> expr};
+        {par} l_par expr r_par {-> expr.expr};
 
     plus_or_minus =
         {plus} plus | 
         {minus} minus;
 
 Abstract Syntax Tree
+
+    program = fun_def;
+
+    fun_def =
+        header local_def* [block]:stmt*;
+
+    header =
+        identifier fpar_def return_type;
+
+    fpar_def =
+        {simple_par} identifier types |
+        {mult_par} identifier fpar_def |
+        {mult_types} identifier types fpar_def |
+        {semi_par} identifier types fpar_def |
+        {none} ;
+
+    local_def =
+        {fun} fun_def |
+        {dec} fun_dec |
+        {var} var_def;
+
+    fun_dec =
+        header;
     
     data_types =
         {int} int |
@@ -266,14 +291,16 @@ Abstract Syntax Tree
         {simple} data_types |
         {array} data_types array_types+;
 
+    return_type =
+        {simple} data_types |
+        {none} nothing;
 
     var_def = [name]:identifier* [type]:types;
-
-    //returnstmt = expr?;
 
     fun_cal = [name]:identifier [exprs]:expr*;
 
     expr = 
+        {if_header} [cond]:expr |
         {and_expr} [left]:expr [right]:expr |
         {or_expr} [left]:expr [right]:expr |
         {not_expr} [expr]:expr |
@@ -295,13 +322,14 @@ Abstract Syntax Tree
         {string} string_literal | 
         {id_brackets} [left]:expr [right]:expr |
         {fun_cal} fun_cal |  //<--
+        {returnstmt} [returnexpr]:expr | //<--
         {expr} expr;
 
 
     stmt =   
         {assignment} [left]:expr [right]:expr |
         {ifstmt} [then]:stmt* [else]:stmt* | 
-        {whilestmt} [body]:stmt* |
+        {whilestmt} [cond]:expr [body]:stmt* |
         {fun_cal} [name]:identifier [exprs]:expr* |
         {block} [block]:stmt* ; //<--
-        //{returnstmt} returnstmt;  //<--
+        
