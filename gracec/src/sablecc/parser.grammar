@@ -100,15 +100,15 @@ Productions
         {-> New fun_def(header, [local_def], [block.stmt])};
 
     header =
-        fun identifier l_par fpar_def r_par colon return_type
-        {-> New header(identifier, [fpar_def], return_type)};
+        fun [name]:identifier l_par [pars]:fpar_def r_par colon return_type {-> New header(name, pars, return_type)};
 
     fpar_def =
-        {simple_par} ref? identifier colon types {-> New fpar_def(identifier, types)} |
-        {mult_par} ref? identifier comma fpar_def |
-        {mult_types} ref? identifier colon types comma fpar_def |
-        {semi_par} ref? identifier colon types semi fpar_def |
-        {none} ;
+        {simple_par} ref? identifier colon types {-> New fpar_def.simple_par(identifier, types)} |
+        {mult_par} ref? identifier comma fpar_def {-> New fpar_def.mult_par([identifier, fpar_def.identifier], fpar_def)} |
+        {mult_types} ref? identifier colon types comma fpar_def {-> New fpar_def.mult_types([identifier, fpar_def.identifier], [types, fpar_def])} |
+        {semi_par} ref? identifier colon types semi fpar_def {-> New fpar_def.semi_par([identifier, fpar_def.identifier], [types, fpar_def])} |
+        {none} {-> []};
+
 
     data_types =
         {int} int |
@@ -249,7 +249,7 @@ Productions
         {char} char_const {-> New expr.char(char_const)} |
         {l_val} l_val {-> l_val.expr} |
         {fun_cal} fun_cal {-> fun_cal} |
-        {par} l_par expr r_par {-> expr.expr};
+        {par} l_par expr r_par {-> expr};
 
     plus_or_minus =
         {plus} plus | 
@@ -260,16 +260,16 @@ Abstract Syntax Tree
     program = fun_def;
 
     fun_def =
-        header local_def* [block]:stmt*;
+        header [local]:local_def* [block]:stmt*;
 
     header =
-        identifier fpar_def return_type;
+        [name]:identifier [pars]:fpar_def [return_t]:return_type;
 
     fpar_def =
-        {simple_par} identifier types |
-        {mult_par} identifier fpar_def |
-        {mult_types} identifier types fpar_def |
-        {semi_par} identifier types fpar_def |
+        {simple_par} [names]:identifier [types]:types |
+        {mult_par} [names]:identifier* [types]:types |
+        {mult_types} [names]:identifier* [types]:types* |
+        {semi_par} [names]:identifier* [types]:types* |
         {none} ;
 
     local_def =
