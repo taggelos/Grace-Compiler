@@ -1,6 +1,5 @@
-package symboltable;
+package compiler.symboltable;
 
-import my_type.*;
 import java.util.*;
 
 public class SymbolTable {

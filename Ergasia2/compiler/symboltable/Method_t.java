@@ -1,4 +1,4 @@
-package symboltable;
+package compiler.symboltable;
 
 import java.util.*;
 
@@ -26,13 +26,13 @@ public class Method_t extends MyType {
         int i = 0;
         while (i < methodVars.size()) {         // Elexgoume an to onoma ths metablhths uparxei sth lista methodVars
             if (methodVars.get(i).getName().equals(varName))
-                return methodVars.get(i).get_return_type();
+                return methodVars.get(i).getType();
             i++;
         }
         i = 0;
         while (i < methodParams.size()) {       // Elexgoume an to onoma ths metablhths uparxei sth lista methodParams
             if (methodParams.get(i).getName().equals(varName))
-                return methodParams.get(i).get_return_type();
+                return methodParams.get(i).getType();
             i++;
         }
         return null;

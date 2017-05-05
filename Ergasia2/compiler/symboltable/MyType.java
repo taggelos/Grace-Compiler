@@ -1,4 +1,4 @@
-package symboltable;
+package compiler.symboltable;
 
 public class MyType {
 	private String name;

@@ -1,4 +1,4 @@
-package symboltable;
+package compiler.symboltable;
 
 public class Variable_t extends MyType {
 	private String type;
