@@ -104,22 +104,22 @@ Productions
 
     fpar_def =
         {simple_par} ref? identifier colon types {-> New fpar_def.simple_par(identifier, types)} |
-        {mult_par} ref? identifier comma fpar_def {-> New fpar_def.mult_par([identifier, fpar_def.identifier], fpar_def)} |
-        {mult_types} ref? identifier colon types comma fpar_def {-> New fpar_def.mult_types([identifier, fpar_def.identifier], [types, fpar_def])} |
-        {semi_par} ref? identifier colon types semi fpar_def {-> New fpar_def.semi_par([identifier, fpar_def.identifier], [types, fpar_def])} |
-        {none} {-> []};
+        {mult_par} ref? identifier comma fpar_def {-> New fpar_def.mult_par(identifier, fpar_def)} |
+        {mult_types} ref? identifier colon types comma fpar_def {-> New fpar_def.mult_types(identifier, types, fpar_def)} |
+        {semi_par} ref? identifier colon types semi fpar_def {-> New fpar_def.semi_par(identifier, types, fpar_def)} |
+        {none} ;
 
 
     data_types =
-        {int} int |
-        {char} char;
+        {int} int {-> New data_types.int(int)} |
+        {char} char {-> New data_types.char(char)};
 
     array_types =
-        {brackets} l_br integers? r_br;
+        {brackets} l_br integers? r_br {-> integers};
 
     types =
-        {simple} data_types |
-        {array} data_types array_types+;
+        {simple} data_types {-> New types.simple(data_types)} |
+        {array} data_types array_types+ {-> New types.array(data_types, [array_types])};
 
     return_type =
         {simple} data_types |
@@ -148,10 +148,10 @@ Productions
     assignment {-> stmt} =  //<--
         l_val arrow expr semi {-> New stmt.assignment(l_val.expr, expr)};
 
-    l_val {-> expr} =
-        {id} identifier {-> New expr.id(identifier)} | 
-        {string} string_literal {-> New expr.string(string_literal)} | 
-        {id_brackets} l_val l_br expr r_br {-> New expr.id_brackets(l_val.expr, expr)};
+    l_val =
+        {id} identifier {-> New l_val.id(identifier)} | 
+        {string} string_literal {-> New l_val.string(string_literal)} | 
+        {id_brackets} l_val l_br expr r_br {-> New l_val.id_brackets(l_val, expr)};
 
     fun_cal =
         [name]:identifier l_par [exprs]:expr_list r_par {-> New fun_cal(name, [exprs.expr])};
@@ -247,9 +247,9 @@ Productions
         {plus_or_minus} plus_or_minus term {-> term.expr} |
         {int} integers {-> New expr.int(integers)} |
         {char} char_const {-> New expr.char(char_const)} |
-        {l_val} l_val {-> l_val.expr} |
+        {l_val} l_val {-> l_val} |
         {fun_cal} fun_cal {-> fun_cal} |
-        {par} l_par expr r_par {-> expr};
+        {par} l_par expr r_par {-> expr.expr};
 
     plus_or_minus =
         {plus} plus | 
@@ -266,10 +266,10 @@ Abstract Syntax Tree
         [name]:identifier [pars]:fpar_def [return_t]:return_type;
 
     fpar_def =
-        {simple_par} [names]:identifier [types]:types |
-        {mult_par} [names]:identifier* [types]:types |
-        {mult_types} [names]:identifier* [types]:types* |
-        {semi_par} [names]:identifier* [types]:types* |
+        {simple_par} [name]:identifier [type]:types |
+        {mult_par} [name]:identifier [fpar_def]:fpar_def |
+        {mult_types} [name]:identifier [type]:types [fpar_def]:fpar_def |
+        {semi_par} [name]:identifier [type]:types [fpar_def]:fpar_def |
         {none} ;
 
     local_def =
@@ -299,6 +299,11 @@ Abstract Syntax Tree
 
     fun_cal = [name]:identifier [exprs]:expr*;
 
+    l_val =
+        {id} identifier | 
+        {string} string_literal | 
+        {id_brackets} l_val expr;
+
     expr = 
         {if_header} [cond]:expr |
         {and_expr} [left]:expr [right]:expr |
@@ -315,21 +320,22 @@ Abstract Syntax Tree
         {mult} [expr1]:expr [expr2]:expr |
         {mod} [expr1]:expr [expr2]:expr |
         {div} [expr1]:expr [expr2]:expr |
+        {plus_or_minus} [expr]:expr |
         {int} integers |
         {char} char_const |  //<--
-        {l_val} [left]:expr [right]:expr |      //<--
-        {id} identifier | 
+        {l_val} l_val |      //<--
+        {par} [expr]:expr |
+        /*{id} identifier | 
         {string} string_literal | 
-        {id_brackets} [left]:expr [right]:expr |
+        {id_brackets} [left]:expr [right]:expr | */
         {fun_cal} fun_cal |  //<--
-        {returnstmt} [returnexpr]:expr | //<--
-        {expr} expr;
-
+        {returnstmt} [returnexpr]:expr;
 
     stmt =   
         {assignment} [left]:expr [right]:expr |
         {ifstmt} [then]:stmt* [else]:stmt* | 
         {whilestmt} [cond]:expr [body]:stmt* |
-        {fun_cal} [name]:identifier [exprs]:expr* |
+        //{fun_cal} [name]:identifier [exprs]:expr* |
+        {fun_cal} fun_cal |
         {block} [block]:stmt* ; //<--
         
