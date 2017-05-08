@@ -64,9 +64,7 @@ public class Main {
                     
                     SyntaxCheck sc = new SyntaxCheck();
                     tree.apply(sc);
-                    byte[] contentInBytes = sc.getoutput().toString().getBytes();
 
-        			fop.write(contentInBytes);
         			fop.flush();
         			fop.close();
                 } catch (Exception e) {
