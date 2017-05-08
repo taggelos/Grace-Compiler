@@ -159,6 +159,12 @@ public class AnalysisAdapter implements Analysis
     }
 
     @Override
+    public void caseABracketsArrayTypes(ABracketsArrayTypes node)
+    {
+        defaultCase(node);
+    }
+
+    @Override
     public void caseASimpleTypes(ASimpleTypes node)
     {
         defaultCase(node);
@@ -213,7 +219,19 @@ public class AnalysisAdapter implements Analysis
     }
 
     @Override
-    public void caseAIfHeaderExpr(AIfHeaderExpr node)
+    public void caseAIfHeader(AIfHeader node)
+    {
+        defaultCase(node);
+    }
+
+    @Override
+    public void caseANoElseIfTrail(ANoElseIfTrail node)
+    {
+        defaultCase(node);
+    }
+
+    @Override
+    public void caseAWithElseIfTrail(AWithElseIfTrail node)
     {
         defaultCase(node);
     }
@@ -358,6 +376,12 @@ public class AnalysisAdapter implements Analysis
 
     @Override
     public void caseAIfstmtStmt(AIfstmtStmt node)
+    {
+        defaultCase(node);
+    }
+
+    @Override
+    public void caseAIfElseStmt(AIfElseStmt node)
     {
         defaultCase(node);
     }

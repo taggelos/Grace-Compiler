@@ -2,14 +2,13 @@
 
 package compiler.node;
 
-import java.util.*;
 import compiler.analysis.*;
 
 @SuppressWarnings("nls")
 public final class AIfstmtStmt extends PStmt
 {
-    private final LinkedList<PStmt> _then_ = new LinkedList<PStmt>();
-    private final LinkedList<PStmt> _elsest_ = new LinkedList<PStmt>();
+    private PIfHeader _cond_;
+    private PIfTrail _stmt_;
 
     public AIfstmtStmt()
     {
@@ -17,13 +16,13 @@ public final class AIfstmtStmt extends PStmt
     }
 
     public AIfstmtStmt(
-        @SuppressWarnings("hiding") List<?> _then_,
-        @SuppressWarnings("hiding") List<?> _elsest_)
+        @SuppressWarnings("hiding") PIfHeader _cond_,
+        @SuppressWarnings("hiding") PIfTrail _stmt_)
     {
         // Constructor
-        setThen(_then_);
+        setCond(_cond_);
 
-        setElsest(_elsest_);
+        setStmt(_stmt_);
 
     }
 
@@ -31,8 +30,8 @@ public final class AIfstmtStmt extends PStmt
     public Object clone()
     {
         return new AIfstmtStmt(
-            cloneList(this._then_),
-            cloneList(this._elsest_));
+            cloneNode(this._cond_),
+            cloneNode(this._stmt_));
     }
 
     @Override
@@ -41,77 +40,77 @@ public final class AIfstmtStmt extends PStmt
         ((Analysis) sw).caseAIfstmtStmt(this);
     }
 
-    public LinkedList<PStmt> getThen()
+    public PIfHeader getCond()
     {
-        return this._then_;
+        return this._cond_;
     }
 
-    public void setThen(List<?> list)
+    public void setCond(PIfHeader node)
     {
-        for(PStmt e : this._then_)
+        if(this._cond_ != null)
         {
-            e.parent(null);
+            this._cond_.parent(null);
         }
-        this._then_.clear();
 
-        for(Object obj_e : list)
+        if(node != null)
         {
-            PStmt e = (PStmt) obj_e;
-            if(e.parent() != null)
+            if(node.parent() != null)
             {
-                e.parent().removeChild(e);
+                node.parent().removeChild(node);
             }
 
-            e.parent(this);
-            this._then_.add(e);
+            node.parent(this);
         }
+
+        this._cond_ = node;
     }
 
-    public LinkedList<PStmt> getElsest()
+    public PIfTrail getStmt()
     {
-        return this._elsest_;
+        return this._stmt_;
     }
 
-    public void setElsest(List<?> list)
+    public void setStmt(PIfTrail node)
     {
-        for(PStmt e : this._elsest_)
+        if(this._stmt_ != null)
         {
-            e.parent(null);
+            this._stmt_.parent(null);
         }
-        this._elsest_.clear();
 
-        for(Object obj_e : list)
+        if(node != null)
         {
-            PStmt e = (PStmt) obj_e;
-            if(e.parent() != null)
+            if(node.parent() != null)
             {
-                e.parent().removeChild(e);
+                node.parent().removeChild(node);
             }
 
-            e.parent(this);
-            this._elsest_.add(e);
+            node.parent(this);
         }
+
+        this._stmt_ = node;
     }
 
     @Override
     public String toString()
     {
         return ""
-            + toString(this._then_)
-            + toString(this._elsest_);
+            + toString(this._cond_)
+            + toString(this._stmt_);
     }
 
     @Override
     void removeChild(@SuppressWarnings("unused") Node child)
     {
         // Remove child
-        if(this._then_.remove(child))
+        if(this._cond_ == child)
         {
+            this._cond_ = null;
             return;
         }
 
-        if(this._elsest_.remove(child))
+        if(this._stmt_ == child)
         {
+            this._stmt_ = null;
             return;
         }
 
@@ -122,40 +121,16 @@ public final class AIfstmtStmt extends PStmt
     void replaceChild(@SuppressWarnings("unused") Node oldChild, @SuppressWarnings("unused") Node newChild)
     {
         // Replace child
-        for(ListIterator<PStmt> i = this._then_.listIterator(); i.hasNext();)
+        if(this._cond_ == oldChild)
         {
-            if(i.next() == oldChild)
-            {
-                if(newChild != null)
-                {
-                    i.set((PStmt) newChild);
-                    newChild.parent(this);
-                    oldChild.parent(null);
-                    return;
-                }
-
-                i.remove();
-                oldChild.parent(null);
-                return;
-            }
+            setCond((PIfHeader) newChild);
+            return;
         }
 
-        for(ListIterator<PStmt> i = this._elsest_.listIterator(); i.hasNext();)
+        if(this._stmt_ == oldChild)
         {
-            if(i.next() == oldChild)
-            {
-                if(newChild != null)
-                {
-                    i.set((PStmt) newChild);
-                    newChild.parent(this);
-                    oldChild.parent(null);
-                    return;
-                }
-
-                i.remove();
-                oldChild.parent(null);
-                return;
-            }
+            setStmt((PIfTrail) newChild);
+            return;
         }
 
         throw new RuntimeException("Not a child.");

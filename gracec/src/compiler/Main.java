@@ -64,7 +64,7 @@ public class Main {
                     
                     SyntaxCheck sc = new SyntaxCheck();
                     tree.apply(sc);
-
+                    
         			fop.flush();
         			fop.close();
                 } catch (Exception e) {

@@ -135,6 +135,10 @@ public class DepthFirstAdapter extends AnalysisAdapter
     public void caseASimpleParFparDef(ASimpleParFparDef node)
     {
         inASimpleParFparDef(node);
+        if(node.getRef() != null)
+        {
+            node.getRef().apply(this);
+        }
         if(node.getName() != null)
         {
             node.getName().apply(this);
@@ -160,6 +164,10 @@ public class DepthFirstAdapter extends AnalysisAdapter
     public void caseAMultParFparDef(AMultParFparDef node)
     {
         inAMultParFparDef(node);
+        if(node.getRef() != null)
+        {
+            node.getRef().apply(this);
+        }
         if(node.getName() != null)
         {
             node.getName().apply(this);
@@ -185,6 +193,10 @@ public class DepthFirstAdapter extends AnalysisAdapter
     public void caseAMultTypesFparDef(AMultTypesFparDef node)
     {
         inAMultTypesFparDef(node);
+        if(node.getRef() != null)
+        {
+            node.getRef().apply(this);
+        }
         if(node.getName() != null)
         {
             node.getName().apply(this);
@@ -214,6 +226,10 @@ public class DepthFirstAdapter extends AnalysisAdapter
     public void caseASemiParFparDef(ASemiParFparDef node)
     {
         inASemiParFparDef(node);
+        if(node.getRef() != null)
+        {
+            node.getRef().apply(this);
+        }
         if(node.getName() != null)
         {
             node.getName().apply(this);
@@ -372,6 +388,35 @@ public class DepthFirstAdapter extends AnalysisAdapter
         outACharDataTypes(node);
     }
 
+    public void inABracketsArrayTypes(ABracketsArrayTypes node)
+    {
+        defaultIn(node);
+    }
+
+    public void outABracketsArrayTypes(ABracketsArrayTypes node)
+    {
+        defaultOut(node);
+    }
+
+    @Override
+    public void caseABracketsArrayTypes(ABracketsArrayTypes node)
+    {
+        inABracketsArrayTypes(node);
+        if(node.getLBr() != null)
+        {
+            node.getLBr().apply(this);
+        }
+        if(node.getIntegers() != null)
+        {
+            node.getIntegers().apply(this);
+        }
+        if(node.getRBr() != null)
+        {
+            node.getRBr().apply(this);
+        }
+        outABracketsArrayTypes(node);
+    }
+
     public void inASimpleTypes(ASimpleTypes node)
     {
         defaultIn(node);
@@ -412,8 +457,8 @@ public class DepthFirstAdapter extends AnalysisAdapter
             node.getDataTypes().apply(this);
         }
         {
-            List<TIntegers> copy = new ArrayList<TIntegers>(node.getIntegers());
-            for(TIntegers e : copy)
+            List<PArrayTypes> copy = new ArrayList<PArrayTypes>(node.getArrayTypes());
+            for(PArrayTypes e : copy)
             {
                 e.apply(this);
             }
@@ -586,25 +631,80 @@ public class DepthFirstAdapter extends AnalysisAdapter
         outAIdBracketsLVal(node);
     }
 
-    public void inAIfHeaderExpr(AIfHeaderExpr node)
+    public void inAIfHeader(AIfHeader node)
     {
         defaultIn(node);
     }
 
-    public void outAIfHeaderExpr(AIfHeaderExpr node)
+    public void outAIfHeader(AIfHeader node)
     {
         defaultOut(node);
     }
 
     @Override
-    public void caseAIfHeaderExpr(AIfHeaderExpr node)
+    public void caseAIfHeader(AIfHeader node)
     {
-        inAIfHeaderExpr(node);
+        inAIfHeader(node);
         if(node.getCond() != null)
         {
             node.getCond().apply(this);
         }
-        outAIfHeaderExpr(node);
+        outAIfHeader(node);
+    }
+
+    public void inANoElseIfTrail(ANoElseIfTrail node)
+    {
+        defaultIn(node);
+    }
+
+    public void outANoElseIfTrail(ANoElseIfTrail node)
+    {
+        defaultOut(node);
+    }
+
+    @Override
+    public void caseANoElseIfTrail(ANoElseIfTrail node)
+    {
+        inANoElseIfTrail(node);
+        {
+            List<PStmt> copy = new ArrayList<PStmt>(node.getThen());
+            for(PStmt e : copy)
+            {
+                e.apply(this);
+            }
+        }
+        outANoElseIfTrail(node);
+    }
+
+    public void inAWithElseIfTrail(AWithElseIfTrail node)
+    {
+        defaultIn(node);
+    }
+
+    public void outAWithElseIfTrail(AWithElseIfTrail node)
+    {
+        defaultOut(node);
+    }
+
+    @Override
+    public void caseAWithElseIfTrail(AWithElseIfTrail node)
+    {
+        inAWithElseIfTrail(node);
+        {
+            List<PStmt> copy = new ArrayList<PStmt>(node.getThen());
+            for(PStmt e : copy)
+            {
+                e.apply(this);
+            }
+        }
+        {
+            List<PStmt> copy = new ArrayList<PStmt>(node.getElseSt());
+            for(PStmt e : copy)
+            {
+                e.apply(this);
+            }
+        }
+        outAWithElseIfTrail(node);
     }
 
     public void inAAndExprExpr(AAndExprExpr node)
@@ -1156,6 +1256,35 @@ public class DepthFirstAdapter extends AnalysisAdapter
     public void caseAIfstmtStmt(AIfstmtStmt node)
     {
         inAIfstmtStmt(node);
+        if(node.getCond() != null)
+        {
+            node.getCond().apply(this);
+        }
+        if(node.getStmt() != null)
+        {
+            node.getStmt().apply(this);
+        }
+        outAIfstmtStmt(node);
+    }
+
+    public void inAIfElseStmt(AIfElseStmt node)
+    {
+        defaultIn(node);
+    }
+
+    public void outAIfElseStmt(AIfElseStmt node)
+    {
+        defaultOut(node);
+    }
+
+    @Override
+    public void caseAIfElseStmt(AIfElseStmt node)
+    {
+        inAIfElseStmt(node);
+        if(node.getCond() != null)
+        {
+            node.getCond().apply(this);
+        }
         {
             List<PStmt> copy = new ArrayList<PStmt>(node.getThen());
             for(PStmt e : copy)
@@ -1164,13 +1293,13 @@ public class DepthFirstAdapter extends AnalysisAdapter
             }
         }
         {
-            List<PStmt> copy = new ArrayList<PStmt>(node.getElsest());
+            List<PStmt> copy = new ArrayList<PStmt>(node.getElseSt());
             for(PStmt e : copy)
             {
                 e.apply(this);
             }
         }
-        outAIfstmtStmt(node);
+        outAIfElseStmt(node);
     }
 
     public void inAWhilestmtStmt(AWhilestmtStmt node)

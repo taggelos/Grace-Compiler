@@ -103,10 +103,10 @@ Productions
         fun [name]:identifier l_par [pars]:fpar_def r_par colon return_type {-> New header(name, pars, return_type)};
 
     fpar_def =
-        {simple_par} ref? identifier colon types {-> New fpar_def.simple_par(identifier, types)} |
-        {mult_par} ref? identifier comma fpar_def {-> New fpar_def.mult_par(identifier, fpar_def)} |
-        {mult_types} ref? identifier colon types comma fpar_def {-> New fpar_def.mult_types(identifier, types, fpar_def)} |
-        {semi_par} ref? identifier colon types semi fpar_def {-> New fpar_def.semi_par(identifier, types, fpar_def)} |
+        {simple_par} ref? identifier colon types {-> New fpar_def.simple_par(ref, identifier, types)} |
+        {mult_par} ref? identifier comma fpar_def {-> New fpar_def.mult_par(ref, identifier, fpar_def)} |
+        {mult_types} ref? identifier colon types comma fpar_def {-> New fpar_def.mult_types(ref, identifier, types, fpar_def)} |
+        {semi_par} ref? identifier colon types semi fpar_def {-> New fpar_def.semi_par(ref, identifier, types, fpar_def)} |
         {none} ;
 
 
@@ -114,12 +114,12 @@ Productions
         {int} int {-> New data_types.int(int)} |
         {char} char {-> New data_types.char(char)};
 
-    array_types {-> integers*} =
-        {brackets} l_br integers? r_br {-> [integers]};
+    array_types  =
+        {brackets} l_br integers? r_br {->New array_types.brackets( l_br, integers, r_br )};
 
     types =
         {simple} data_types {-> New types.simple(data_types)} |
-        {array} data_types array_types+ {-> New types.array(data_types, [array_types.integers])};
+        {array} data_types array_types+ {-> New types.array(data_types,[array_types])};
 
     return_type =
         {simple} data_types {-> New return_type.simple(data_types)} |
@@ -177,14 +177,14 @@ Productions
         while cond do stmt_with_else {-> New stmt.whilestmt(cond.expr, [stmt_with_else.stmt])};
 
     ifstmt {-> stmt} =
-        if_header if_trail {-> if_trail.stmt};
+        if_header if_trail {-> New stmt.ifstmt(if_header,if_trail)};
 
-    if_header {-> expr} =
-        if cond then {-> cond.expr};
+    if_header  =
+        if cond then {-> New if_header(cond.expr)};
 
-    if_trail {-> stmt} =
-        {no_else} [then]:stmt {-> New stmt.ifstmt([then.stmt], [])} | 
-        {with_else} [then]:stmt_with_else else [else_st]:stmt {-> New stmt.ifstmt([then.stmt], [else_st.stmt])};
+    if_trail  =
+        {no_else} [then]:stmt {-> New if_trail.no_else([then.stmt])} | 
+        {with_else} [then]:stmt_with_else else [else_st]:stmt {-> New if_trail.with_else([then.stmt], [else_st.stmt])};
 
     stmt_with_else {-> stmt} =
         {semi} semi {-> New stmt.semi() } | 
@@ -197,7 +197,7 @@ Productions
 
     if_else {-> stmt} =
         if_header [then]:stmt_with_else else [else_st]:stmt_with_else 
-        {-> New stmt.ifstmt([then.stmt], [else_st.stmt])};
+        {-> New stmt.if_else(if_header,[then.stmt], [else_st.stmt])};
 
     /* ---------------------------------------------------- */
 
@@ -266,10 +266,10 @@ Abstract Syntax Tree
         [name]:identifier [pars]:fpar_def [return_t]:return_type;
 
     fpar_def =
-        {simple_par} [name]:identifier [type]:types |
-        {mult_par} [name]:identifier [fpar_def]:fpar_def |
-        {mult_types} [name]:identifier [type]:types [fpar_def]:fpar_def |
-        {semi_par} [name]:identifier [type]:types [fpar_def]:fpar_def |
+        {simple_par} [ref]:ref? [name]:identifier [type]:types |
+        {mult_par} [ref]:ref? [name]:identifier [fpar_def]:fpar_def |
+        {mult_types} [ref]:ref? [name]:identifier [type]:types [fpar_def]:fpar_def |
+        {semi_par} [ref]:ref? [name]:identifier [type]:types [fpar_def]:fpar_def |
         {none} ;
 
     local_def =
@@ -284,9 +284,12 @@ Abstract Syntax Tree
         {int} int |
         {char} char;
 
+    array_types  =
+        {brackets} l_br integers? r_br;
+
     types =
-        {simple} data_types |
-        {array} data_types integers*;
+        {simple} data_types  |
+        {array} data_types array_types+;
 
     return_type =
         {simple} data_types |
@@ -301,8 +304,15 @@ Abstract Syntax Tree
         {string} string_literal | 
         {id_brackets} l_val expr;
 
+    if_header =
+        [cond]:expr;
+
+    if_trail =
+        {no_else} [then]:stmt* | 
+        {with_else} [then]:stmt* [else_st]:stmt*;
+
     expr = 
-        {if_header} [cond]:expr |
+        //{if_header} [cond]:expr |
         {and_expr} [left]:expr [right]:expr |
         {or_expr} [left]:expr [right]:expr |
         {not_expr} [expr]:expr |
@@ -322,16 +332,15 @@ Abstract Syntax Tree
         {char} char_const | 
         {l_val} l_val |     
         {par} [expr]:expr |
-        /*{id} identifier | 
-        {string} string_literal | 
-        {id_brackets} [left]:expr [right]:expr | */
         {fun_cal} fun_cal | 
         {returnstmt} [returnexpr]:expr;
 
     stmt =   
         {semi} |
         {assignment} [left]:l_val [right]:expr |
-        {ifstmt} [then]:stmt* [elsest]:stmt* | 
+        //{ifstmt} [cond]:expr [then]:stmt* [elsest]:stmt* | 
+        {ifstmt} [cond]:if_header [stmt]:if_trail |
+        {if_else} [cond]:if_header [then]:stmt* [else_st]:stmt*  |
         {whilestmt} [cond]:expr [body]:stmt* |
         {fun_cal} fun_cal |
         {returnstmt} [returnexpr]:expr? |

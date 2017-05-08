@@ -908,12 +908,13 @@ public class Parser
         PFparDef pfpardefNode1;
         {
             // Block
-        TIdentifier tidentifierNode2;
-        PTypes ptypesNode3;
-        tidentifierNode2 = (TIdentifier)nodeArrayList1.get(0);
-        ptypesNode3 = (PTypes)nodeArrayList3.get(0);
+        @SuppressWarnings("unused") Object nullNode2 = null;
+        TIdentifier tidentifierNode3;
+        PTypes ptypesNode4;
+        tidentifierNode3 = (TIdentifier)nodeArrayList1.get(0);
+        ptypesNode4 = (PTypes)nodeArrayList3.get(0);
 
-        pfpardefNode1 = new ASimpleParFparDef(tidentifierNode2, ptypesNode3);
+        pfpardefNode1 = new ASimpleParFparDef(null, tidentifierNode3, ptypesNode4);
         }
 	nodeList.add(pfpardefNode1);
         return nodeList;
@@ -933,12 +934,14 @@ public class Parser
         PFparDef pfpardefNode1;
         {
             // Block
-        TIdentifier tidentifierNode2;
-        PTypes ptypesNode3;
-        tidentifierNode2 = (TIdentifier)nodeArrayList2.get(0);
-        ptypesNode3 = (PTypes)nodeArrayList4.get(0);
+        TRef trefNode2;
+        TIdentifier tidentifierNode3;
+        PTypes ptypesNode4;
+        trefNode2 = (TRef)nodeArrayList1.get(0);
+        tidentifierNode3 = (TIdentifier)nodeArrayList2.get(0);
+        ptypesNode4 = (PTypes)nodeArrayList4.get(0);
 
-        pfpardefNode1 = new ASimpleParFparDef(tidentifierNode2, ptypesNode3);
+        pfpardefNode1 = new ASimpleParFparDef(trefNode2, tidentifierNode3, ptypesNode4);
         }
 	nodeList.add(pfpardefNode1);
         return nodeList;
@@ -957,12 +960,13 @@ public class Parser
         PFparDef pfpardefNode1;
         {
             // Block
-        TIdentifier tidentifierNode2;
-        PFparDef pfpardefNode3;
-        tidentifierNode2 = (TIdentifier)nodeArrayList1.get(0);
-        pfpardefNode3 = (PFparDef)nodeArrayList3.get(0);
+        @SuppressWarnings("unused") Object nullNode2 = null;
+        TIdentifier tidentifierNode3;
+        PFparDef pfpardefNode4;
+        tidentifierNode3 = (TIdentifier)nodeArrayList1.get(0);
+        pfpardefNode4 = (PFparDef)nodeArrayList3.get(0);
 
-        pfpardefNode1 = new AMultParFparDef(tidentifierNode2, pfpardefNode3);
+        pfpardefNode1 = new AMultParFparDef(null, tidentifierNode3, pfpardefNode4);
         }
 	nodeList.add(pfpardefNode1);
         return nodeList;
@@ -982,12 +986,14 @@ public class Parser
         PFparDef pfpardefNode1;
         {
             // Block
-        TIdentifier tidentifierNode2;
-        PFparDef pfpardefNode3;
-        tidentifierNode2 = (TIdentifier)nodeArrayList2.get(0);
-        pfpardefNode3 = (PFparDef)nodeArrayList4.get(0);
+        TRef trefNode2;
+        TIdentifier tidentifierNode3;
+        PFparDef pfpardefNode4;
+        trefNode2 = (TRef)nodeArrayList1.get(0);
+        tidentifierNode3 = (TIdentifier)nodeArrayList2.get(0);
+        pfpardefNode4 = (PFparDef)nodeArrayList4.get(0);
 
-        pfpardefNode1 = new AMultParFparDef(tidentifierNode2, pfpardefNode3);
+        pfpardefNode1 = new AMultParFparDef(trefNode2, tidentifierNode3, pfpardefNode4);
         }
 	nodeList.add(pfpardefNode1);
         return nodeList;
@@ -1008,14 +1014,15 @@ public class Parser
         PFparDef pfpardefNode1;
         {
             // Block
-        TIdentifier tidentifierNode2;
-        PTypes ptypesNode3;
-        PFparDef pfpardefNode4;
-        tidentifierNode2 = (TIdentifier)nodeArrayList1.get(0);
-        ptypesNode3 = (PTypes)nodeArrayList3.get(0);
-        pfpardefNode4 = (PFparDef)nodeArrayList5.get(0);
+        @SuppressWarnings("unused") Object nullNode2 = null;
+        TIdentifier tidentifierNode3;
+        PTypes ptypesNode4;
+        PFparDef pfpardefNode5;
+        tidentifierNode3 = (TIdentifier)nodeArrayList1.get(0);
+        ptypesNode4 = (PTypes)nodeArrayList3.get(0);
+        pfpardefNode5 = (PFparDef)nodeArrayList5.get(0);
 
-        pfpardefNode1 = new AMultTypesFparDef(tidentifierNode2, ptypesNode3, pfpardefNode4);
+        pfpardefNode1 = new AMultTypesFparDef(null, tidentifierNode3, ptypesNode4, pfpardefNode5);
         }
 	nodeList.add(pfpardefNode1);
         return nodeList;
@@ -1037,14 +1044,16 @@ public class Parser
         PFparDef pfpardefNode1;
         {
             // Block
-        TIdentifier tidentifierNode2;
-        PTypes ptypesNode3;
-        PFparDef pfpardefNode4;
-        tidentifierNode2 = (TIdentifier)nodeArrayList2.get(0);
-        ptypesNode3 = (PTypes)nodeArrayList4.get(0);
-        pfpardefNode4 = (PFparDef)nodeArrayList6.get(0);
+        TRef trefNode2;
+        TIdentifier tidentifierNode3;
+        PTypes ptypesNode4;
+        PFparDef pfpardefNode5;
+        trefNode2 = (TRef)nodeArrayList1.get(0);
+        tidentifierNode3 = (TIdentifier)nodeArrayList2.get(0);
+        ptypesNode4 = (PTypes)nodeArrayList4.get(0);
+        pfpardefNode5 = (PFparDef)nodeArrayList6.get(0);
 
-        pfpardefNode1 = new AMultTypesFparDef(tidentifierNode2, ptypesNode3, pfpardefNode4);
+        pfpardefNode1 = new AMultTypesFparDef(trefNode2, tidentifierNode3, ptypesNode4, pfpardefNode5);
         }
 	nodeList.add(pfpardefNode1);
         return nodeList;
@@ -1065,14 +1074,15 @@ public class Parser
         PFparDef pfpardefNode1;
         {
             // Block
-        TIdentifier tidentifierNode2;
-        PTypes ptypesNode3;
-        PFparDef pfpardefNode4;
-        tidentifierNode2 = (TIdentifier)nodeArrayList1.get(0);
-        ptypesNode3 = (PTypes)nodeArrayList3.get(0);
-        pfpardefNode4 = (PFparDef)nodeArrayList5.get(0);
+        @SuppressWarnings("unused") Object nullNode2 = null;
+        TIdentifier tidentifierNode3;
+        PTypes ptypesNode4;
+        PFparDef pfpardefNode5;
+        tidentifierNode3 = (TIdentifier)nodeArrayList1.get(0);
+        ptypesNode4 = (PTypes)nodeArrayList3.get(0);
+        pfpardefNode5 = (PFparDef)nodeArrayList5.get(0);
 
-        pfpardefNode1 = new ASemiParFparDef(tidentifierNode2, ptypesNode3, pfpardefNode4);
+        pfpardefNode1 = new ASemiParFparDef(null, tidentifierNode3, ptypesNode4, pfpardefNode5);
         }
 	nodeList.add(pfpardefNode1);
         return nodeList;
@@ -1094,14 +1104,16 @@ public class Parser
         PFparDef pfpardefNode1;
         {
             // Block
-        TIdentifier tidentifierNode2;
-        PTypes ptypesNode3;
-        PFparDef pfpardefNode4;
-        tidentifierNode2 = (TIdentifier)nodeArrayList2.get(0);
-        ptypesNode3 = (PTypes)nodeArrayList4.get(0);
-        pfpardefNode4 = (PFparDef)nodeArrayList6.get(0);
+        TRef trefNode2;
+        TIdentifier tidentifierNode3;
+        PTypes ptypesNode4;
+        PFparDef pfpardefNode5;
+        trefNode2 = (TRef)nodeArrayList1.get(0);
+        tidentifierNode3 = (TIdentifier)nodeArrayList2.get(0);
+        ptypesNode4 = (PTypes)nodeArrayList4.get(0);
+        pfpardefNode5 = (PFparDef)nodeArrayList6.get(0);
 
-        pfpardefNode1 = new ASemiParFparDef(tidentifierNode2, ptypesNode3, pfpardefNode4);
+        pfpardefNode1 = new ASemiParFparDef(trefNode2, tidentifierNode3, ptypesNode4, pfpardefNode5);
         }
 	nodeList.add(pfpardefNode1);
         return nodeList;
@@ -1173,11 +1185,18 @@ public class Parser
 
         @SuppressWarnings("unused") ArrayList<Object> nodeArrayList2 = pop();
         @SuppressWarnings("unused") ArrayList<Object> nodeArrayList1 = pop();
-        LinkedList<Object> listNode1 = new LinkedList<Object>();
+        PArrayTypes parraytypesNode1;
         {
             // Block
+        TLBr tlbrNode2;
+        @SuppressWarnings("unused") Object nullNode3 = null;
+        TRBr trbrNode4;
+        tlbrNode2 = (TLBr)nodeArrayList1.get(0);
+        trbrNode4 = (TRBr)nodeArrayList2.get(0);
+
+        parraytypesNode1 = new ABracketsArrayTypes(tlbrNode2, null, trbrNode4);
         }
-	nodeList.add(listNode1);
+	nodeList.add(parraytypesNode1);
         return nodeList;
     }
 
@@ -1191,17 +1210,19 @@ public class Parser
         @SuppressWarnings("unused") ArrayList<Object> nodeArrayList3 = pop();
         @SuppressWarnings("unused") ArrayList<Object> nodeArrayList2 = pop();
         @SuppressWarnings("unused") ArrayList<Object> nodeArrayList1 = pop();
-        LinkedList<Object> listNode2 = new LinkedList<Object>();
+        PArrayTypes parraytypesNode1;
         {
             // Block
-        TIntegers tintegersNode1;
-        tintegersNode1 = (TIntegers)nodeArrayList2.get(0);
-	if(tintegersNode1 != null)
-	{
-	  listNode2.add(tintegersNode1);
-	}
+        TLBr tlbrNode2;
+        TIntegers tintegersNode3;
+        TRBr trbrNode4;
+        tlbrNode2 = (TLBr)nodeArrayList1.get(0);
+        tintegersNode3 = (TIntegers)nodeArrayList2.get(0);
+        trbrNode4 = (TRBr)nodeArrayList3.get(0);
+
+        parraytypesNode1 = new ABracketsArrayTypes(tlbrNode2, tintegersNode3, trbrNode4);
         }
-	nodeList.add(listNode2);
+	nodeList.add(parraytypesNode1);
         return nodeList;
     }
 
@@ -1899,7 +1920,15 @@ public class Parser
         @SuppressWarnings("unused") ArrayList<Object> nodeArrayList2 = pop();
         @SuppressWarnings("unused") ArrayList<Object> nodeArrayList1 = pop();
         PStmt pstmtNode1;
-        pstmtNode1 = (PStmt)nodeArrayList2.get(0);
+        {
+            // Block
+        PIfHeader pifheaderNode2;
+        PIfTrail piftrailNode3;
+        pifheaderNode2 = (PIfHeader)nodeArrayList1.get(0);
+        piftrailNode3 = (PIfTrail)nodeArrayList2.get(0);
+
+        pstmtNode1 = new AIfstmtStmt(pifheaderNode2, piftrailNode3);
+        }
 	nodeList.add(pstmtNode1);
         return nodeList;
     }
@@ -1914,9 +1943,15 @@ public class Parser
         @SuppressWarnings("unused") ArrayList<Object> nodeArrayList3 = pop();
         @SuppressWarnings("unused") ArrayList<Object> nodeArrayList2 = pop();
         @SuppressWarnings("unused") ArrayList<Object> nodeArrayList1 = pop();
-        PExpr pexprNode1;
-        pexprNode1 = (PExpr)nodeArrayList2.get(0);
-	nodeList.add(pexprNode1);
+        PIfHeader pifheaderNode1;
+        {
+            // Block
+        PExpr pexprNode2;
+        pexprNode2 = (PExpr)nodeArrayList2.get(0);
+
+        pifheaderNode1 = new AIfHeader(pexprNode2);
+        }
+	nodeList.add(pifheaderNode1);
         return nodeList;
     }
 
@@ -1928,11 +1963,10 @@ public class Parser
         @SuppressWarnings("hiding") ArrayList<Object> nodeList = new ArrayList<Object>();
 
         @SuppressWarnings("unused") ArrayList<Object> nodeArrayList1 = pop();
-        PStmt pstmtNode1;
+        PIfTrail piftrailNode1;
         {
             // Block
         LinkedList<Object> listNode3 = new LinkedList<Object>();
-        LinkedList<Object> listNode4 = new LinkedList<Object>();
         {
             // Block
         PStmt pstmtNode2;
@@ -1942,13 +1976,10 @@ public class Parser
 	  listNode3.add(pstmtNode2);
 	}
         }
-        {
-            // Block
-        }
 
-        pstmtNode1 = new AIfstmtStmt(listNode3, listNode4);
+        piftrailNode1 = new ANoElseIfTrail(listNode3);
         }
-	nodeList.add(pstmtNode1);
+	nodeList.add(piftrailNode1);
         return nodeList;
     }
 
@@ -1962,7 +1993,7 @@ public class Parser
         @SuppressWarnings("unused") ArrayList<Object> nodeArrayList3 = pop();
         @SuppressWarnings("unused") ArrayList<Object> nodeArrayList2 = pop();
         @SuppressWarnings("unused") ArrayList<Object> nodeArrayList1 = pop();
-        PStmt pstmtNode1;
+        PIfTrail piftrailNode1;
         {
             // Block
         LinkedList<Object> listNode3 = new LinkedList<Object>();
@@ -1986,9 +2017,9 @@ public class Parser
 	}
         }
 
-        pstmtNode1 = new AIfstmtStmt(listNode3, listNode5);
+        piftrailNode1 = new AWithElseIfTrail(listNode3, listNode5);
         }
-	nodeList.add(pstmtNode1);
+	nodeList.add(piftrailNode1);
         return nodeList;
     }
 
@@ -2135,28 +2166,30 @@ public class Parser
         PStmt pstmtNode1;
         {
             // Block
-        LinkedList<Object> listNode3 = new LinkedList<Object>();
-        LinkedList<Object> listNode5 = new LinkedList<Object>();
+        PIfHeader pifheaderNode2;
+        LinkedList<Object> listNode4 = new LinkedList<Object>();
+        LinkedList<Object> listNode6 = new LinkedList<Object>();
+        pifheaderNode2 = (PIfHeader)nodeArrayList1.get(0);
         {
             // Block
-        PStmt pstmtNode2;
-        pstmtNode2 = (PStmt)nodeArrayList2.get(0);
-	if(pstmtNode2 != null)
+        PStmt pstmtNode3;
+        pstmtNode3 = (PStmt)nodeArrayList2.get(0);
+	if(pstmtNode3 != null)
 	{
-	  listNode3.add(pstmtNode2);
+	  listNode4.add(pstmtNode3);
 	}
         }
         {
             // Block
-        PStmt pstmtNode4;
-        pstmtNode4 = (PStmt)nodeArrayList4.get(0);
-	if(pstmtNode4 != null)
+        PStmt pstmtNode5;
+        pstmtNode5 = (PStmt)nodeArrayList4.get(0);
+	if(pstmtNode5 != null)
 	{
-	  listNode5.add(pstmtNode4);
+	  listNode6.add(pstmtNode5);
 	}
         }
 
-        pstmtNode1 = new AIfstmtStmt(listNode3, listNode5);
+        pstmtNode1 = new AIfElseStmt(pifheaderNode2, listNode4, listNode6);
         }
 	nodeList.add(pstmtNode1);
         return nodeList;
@@ -2818,11 +2851,11 @@ public class Parser
         LinkedList<Object> listNode2 = new LinkedList<Object>();
         {
             // Block
-        LinkedList<Object> listNode1 = new LinkedList<Object>();
-        listNode1 = (LinkedList)nodeArrayList1.get(0);
-	if(listNode1 != null)
+        PArrayTypes parraytypesNode1;
+        parraytypesNode1 = (PArrayTypes)nodeArrayList1.get(0);
+	if(parraytypesNode1 != null)
 	{
-	  listNode2.addAll(listNode1);
+	  listNode2.add(parraytypesNode1);
 	}
         }
 	nodeList.add(listNode2);
@@ -2842,16 +2875,16 @@ public class Parser
         {
             // Block
         LinkedList<Object> listNode1 = new LinkedList<Object>();
-        LinkedList<Object> listNode2 = new LinkedList<Object>();
+        PArrayTypes parraytypesNode2;
         listNode1 = (LinkedList)nodeArrayList1.get(0);
-        listNode2 = (LinkedList)nodeArrayList2.get(0);
+        parraytypesNode2 = (PArrayTypes)nodeArrayList2.get(0);
 	if(listNode1 != null)
 	{
 	  listNode3.addAll(listNode1);
 	}
-	if(listNode2 != null)
+	if(parraytypesNode2 != null)
 	{
-	  listNode3.addAll(listNode2);
+	  listNode3.add(parraytypesNode2);
 	}
         }
 	nodeList.add(listNode3);

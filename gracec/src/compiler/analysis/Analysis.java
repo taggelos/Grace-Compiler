@@ -26,6 +26,7 @@ public interface Analysis extends Switch
     void caseAFunDec(AFunDec node);
     void caseAIntDataTypes(AIntDataTypes node);
     void caseACharDataTypes(ACharDataTypes node);
+    void caseABracketsArrayTypes(ABracketsArrayTypes node);
     void caseASimpleTypes(ASimpleTypes node);
     void caseAArrayTypes(AArrayTypes node);
     void caseASimpleReturnType(ASimpleReturnType node);
@@ -35,7 +36,9 @@ public interface Analysis extends Switch
     void caseAIdLVal(AIdLVal node);
     void caseAStringLVal(AStringLVal node);
     void caseAIdBracketsLVal(AIdBracketsLVal node);
-    void caseAIfHeaderExpr(AIfHeaderExpr node);
+    void caseAIfHeader(AIfHeader node);
+    void caseANoElseIfTrail(ANoElseIfTrail node);
+    void caseAWithElseIfTrail(AWithElseIfTrail node);
     void caseAAndExprExpr(AAndExprExpr node);
     void caseAOrExprExpr(AOrExprExpr node);
     void caseANotExprExpr(ANotExprExpr node);
@@ -60,6 +63,7 @@ public interface Analysis extends Switch
     void caseASemiStmt(ASemiStmt node);
     void caseAAssignmentStmt(AAssignmentStmt node);
     void caseAIfstmtStmt(AIfstmtStmt node);
+    void caseAIfElseStmt(AIfElseStmt node);
     void caseAWhilestmtStmt(AWhilestmtStmt node);
     void caseAFunCalStmt(AFunCalStmt node);
     void caseAReturnstmtStmt(AReturnstmtStmt node);

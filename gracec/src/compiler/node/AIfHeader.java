@@ -5,16 +5,16 @@ package compiler.node;
 import compiler.analysis.*;
 
 @SuppressWarnings("nls")
-public final class AIfHeaderExpr extends PExpr
+public final class AIfHeader extends PIfHeader
 {
     private PExpr _cond_;
 
-    public AIfHeaderExpr()
+    public AIfHeader()
     {
         // Constructor
     }
 
-    public AIfHeaderExpr(
+    public AIfHeader(
         @SuppressWarnings("hiding") PExpr _cond_)
     {
         // Constructor
@@ -25,14 +25,14 @@ public final class AIfHeaderExpr extends PExpr
     @Override
     public Object clone()
     {
-        return new AIfHeaderExpr(
+        return new AIfHeader(
             cloneNode(this._cond_));
     }
 
     @Override
     public void apply(Switch sw)
     {
-        ((Analysis) sw).caseAIfHeaderExpr(this);
+        ((Analysis) sw).caseAIfHeader(this);
     }
 
     public PExpr getCond()

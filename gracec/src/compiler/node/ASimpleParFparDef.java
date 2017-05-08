@@ -7,6 +7,7 @@ import compiler.analysis.*;
 @SuppressWarnings("nls")
 public final class ASimpleParFparDef extends PFparDef
 {
+    private TRef _ref_;
     private TIdentifier _name_;
     private PTypes _type_;
 
@@ -16,10 +17,13 @@ public final class ASimpleParFparDef extends PFparDef
     }
 
     public ASimpleParFparDef(
+        @SuppressWarnings("hiding") TRef _ref_,
         @SuppressWarnings("hiding") TIdentifier _name_,
         @SuppressWarnings("hiding") PTypes _type_)
     {
         // Constructor
+        setRef(_ref_);
+
         setName(_name_);
 
         setType(_type_);
@@ -30,6 +34,7 @@ public final class ASimpleParFparDef extends PFparDef
     public Object clone()
     {
         return new ASimpleParFparDef(
+            cloneNode(this._ref_),
             cloneNode(this._name_),
             cloneNode(this._type_));
     }
@@ -38,6 +43,31 @@ public final class ASimpleParFparDef extends PFparDef
     public void apply(Switch sw)
     {
         ((Analysis) sw).caseASimpleParFparDef(this);
+    }
+
+    public TRef getRef()
+    {
+        return this._ref_;
+    }
+
+    public void setRef(TRef node)
+    {
+        if(this._ref_ != null)
+        {
+            this._ref_.parent(null);
+        }
+
+        if(node != null)
+        {
+            if(node.parent() != null)
+            {
+                node.parent().removeChild(node);
+            }
+
+            node.parent(this);
+        }
+
+        this._ref_ = node;
     }
 
     public TIdentifier getName()
@@ -94,6 +124,7 @@ public final class ASimpleParFparDef extends PFparDef
     public String toString()
     {
         return ""
+            + toString(this._ref_)
             + toString(this._name_)
             + toString(this._type_);
     }
@@ -102,6 +133,12 @@ public final class ASimpleParFparDef extends PFparDef
     void removeChild(@SuppressWarnings("unused") Node child)
     {
         // Remove child
+        if(this._ref_ == child)
+        {
+            this._ref_ = null;
+            return;
+        }
+
         if(this._name_ == child)
         {
             this._name_ = null;
@@ -121,6 +158,12 @@ public final class ASimpleParFparDef extends PFparDef
     void replaceChild(@SuppressWarnings("unused") Node oldChild, @SuppressWarnings("unused") Node newChild)
     {
         // Replace child
+        if(this._ref_ == oldChild)
+        {
+            setRef((TRef) newChild);
+            return;
+        }
+
         if(this._name_ == oldChild)
         {
             setName((TIdentifier) newChild);
