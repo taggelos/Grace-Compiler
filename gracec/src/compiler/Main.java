@@ -14,6 +14,7 @@ import compiler.node.EOF;
 import compiler.node.Start;
 import compiler.node.Token;
 import compiler.parser.*;
+import compiler.visitors.SyntaxCheck;
 
 public class Main {
 
@@ -61,9 +62,9 @@ public class Main {
                     Start tree = p.parse();
                     System.out.println(tree.toString());
                     
-                    Printer pr = new Printer();
-                    tree.apply(pr);
-                    byte[] contentInBytes = pr.getoutput().toString().getBytes();
+                    SyntaxCheck sc = new SyntaxCheck();
+                    tree.apply(sc);
+                    byte[] contentInBytes = sc.getoutput().toString().getBytes();
 
         			fop.write(contentInBytes);
         			fop.flush();
