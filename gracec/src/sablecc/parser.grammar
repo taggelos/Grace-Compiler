@@ -143,7 +143,7 @@ Productions
         {fun_cal} fun_cal semi {-> New stmt.fun_cal(fun_cal)} | 
         {ifstmt} ifstmt {-> ifstmt.stmt} |
         {whilestmt} whilestmt {-> whilestmt.stmt} | 
-        {returnstmt} returnstmt {-> returnstmt.expr};
+        {returnstmt} returnstmt {-> New stmt.returnstmt(returnstmt.expr)};
 
     assignment {-> stmt} = 
         l_val arrow expr semi {-> New stmt.assignment(l_val, expr)};
@@ -176,8 +176,8 @@ Productions
     while_with_else {-> stmt} =
         while cond do stmt_with_else {-> New stmt.whilestmt(cond.expr, [stmt_with_else.stmt])};
 
-    ifstmt {-> stmt*} =
-        if_header if_trail {-> [if_trail.stmt]};
+    ifstmt {-> stmt} =
+        if_header if_trail {-> if_trail.stmt};
 
     if_header {-> expr} =
         if cond then {-> cond.expr};
@@ -186,14 +186,14 @@ Productions
         {no_else} [then]:stmt {-> New stmt.ifstmt([then.stmt], [])} | 
         {with_else} [then]:stmt_with_else else [else_st]:stmt {-> New stmt.ifstmt([then.stmt], [else_st.stmt])};
 
-    stmt_with_else {-> stmt*} =
-        {semi} semi {-> []} | 
-        {assignment} assignment {-> [assignment.stmt]} | 
-        {stmt_returnstmt} returnstmt {-> [returnstmt.expr]} |
-        {stmt_funcal} fun_cal semi {-> [fun_cal]} |
-        {block} block {-> [block.stmt]} | 
-        {ifstmt} if_else {-> [if_else.stmt]} | 
-        {whilestmt} while_with_else {-> [while_with_else.stmt]};
+    stmt_with_else {-> stmt} =
+        {semi} semi {-> New stmt.semi() } | 
+        {assignment} assignment {-> assignment.stmt} | 
+        {stmt_returnstmt} returnstmt {-> New stmt.returnstmt(returnstmt.expr)} |
+        {stmt_funcal} fun_cal semi {-> New stmt.fun_cal(fun_cal)} |
+        {block} block {-> New stmt.block([block.stmt])} | 
+        {ifstmt} if_else {-> if_else.stmt} | 
+        {whilestmt} while_with_else {-> while_with_else.stmt};
 
     if_else {-> stmt} =
         if_header [then]:stmt_with_else else [else_st]:stmt_with_else 
@@ -247,8 +247,8 @@ Productions
         {plus_or_minus} plus_or_minus term {-> term.expr} |
         {int} integers {-> New expr.int(integers)} |
         {char} char_const {-> New expr.char(char_const)} |
-        {l_val} l_val {-> l_val} |
-        {fun_cal} fun_cal {-> fun_cal} |
+        {l_val} l_val {-> New expr.l_val(l_val)} |
+        {fun_cal} fun_cal {-> New expr.fun_cal(fun_cal)} |
         {par} l_par expr r_par {-> expr.expr};
 
     plus_or_minus =
@@ -334,5 +334,6 @@ Abstract Syntax Tree
         {ifstmt} [then]:stmt* [elsest]:stmt* | 
         {whilestmt} [cond]:expr [body]:stmt* |
         {fun_cal} fun_cal |
+        {returnstmt} [returnexpr]:expr? |
         {block} [block]:stmt* ;
         

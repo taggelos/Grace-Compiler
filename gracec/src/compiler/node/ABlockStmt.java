@@ -2,12 +2,13 @@
 
 package compiler.node;
 
+import java.util.*;
 import compiler.analysis.*;
 
 @SuppressWarnings("nls")
 public final class ABlockStmt extends PStmt
 {
-    private PBlock _block_;
+    private final LinkedList<PStmt> _block_ = new LinkedList<PStmt>();
 
     public ABlockStmt()
     {
@@ -15,7 +16,7 @@ public final class ABlockStmt extends PStmt
     }
 
     public ABlockStmt(
-        @SuppressWarnings("hiding") PBlock _block_)
+        @SuppressWarnings("hiding") List<?> _block_)
     {
         // Constructor
         setBlock(_block_);
@@ -26,7 +27,7 @@ public final class ABlockStmt extends PStmt
     public Object clone()
     {
         return new ABlockStmt(
-            cloneNode(this._block_));
+            cloneList(this._block_));
     }
 
     @Override
@@ -35,29 +36,30 @@ public final class ABlockStmt extends PStmt
         ((Analysis) sw).caseABlockStmt(this);
     }
 
-    public PBlock getBlock()
+    public LinkedList<PStmt> getBlock()
     {
         return this._block_;
     }
 
-    public void setBlock(PBlock node)
+    public void setBlock(List<?> list)
     {
-        if(this._block_ != null)
+        for(PStmt e : this._block_)
         {
-            this._block_.parent(null);
+            e.parent(null);
         }
+        this._block_.clear();
 
-        if(node != null)
+        for(Object obj_e : list)
         {
-            if(node.parent() != null)
+            PStmt e = (PStmt) obj_e;
+            if(e.parent() != null)
             {
-                node.parent().removeChild(node);
+                e.parent().removeChild(e);
             }
 
-            node.parent(this);
+            e.parent(this);
+            this._block_.add(e);
         }
-
-        this._block_ = node;
     }
 
     @Override
@@ -71,9 +73,8 @@ public final class ABlockStmt extends PStmt
     void removeChild(@SuppressWarnings("unused") Node child)
     {
         // Remove child
-        if(this._block_ == child)
+        if(this._block_.remove(child))
         {
-            this._block_ = null;
             return;
         }
 
@@ -84,10 +85,22 @@ public final class ABlockStmt extends PStmt
     void replaceChild(@SuppressWarnings("unused") Node oldChild, @SuppressWarnings("unused") Node newChild)
     {
         // Replace child
-        if(this._block_ == oldChild)
+        for(ListIterator<PStmt> i = this._block_.listIterator(); i.hasNext();)
         {
-            setBlock((PBlock) newChild);
-            return;
+            if(i.next() == oldChild)
+            {
+                if(newChild != null)
+                {
+                    i.set((PStmt) newChild);
+                    newChild.parent(this);
+                    oldChild.parent(null);
+                    return;
+                }
+
+                i.remove();
+                oldChild.parent(null);
+                return;
+            }
         }
 
         throw new RuntimeException("Not a child.");

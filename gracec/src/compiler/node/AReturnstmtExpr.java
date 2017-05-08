@@ -5,16 +5,16 @@ package compiler.node;
 import compiler.analysis.*;
 
 @SuppressWarnings("nls")
-public final class AReturnstmtStmt extends PStmt
+public final class AReturnstmtExpr extends PExpr
 {
     private PExpr _returnexpr_;
 
-    public AReturnstmtStmt()
+    public AReturnstmtExpr()
     {
         // Constructor
     }
 
-    public AReturnstmtStmt(
+    public AReturnstmtExpr(
         @SuppressWarnings("hiding") PExpr _returnexpr_)
     {
         // Constructor
@@ -25,14 +25,14 @@ public final class AReturnstmtStmt extends PStmt
     @Override
     public Object clone()
     {
-        return new AReturnstmtStmt(
+        return new AReturnstmtExpr(
             cloneNode(this._returnexpr_));
     }
 
     @Override
     public void apply(Switch sw)
     {
-        ((Analysis) sw).caseAReturnstmtStmt(this);
+        ((Analysis) sw).caseAReturnstmtExpr(this);
     }
 
     public PExpr getReturnexpr()

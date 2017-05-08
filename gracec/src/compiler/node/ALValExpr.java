@@ -5,39 +5,34 @@ package compiler.node;
 import compiler.analysis.*;
 
 @SuppressWarnings("nls")
-public final class AIdBracketsLVal extends PLVal
+public final class ALValExpr extends PExpr
 {
     private PLVal _lVal_;
-    private PExpr _expr_;
 
-    public AIdBracketsLVal()
+    public ALValExpr()
     {
         // Constructor
     }
 
-    public AIdBracketsLVal(
-        @SuppressWarnings("hiding") PLVal _lVal_,
-        @SuppressWarnings("hiding") PExpr _expr_)
+    public ALValExpr(
+        @SuppressWarnings("hiding") PLVal _lVal_)
     {
         // Constructor
         setLVal(_lVal_);
-
-        setExpr(_expr_);
 
     }
 
     @Override
     public Object clone()
     {
-        return new AIdBracketsLVal(
-            cloneNode(this._lVal_),
-            cloneNode(this._expr_));
+        return new ALValExpr(
+            cloneNode(this._lVal_));
     }
 
     @Override
     public void apply(Switch sw)
     {
-        ((Analysis) sw).caseAIdBracketsLVal(this);
+        ((Analysis) sw).caseALValExpr(this);
     }
 
     public PLVal getLVal()
@@ -65,37 +60,11 @@ public final class AIdBracketsLVal extends PLVal
         this._lVal_ = node;
     }
 
-    public PExpr getExpr()
-    {
-        return this._expr_;
-    }
-
-    public void setExpr(PExpr node)
-    {
-        if(this._expr_ != null)
-        {
-            this._expr_.parent(null);
-        }
-
-        if(node != null)
-        {
-            if(node.parent() != null)
-            {
-                node.parent().removeChild(node);
-            }
-
-            node.parent(this);
-        }
-
-        this._expr_ = node;
-    }
-
     @Override
     public String toString()
     {
         return ""
-            + toString(this._lVal_)
-            + toString(this._expr_);
+            + toString(this._lVal_);
     }
 
     @Override
@@ -105,12 +74,6 @@ public final class AIdBracketsLVal extends PLVal
         if(this._lVal_ == child)
         {
             this._lVal_ = null;
-            return;
-        }
-
-        if(this._expr_ == child)
-        {
-            this._expr_ = null;
             return;
         }
 
@@ -124,12 +87,6 @@ public final class AIdBracketsLVal extends PLVal
         if(this._lVal_ == oldChild)
         {
             setLVal((PLVal) newChild);
-            return;
-        }
-
-        if(this._expr_ == oldChild)
-        {
-            setExpr((PExpr) newChild);
             return;
         }
 

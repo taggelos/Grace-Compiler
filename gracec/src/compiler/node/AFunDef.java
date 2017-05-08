@@ -9,8 +9,8 @@ import compiler.analysis.*;
 public final class AFunDef extends PFunDef
 {
     private PHeader _header_;
-    private final LinkedList<PLocalDef> _localDef_ = new LinkedList<PLocalDef>();
-    private PBlock _block_;
+    private final LinkedList<PLocalDef> _local_ = new LinkedList<PLocalDef>();
+    private final LinkedList<PStmt> _block_ = new LinkedList<PStmt>();
 
     public AFunDef()
     {
@@ -19,13 +19,13 @@ public final class AFunDef extends PFunDef
 
     public AFunDef(
         @SuppressWarnings("hiding") PHeader _header_,
-        @SuppressWarnings("hiding") List<?> _localDef_,
-        @SuppressWarnings("hiding") PBlock _block_)
+        @SuppressWarnings("hiding") List<?> _local_,
+        @SuppressWarnings("hiding") List<?> _block_)
     {
         // Constructor
         setHeader(_header_);
 
-        setLocalDef(_localDef_);
+        setLocal(_local_);
 
         setBlock(_block_);
 
@@ -36,8 +36,8 @@ public final class AFunDef extends PFunDef
     {
         return new AFunDef(
             cloneNode(this._header_),
-            cloneList(this._localDef_),
-            cloneNode(this._block_));
+            cloneList(this._local_),
+            cloneList(this._block_));
     }
 
     @Override
@@ -71,18 +71,18 @@ public final class AFunDef extends PFunDef
         this._header_ = node;
     }
 
-    public LinkedList<PLocalDef> getLocalDef()
+    public LinkedList<PLocalDef> getLocal()
     {
-        return this._localDef_;
+        return this._local_;
     }
 
-    public void setLocalDef(List<?> list)
+    public void setLocal(List<?> list)
     {
-        for(PLocalDef e : this._localDef_)
+        for(PLocalDef e : this._local_)
         {
             e.parent(null);
         }
-        this._localDef_.clear();
+        this._local_.clear();
 
         for(Object obj_e : list)
         {
@@ -93,33 +93,34 @@ public final class AFunDef extends PFunDef
             }
 
             e.parent(this);
-            this._localDef_.add(e);
+            this._local_.add(e);
         }
     }
 
-    public PBlock getBlock()
+    public LinkedList<PStmt> getBlock()
     {
         return this._block_;
     }
 
-    public void setBlock(PBlock node)
+    public void setBlock(List<?> list)
     {
-        if(this._block_ != null)
+        for(PStmt e : this._block_)
         {
-            this._block_.parent(null);
+            e.parent(null);
         }
+        this._block_.clear();
 
-        if(node != null)
+        for(Object obj_e : list)
         {
-            if(node.parent() != null)
+            PStmt e = (PStmt) obj_e;
+            if(e.parent() != null)
             {
-                node.parent().removeChild(node);
+                e.parent().removeChild(e);
             }
 
-            node.parent(this);
+            e.parent(this);
+            this._block_.add(e);
         }
-
-        this._block_ = node;
     }
 
     @Override
@@ -127,7 +128,7 @@ public final class AFunDef extends PFunDef
     {
         return ""
             + toString(this._header_)
-            + toString(this._localDef_)
+            + toString(this._local_)
             + toString(this._block_);
     }
 
@@ -141,14 +142,13 @@ public final class AFunDef extends PFunDef
             return;
         }
 
-        if(this._localDef_.remove(child))
+        if(this._local_.remove(child))
         {
             return;
         }
 
-        if(this._block_ == child)
+        if(this._block_.remove(child))
         {
-            this._block_ = null;
             return;
         }
 
@@ -165,7 +165,7 @@ public final class AFunDef extends PFunDef
             return;
         }
 
-        for(ListIterator<PLocalDef> i = this._localDef_.listIterator(); i.hasNext();)
+        for(ListIterator<PLocalDef> i = this._local_.listIterator(); i.hasNext();)
         {
             if(i.next() == oldChild)
             {
@@ -183,10 +183,22 @@ public final class AFunDef extends PFunDef
             }
         }
 
-        if(this._block_ == oldChild)
+        for(ListIterator<PStmt> i = this._block_.listIterator(); i.hasNext();)
         {
-            setBlock((PBlock) newChild);
-            return;
+            if(i.next() == oldChild)
+            {
+                if(newChild != null)
+                {
+                    i.set((PStmt) newChild);
+                    newChild.parent(this);
+                    oldChild.parent(null);
+                    return;
+                }
+
+                i.remove();
+                oldChild.parent(null);
+                return;
+            }
         }
 
         throw new RuntimeException("Not a child.");

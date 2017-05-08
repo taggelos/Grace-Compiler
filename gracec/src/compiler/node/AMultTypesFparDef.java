@@ -7,11 +7,8 @@ import compiler.analysis.*;
 @SuppressWarnings("nls")
 public final class AMultTypesFparDef extends PFparDef
 {
-    private TRef _ref_;
-    private TIdentifier _identifier_;
-    private TColon _colon_;
-    private PTypes _types_;
-    private TComma _comma_;
+    private TIdentifier _name_;
+    private PTypes _type_;
     private PFparDef _fparDef_;
 
     public AMultTypesFparDef()
@@ -20,23 +17,14 @@ public final class AMultTypesFparDef extends PFparDef
     }
 
     public AMultTypesFparDef(
-        @SuppressWarnings("hiding") TRef _ref_,
-        @SuppressWarnings("hiding") TIdentifier _identifier_,
-        @SuppressWarnings("hiding") TColon _colon_,
-        @SuppressWarnings("hiding") PTypes _types_,
-        @SuppressWarnings("hiding") TComma _comma_,
+        @SuppressWarnings("hiding") TIdentifier _name_,
+        @SuppressWarnings("hiding") PTypes _type_,
         @SuppressWarnings("hiding") PFparDef _fparDef_)
     {
         // Constructor
-        setRef(_ref_);
+        setName(_name_);
 
-        setIdentifier(_identifier_);
-
-        setColon(_colon_);
-
-        setTypes(_types_);
-
-        setComma(_comma_);
+        setType(_type_);
 
         setFparDef(_fparDef_);
 
@@ -46,11 +34,8 @@ public final class AMultTypesFparDef extends PFparDef
     public Object clone()
     {
         return new AMultTypesFparDef(
-            cloneNode(this._ref_),
-            cloneNode(this._identifier_),
-            cloneNode(this._colon_),
-            cloneNode(this._types_),
-            cloneNode(this._comma_),
+            cloneNode(this._name_),
+            cloneNode(this._type_),
             cloneNode(this._fparDef_));
     }
 
@@ -60,16 +45,16 @@ public final class AMultTypesFparDef extends PFparDef
         ((Analysis) sw).caseAMultTypesFparDef(this);
     }
 
-    public TRef getRef()
+    public TIdentifier getName()
     {
-        return this._ref_;
+        return this._name_;
     }
 
-    public void setRef(TRef node)
+    public void setName(TIdentifier node)
     {
-        if(this._ref_ != null)
+        if(this._name_ != null)
         {
-            this._ref_.parent(null);
+            this._name_.parent(null);
         }
 
         if(node != null)
@@ -82,19 +67,19 @@ public final class AMultTypesFparDef extends PFparDef
             node.parent(this);
         }
 
-        this._ref_ = node;
+        this._name_ = node;
     }
 
-    public TIdentifier getIdentifier()
+    public PTypes getType()
     {
-        return this._identifier_;
+        return this._type_;
     }
 
-    public void setIdentifier(TIdentifier node)
+    public void setType(PTypes node)
     {
-        if(this._identifier_ != null)
+        if(this._type_ != null)
         {
-            this._identifier_.parent(null);
+            this._type_.parent(null);
         }
 
         if(node != null)
@@ -107,82 +92,7 @@ public final class AMultTypesFparDef extends PFparDef
             node.parent(this);
         }
 
-        this._identifier_ = node;
-    }
-
-    public TColon getColon()
-    {
-        return this._colon_;
-    }
-
-    public void setColon(TColon node)
-    {
-        if(this._colon_ != null)
-        {
-            this._colon_.parent(null);
-        }
-
-        if(node != null)
-        {
-            if(node.parent() != null)
-            {
-                node.parent().removeChild(node);
-            }
-
-            node.parent(this);
-        }
-
-        this._colon_ = node;
-    }
-
-    public PTypes getTypes()
-    {
-        return this._types_;
-    }
-
-    public void setTypes(PTypes node)
-    {
-        if(this._types_ != null)
-        {
-            this._types_.parent(null);
-        }
-
-        if(node != null)
-        {
-            if(node.parent() != null)
-            {
-                node.parent().removeChild(node);
-            }
-
-            node.parent(this);
-        }
-
-        this._types_ = node;
-    }
-
-    public TComma getComma()
-    {
-        return this._comma_;
-    }
-
-    public void setComma(TComma node)
-    {
-        if(this._comma_ != null)
-        {
-            this._comma_.parent(null);
-        }
-
-        if(node != null)
-        {
-            if(node.parent() != null)
-            {
-                node.parent().removeChild(node);
-            }
-
-            node.parent(this);
-        }
-
-        this._comma_ = node;
+        this._type_ = node;
     }
 
     public PFparDef getFparDef()
@@ -214,11 +124,8 @@ public final class AMultTypesFparDef extends PFparDef
     public String toString()
     {
         return ""
-            + toString(this._ref_)
-            + toString(this._identifier_)
-            + toString(this._colon_)
-            + toString(this._types_)
-            + toString(this._comma_)
+            + toString(this._name_)
+            + toString(this._type_)
             + toString(this._fparDef_);
     }
 
@@ -226,33 +133,15 @@ public final class AMultTypesFparDef extends PFparDef
     void removeChild(@SuppressWarnings("unused") Node child)
     {
         // Remove child
-        if(this._ref_ == child)
+        if(this._name_ == child)
         {
-            this._ref_ = null;
+            this._name_ = null;
             return;
         }
 
-        if(this._identifier_ == child)
+        if(this._type_ == child)
         {
-            this._identifier_ = null;
-            return;
-        }
-
-        if(this._colon_ == child)
-        {
-            this._colon_ = null;
-            return;
-        }
-
-        if(this._types_ == child)
-        {
-            this._types_ = null;
-            return;
-        }
-
-        if(this._comma_ == child)
-        {
-            this._comma_ = null;
+            this._type_ = null;
             return;
         }
 
@@ -269,33 +158,15 @@ public final class AMultTypesFparDef extends PFparDef
     void replaceChild(@SuppressWarnings("unused") Node oldChild, @SuppressWarnings("unused") Node newChild)
     {
         // Replace child
-        if(this._ref_ == oldChild)
+        if(this._name_ == oldChild)
         {
-            setRef((TRef) newChild);
+            setName((TIdentifier) newChild);
             return;
         }
 
-        if(this._identifier_ == oldChild)
+        if(this._type_ == oldChild)
         {
-            setIdentifier((TIdentifier) newChild);
-            return;
-        }
-
-        if(this._colon_ == oldChild)
-        {
-            setColon((TColon) newChild);
-            return;
-        }
-
-        if(this._types_ == oldChild)
-        {
-            setTypes((PTypes) newChild);
-            return;
-        }
-
-        if(this._comma_ == oldChild)
-        {
-            setComma((TComma) newChild);
+            setType((PTypes) newChild);
             return;
         }
 

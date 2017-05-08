@@ -5,51 +5,51 @@ package compiler.node;
 import compiler.analysis.*;
 
 @SuppressWarnings("nls")
-public final class AIdBracketsLVal extends PLVal
+public final class AGreaterThanExpr extends PExpr
 {
-    private PLVal _lVal_;
-    private PExpr _expr_;
+    private PExpr _left_;
+    private PExpr _right_;
 
-    public AIdBracketsLVal()
+    public AGreaterThanExpr()
     {
         // Constructor
     }
 
-    public AIdBracketsLVal(
-        @SuppressWarnings("hiding") PLVal _lVal_,
-        @SuppressWarnings("hiding") PExpr _expr_)
+    public AGreaterThanExpr(
+        @SuppressWarnings("hiding") PExpr _left_,
+        @SuppressWarnings("hiding") PExpr _right_)
     {
         // Constructor
-        setLVal(_lVal_);
+        setLeft(_left_);
 
-        setExpr(_expr_);
+        setRight(_right_);
 
     }
 
     @Override
     public Object clone()
     {
-        return new AIdBracketsLVal(
-            cloneNode(this._lVal_),
-            cloneNode(this._expr_));
+        return new AGreaterThanExpr(
+            cloneNode(this._left_),
+            cloneNode(this._right_));
     }
 
     @Override
     public void apply(Switch sw)
     {
-        ((Analysis) sw).caseAIdBracketsLVal(this);
+        ((Analysis) sw).caseAGreaterThanExpr(this);
     }
 
-    public PLVal getLVal()
+    public PExpr getLeft()
     {
-        return this._lVal_;
+        return this._left_;
     }
 
-    public void setLVal(PLVal node)
+    public void setLeft(PExpr node)
     {
-        if(this._lVal_ != null)
+        if(this._left_ != null)
         {
-            this._lVal_.parent(null);
+            this._left_.parent(null);
         }
 
         if(node != null)
@@ -62,19 +62,19 @@ public final class AIdBracketsLVal extends PLVal
             node.parent(this);
         }
 
-        this._lVal_ = node;
+        this._left_ = node;
     }
 
-    public PExpr getExpr()
+    public PExpr getRight()
     {
-        return this._expr_;
+        return this._right_;
     }
 
-    public void setExpr(PExpr node)
+    public void setRight(PExpr node)
     {
-        if(this._expr_ != null)
+        if(this._right_ != null)
         {
-            this._expr_.parent(null);
+            this._right_.parent(null);
         }
 
         if(node != null)
@@ -87,30 +87,30 @@ public final class AIdBracketsLVal extends PLVal
             node.parent(this);
         }
 
-        this._expr_ = node;
+        this._right_ = node;
     }
 
     @Override
     public String toString()
     {
         return ""
-            + toString(this._lVal_)
-            + toString(this._expr_);
+            + toString(this._left_)
+            + toString(this._right_);
     }
 
     @Override
     void removeChild(@SuppressWarnings("unused") Node child)
     {
         // Remove child
-        if(this._lVal_ == child)
+        if(this._left_ == child)
         {
-            this._lVal_ = null;
+            this._left_ = null;
             return;
         }
 
-        if(this._expr_ == child)
+        if(this._right_ == child)
         {
-            this._expr_ = null;
+            this._right_ = null;
             return;
         }
 
@@ -121,15 +121,15 @@ public final class AIdBracketsLVal extends PLVal
     void replaceChild(@SuppressWarnings("unused") Node oldChild, @SuppressWarnings("unused") Node newChild)
     {
         // Replace child
-        if(this._lVal_ == oldChild)
+        if(this._left_ == oldChild)
         {
-            setLVal((PLVal) newChild);
+            setLeft((PExpr) newChild);
             return;
         }
 
-        if(this._expr_ == oldChild)
+        if(this._right_ == oldChild)
         {
-            setExpr((PExpr) newChild);
+            setRight((PExpr) newChild);
             return;
         }
 

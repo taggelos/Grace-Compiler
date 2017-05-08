@@ -5,46 +5,46 @@ package compiler.node;
 import compiler.analysis.*;
 
 @SuppressWarnings("nls")
-public final class AReturnstmtStmt extends PStmt
+public final class AIntExpr extends PExpr
 {
-    private PExpr _returnexpr_;
+    private TIntegers _integers_;
 
-    public AReturnstmtStmt()
+    public AIntExpr()
     {
         // Constructor
     }
 
-    public AReturnstmtStmt(
-        @SuppressWarnings("hiding") PExpr _returnexpr_)
+    public AIntExpr(
+        @SuppressWarnings("hiding") TIntegers _integers_)
     {
         // Constructor
-        setReturnexpr(_returnexpr_);
+        setIntegers(_integers_);
 
     }
 
     @Override
     public Object clone()
     {
-        return new AReturnstmtStmt(
-            cloneNode(this._returnexpr_));
+        return new AIntExpr(
+            cloneNode(this._integers_));
     }
 
     @Override
     public void apply(Switch sw)
     {
-        ((Analysis) sw).caseAReturnstmtStmt(this);
+        ((Analysis) sw).caseAIntExpr(this);
     }
 
-    public PExpr getReturnexpr()
+    public TIntegers getIntegers()
     {
-        return this._returnexpr_;
+        return this._integers_;
     }
 
-    public void setReturnexpr(PExpr node)
+    public void setIntegers(TIntegers node)
     {
-        if(this._returnexpr_ != null)
+        if(this._integers_ != null)
         {
-            this._returnexpr_.parent(null);
+            this._integers_.parent(null);
         }
 
         if(node != null)
@@ -57,23 +57,23 @@ public final class AReturnstmtStmt extends PStmt
             node.parent(this);
         }
 
-        this._returnexpr_ = node;
+        this._integers_ = node;
     }
 
     @Override
     public String toString()
     {
         return ""
-            + toString(this._returnexpr_);
+            + toString(this._integers_);
     }
 
     @Override
     void removeChild(@SuppressWarnings("unused") Node child)
     {
         // Remove child
-        if(this._returnexpr_ == child)
+        if(this._integers_ == child)
         {
-            this._returnexpr_ = null;
+            this._integers_ = null;
             return;
         }
 
@@ -84,9 +84,9 @@ public final class AReturnstmtStmt extends PStmt
     void replaceChild(@SuppressWarnings("unused") Node oldChild, @SuppressWarnings("unused") Node newChild)
     {
         // Replace child
-        if(this._returnexpr_ == oldChild)
+        if(this._integers_ == oldChild)
         {
-            setReturnexpr((PExpr) newChild);
+            setIntegers((TIntegers) newChild);
             return;
         }
 

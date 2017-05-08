@@ -7,13 +7,9 @@ import compiler.analysis.*;
 @SuppressWarnings("nls")
 public final class AHeader extends PHeader
 {
-    private TFun _fun_;
-    private TIdentifier _identifier_;
-    private TLPar _lPar_;
-    private PFparDef _fparDef_;
-    private TRPar _rPar_;
-    private TColon _colon_;
-    private PReturnType _returnType_;
+    private TIdentifier _name_;
+    private PFparDef _pars_;
+    private PReturnType _returnT_;
 
     public AHeader()
     {
@@ -21,28 +17,16 @@ public final class AHeader extends PHeader
     }
 
     public AHeader(
-        @SuppressWarnings("hiding") TFun _fun_,
-        @SuppressWarnings("hiding") TIdentifier _identifier_,
-        @SuppressWarnings("hiding") TLPar _lPar_,
-        @SuppressWarnings("hiding") PFparDef _fparDef_,
-        @SuppressWarnings("hiding") TRPar _rPar_,
-        @SuppressWarnings("hiding") TColon _colon_,
-        @SuppressWarnings("hiding") PReturnType _returnType_)
+        @SuppressWarnings("hiding") TIdentifier _name_,
+        @SuppressWarnings("hiding") PFparDef _pars_,
+        @SuppressWarnings("hiding") PReturnType _returnT_)
     {
         // Constructor
-        setFun(_fun_);
+        setName(_name_);
 
-        setIdentifier(_identifier_);
+        setPars(_pars_);
 
-        setLPar(_lPar_);
-
-        setFparDef(_fparDef_);
-
-        setRPar(_rPar_);
-
-        setColon(_colon_);
-
-        setReturnType(_returnType_);
+        setReturnT(_returnT_);
 
     }
 
@@ -50,13 +34,9 @@ public final class AHeader extends PHeader
     public Object clone()
     {
         return new AHeader(
-            cloneNode(this._fun_),
-            cloneNode(this._identifier_),
-            cloneNode(this._lPar_),
-            cloneNode(this._fparDef_),
-            cloneNode(this._rPar_),
-            cloneNode(this._colon_),
-            cloneNode(this._returnType_));
+            cloneNode(this._name_),
+            cloneNode(this._pars_),
+            cloneNode(this._returnT_));
     }
 
     @Override
@@ -65,16 +45,16 @@ public final class AHeader extends PHeader
         ((Analysis) sw).caseAHeader(this);
     }
 
-    public TFun getFun()
+    public TIdentifier getName()
     {
-        return this._fun_;
+        return this._name_;
     }
 
-    public void setFun(TFun node)
+    public void setName(TIdentifier node)
     {
-        if(this._fun_ != null)
+        if(this._name_ != null)
         {
-            this._fun_.parent(null);
+            this._name_.parent(null);
         }
 
         if(node != null)
@@ -87,19 +67,19 @@ public final class AHeader extends PHeader
             node.parent(this);
         }
 
-        this._fun_ = node;
+        this._name_ = node;
     }
 
-    public TIdentifier getIdentifier()
+    public PFparDef getPars()
     {
-        return this._identifier_;
+        return this._pars_;
     }
 
-    public void setIdentifier(TIdentifier node)
+    public void setPars(PFparDef node)
     {
-        if(this._identifier_ != null)
+        if(this._pars_ != null)
         {
-            this._identifier_.parent(null);
+            this._pars_.parent(null);
         }
 
         if(node != null)
@@ -112,19 +92,19 @@ public final class AHeader extends PHeader
             node.parent(this);
         }
 
-        this._identifier_ = node;
+        this._pars_ = node;
     }
 
-    public TLPar getLPar()
+    public PReturnType getReturnT()
     {
-        return this._lPar_;
+        return this._returnT_;
     }
 
-    public void setLPar(TLPar node)
+    public void setReturnT(PReturnType node)
     {
-        if(this._lPar_ != null)
+        if(this._returnT_ != null)
         {
-            this._lPar_.parent(null);
+            this._returnT_.parent(null);
         }
 
         if(node != null)
@@ -137,165 +117,37 @@ public final class AHeader extends PHeader
             node.parent(this);
         }
 
-        this._lPar_ = node;
-    }
-
-    public PFparDef getFparDef()
-    {
-        return this._fparDef_;
-    }
-
-    public void setFparDef(PFparDef node)
-    {
-        if(this._fparDef_ != null)
-        {
-            this._fparDef_.parent(null);
-        }
-
-        if(node != null)
-        {
-            if(node.parent() != null)
-            {
-                node.parent().removeChild(node);
-            }
-
-            node.parent(this);
-        }
-
-        this._fparDef_ = node;
-    }
-
-    public TRPar getRPar()
-    {
-        return this._rPar_;
-    }
-
-    public void setRPar(TRPar node)
-    {
-        if(this._rPar_ != null)
-        {
-            this._rPar_.parent(null);
-        }
-
-        if(node != null)
-        {
-            if(node.parent() != null)
-            {
-                node.parent().removeChild(node);
-            }
-
-            node.parent(this);
-        }
-
-        this._rPar_ = node;
-    }
-
-    public TColon getColon()
-    {
-        return this._colon_;
-    }
-
-    public void setColon(TColon node)
-    {
-        if(this._colon_ != null)
-        {
-            this._colon_.parent(null);
-        }
-
-        if(node != null)
-        {
-            if(node.parent() != null)
-            {
-                node.parent().removeChild(node);
-            }
-
-            node.parent(this);
-        }
-
-        this._colon_ = node;
-    }
-
-    public PReturnType getReturnType()
-    {
-        return this._returnType_;
-    }
-
-    public void setReturnType(PReturnType node)
-    {
-        if(this._returnType_ != null)
-        {
-            this._returnType_.parent(null);
-        }
-
-        if(node != null)
-        {
-            if(node.parent() != null)
-            {
-                node.parent().removeChild(node);
-            }
-
-            node.parent(this);
-        }
-
-        this._returnType_ = node;
+        this._returnT_ = node;
     }
 
     @Override
     public String toString()
     {
         return ""
-            + toString(this._fun_)
-            + toString(this._identifier_)
-            + toString(this._lPar_)
-            + toString(this._fparDef_)
-            + toString(this._rPar_)
-            + toString(this._colon_)
-            + toString(this._returnType_);
+            + toString(this._name_)
+            + toString(this._pars_)
+            + toString(this._returnT_);
     }
 
     @Override
     void removeChild(@SuppressWarnings("unused") Node child)
     {
         // Remove child
-        if(this._fun_ == child)
+        if(this._name_ == child)
         {
-            this._fun_ = null;
+            this._name_ = null;
             return;
         }
 
-        if(this._identifier_ == child)
+        if(this._pars_ == child)
         {
-            this._identifier_ = null;
+            this._pars_ = null;
             return;
         }
 
-        if(this._lPar_ == child)
+        if(this._returnT_ == child)
         {
-            this._lPar_ = null;
-            return;
-        }
-
-        if(this._fparDef_ == child)
-        {
-            this._fparDef_ = null;
-            return;
-        }
-
-        if(this._rPar_ == child)
-        {
-            this._rPar_ = null;
-            return;
-        }
-
-        if(this._colon_ == child)
-        {
-            this._colon_ = null;
-            return;
-        }
-
-        if(this._returnType_ == child)
-        {
-            this._returnType_ = null;
+            this._returnT_ = null;
             return;
         }
 
@@ -306,45 +158,21 @@ public final class AHeader extends PHeader
     void replaceChild(@SuppressWarnings("unused") Node oldChild, @SuppressWarnings("unused") Node newChild)
     {
         // Replace child
-        if(this._fun_ == oldChild)
+        if(this._name_ == oldChild)
         {
-            setFun((TFun) newChild);
+            setName((TIdentifier) newChild);
             return;
         }
 
-        if(this._identifier_ == oldChild)
+        if(this._pars_ == oldChild)
         {
-            setIdentifier((TIdentifier) newChild);
+            setPars((PFparDef) newChild);
             return;
         }
 
-        if(this._lPar_ == oldChild)
+        if(this._returnT_ == oldChild)
         {
-            setLPar((TLPar) newChild);
-            return;
-        }
-
-        if(this._fparDef_ == oldChild)
-        {
-            setFparDef((PFparDef) newChild);
-            return;
-        }
-
-        if(this._rPar_ == oldChild)
-        {
-            setRPar((TRPar) newChild);
-            return;
-        }
-
-        if(this._colon_ == oldChild)
-        {
-            setColon((TColon) newChild);
-            return;
-        }
-
-        if(this._returnType_ == oldChild)
-        {
-            setReturnType((PReturnType) newChild);
+            setReturnT((PReturnType) newChild);
             return;
         }
 

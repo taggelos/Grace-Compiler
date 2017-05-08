@@ -2,12 +2,14 @@
 
 package compiler.node;
 
+import java.util.*;
 import compiler.analysis.*;
 
 @SuppressWarnings("nls")
 public final class AIfstmtStmt extends PStmt
 {
-    private PIfstmt _ifstmt_;
+    private final LinkedList<PStmt> _then_ = new LinkedList<PStmt>();
+    private final LinkedList<PStmt> _elsest_ = new LinkedList<PStmt>();
 
     public AIfstmtStmt()
     {
@@ -15,10 +17,13 @@ public final class AIfstmtStmt extends PStmt
     }
 
     public AIfstmtStmt(
-        @SuppressWarnings("hiding") PIfstmt _ifstmt_)
+        @SuppressWarnings("hiding") List<?> _then_,
+        @SuppressWarnings("hiding") List<?> _elsest_)
     {
         // Constructor
-        setIfstmt(_ifstmt_);
+        setThen(_then_);
+
+        setElsest(_elsest_);
 
     }
 
@@ -26,7 +31,8 @@ public final class AIfstmtStmt extends PStmt
     public Object clone()
     {
         return new AIfstmtStmt(
-            cloneNode(this._ifstmt_));
+            cloneList(this._then_),
+            cloneList(this._elsest_));
     }
 
     @Override
@@ -35,45 +41,77 @@ public final class AIfstmtStmt extends PStmt
         ((Analysis) sw).caseAIfstmtStmt(this);
     }
 
-    public PIfstmt getIfstmt()
+    public LinkedList<PStmt> getThen()
     {
-        return this._ifstmt_;
+        return this._then_;
     }
 
-    public void setIfstmt(PIfstmt node)
+    public void setThen(List<?> list)
     {
-        if(this._ifstmt_ != null)
+        for(PStmt e : this._then_)
         {
-            this._ifstmt_.parent(null);
+            e.parent(null);
         }
+        this._then_.clear();
 
-        if(node != null)
+        for(Object obj_e : list)
         {
-            if(node.parent() != null)
+            PStmt e = (PStmt) obj_e;
+            if(e.parent() != null)
             {
-                node.parent().removeChild(node);
+                e.parent().removeChild(e);
             }
 
-            node.parent(this);
+            e.parent(this);
+            this._then_.add(e);
         }
+    }
 
-        this._ifstmt_ = node;
+    public LinkedList<PStmt> getElsest()
+    {
+        return this._elsest_;
+    }
+
+    public void setElsest(List<?> list)
+    {
+        for(PStmt e : this._elsest_)
+        {
+            e.parent(null);
+        }
+        this._elsest_.clear();
+
+        for(Object obj_e : list)
+        {
+            PStmt e = (PStmt) obj_e;
+            if(e.parent() != null)
+            {
+                e.parent().removeChild(e);
+            }
+
+            e.parent(this);
+            this._elsest_.add(e);
+        }
     }
 
     @Override
     public String toString()
     {
         return ""
-            + toString(this._ifstmt_);
+            + toString(this._then_)
+            + toString(this._elsest_);
     }
 
     @Override
     void removeChild(@SuppressWarnings("unused") Node child)
     {
         // Remove child
-        if(this._ifstmt_ == child)
+        if(this._then_.remove(child))
         {
-            this._ifstmt_ = null;
+            return;
+        }
+
+        if(this._elsest_.remove(child))
+        {
             return;
         }
 
@@ -84,10 +122,40 @@ public final class AIfstmtStmt extends PStmt
     void replaceChild(@SuppressWarnings("unused") Node oldChild, @SuppressWarnings("unused") Node newChild)
     {
         // Replace child
-        if(this._ifstmt_ == oldChild)
+        for(ListIterator<PStmt> i = this._then_.listIterator(); i.hasNext();)
         {
-            setIfstmt((PIfstmt) newChild);
-            return;
+            if(i.next() == oldChild)
+            {
+                if(newChild != null)
+                {
+                    i.set((PStmt) newChild);
+                    newChild.parent(this);
+                    oldChild.parent(null);
+                    return;
+                }
+
+                i.remove();
+                oldChild.parent(null);
+                return;
+            }
+        }
+
+        for(ListIterator<PStmt> i = this._elsest_.listIterator(); i.hasNext();)
+        {
+            if(i.next() == oldChild)
+            {
+                if(newChild != null)
+                {
+                    i.set((PStmt) newChild);
+                    newChild.parent(this);
+                    oldChild.parent(null);
+                    return;
+                }
+
+                i.remove();
+                oldChild.parent(null);
+                return;
+            }
         }
 
         throw new RuntimeException("Not a child.");

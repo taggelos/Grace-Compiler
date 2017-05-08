@@ -2,15 +2,14 @@
 
 package compiler.node;
 
+import java.util.*;
 import compiler.analysis.*;
 
 @SuppressWarnings("nls")
 public final class AFunCal extends PFunCal
 {
-    private TIdentifier _identifier_;
-    private TLPar _lPar_;
-    private PExprList _exprList_;
-    private TRPar _rPar_;
+    private TIdentifier _name_;
+    private final LinkedList<PExpr> _exprs_ = new LinkedList<PExpr>();
 
     public AFunCal()
     {
@@ -18,19 +17,13 @@ public final class AFunCal extends PFunCal
     }
 
     public AFunCal(
-        @SuppressWarnings("hiding") TIdentifier _identifier_,
-        @SuppressWarnings("hiding") TLPar _lPar_,
-        @SuppressWarnings("hiding") PExprList _exprList_,
-        @SuppressWarnings("hiding") TRPar _rPar_)
+        @SuppressWarnings("hiding") TIdentifier _name_,
+        @SuppressWarnings("hiding") List<?> _exprs_)
     {
         // Constructor
-        setIdentifier(_identifier_);
+        setName(_name_);
 
-        setLPar(_lPar_);
-
-        setExprList(_exprList_);
-
-        setRPar(_rPar_);
+        setExprs(_exprs_);
 
     }
 
@@ -38,10 +31,8 @@ public final class AFunCal extends PFunCal
     public Object clone()
     {
         return new AFunCal(
-            cloneNode(this._identifier_),
-            cloneNode(this._lPar_),
-            cloneNode(this._exprList_),
-            cloneNode(this._rPar_));
+            cloneNode(this._name_),
+            cloneList(this._exprs_));
     }
 
     @Override
@@ -50,16 +41,16 @@ public final class AFunCal extends PFunCal
         ((Analysis) sw).caseAFunCal(this);
     }
 
-    public TIdentifier getIdentifier()
+    public TIdentifier getName()
     {
-        return this._identifier_;
+        return this._name_;
     }
 
-    public void setIdentifier(TIdentifier node)
+    public void setName(TIdentifier node)
     {
-        if(this._identifier_ != null)
+        if(this._name_ != null)
         {
-            this._identifier_.parent(null);
+            this._name_.parent(null);
         }
 
         if(node != null)
@@ -72,119 +63,55 @@ public final class AFunCal extends PFunCal
             node.parent(this);
         }
 
-        this._identifier_ = node;
+        this._name_ = node;
     }
 
-    public TLPar getLPar()
+    public LinkedList<PExpr> getExprs()
     {
-        return this._lPar_;
+        return this._exprs_;
     }
 
-    public void setLPar(TLPar node)
+    public void setExprs(List<?> list)
     {
-        if(this._lPar_ != null)
+        for(PExpr e : this._exprs_)
         {
-            this._lPar_.parent(null);
+            e.parent(null);
         }
+        this._exprs_.clear();
 
-        if(node != null)
+        for(Object obj_e : list)
         {
-            if(node.parent() != null)
+            PExpr e = (PExpr) obj_e;
+            if(e.parent() != null)
             {
-                node.parent().removeChild(node);
+                e.parent().removeChild(e);
             }
 
-            node.parent(this);
+            e.parent(this);
+            this._exprs_.add(e);
         }
-
-        this._lPar_ = node;
-    }
-
-    public PExprList getExprList()
-    {
-        return this._exprList_;
-    }
-
-    public void setExprList(PExprList node)
-    {
-        if(this._exprList_ != null)
-        {
-            this._exprList_.parent(null);
-        }
-
-        if(node != null)
-        {
-            if(node.parent() != null)
-            {
-                node.parent().removeChild(node);
-            }
-
-            node.parent(this);
-        }
-
-        this._exprList_ = node;
-    }
-
-    public TRPar getRPar()
-    {
-        return this._rPar_;
-    }
-
-    public void setRPar(TRPar node)
-    {
-        if(this._rPar_ != null)
-        {
-            this._rPar_.parent(null);
-        }
-
-        if(node != null)
-        {
-            if(node.parent() != null)
-            {
-                node.parent().removeChild(node);
-            }
-
-            node.parent(this);
-        }
-
-        this._rPar_ = node;
     }
 
     @Override
     public String toString()
     {
         return ""
-            + toString(this._identifier_)
-            + toString(this._lPar_)
-            + toString(this._exprList_)
-            + toString(this._rPar_);
+            + toString(this._name_)
+            + toString(this._exprs_);
     }
 
     @Override
     void removeChild(@SuppressWarnings("unused") Node child)
     {
         // Remove child
-        if(this._identifier_ == child)
+        if(this._name_ == child)
         {
-            this._identifier_ = null;
+            this._name_ = null;
             return;
         }
 
-        if(this._lPar_ == child)
+        if(this._exprs_.remove(child))
         {
-            this._lPar_ = null;
-            return;
-        }
-
-        if(this._exprList_ == child)
-        {
-            this._exprList_ = null;
-            return;
-        }
-
-        if(this._rPar_ == child)
-        {
-            this._rPar_ = null;
             return;
         }
 
@@ -195,28 +122,28 @@ public final class AFunCal extends PFunCal
     void replaceChild(@SuppressWarnings("unused") Node oldChild, @SuppressWarnings("unused") Node newChild)
     {
         // Replace child
-        if(this._identifier_ == oldChild)
+        if(this._name_ == oldChild)
         {
-            setIdentifier((TIdentifier) newChild);
+            setName((TIdentifier) newChild);
             return;
         }
 
-        if(this._lPar_ == oldChild)
+        for(ListIterator<PExpr> i = this._exprs_.listIterator(); i.hasNext();)
         {
-            setLPar((TLPar) newChild);
-            return;
-        }
+            if(i.next() == oldChild)
+            {
+                if(newChild != null)
+                {
+                    i.set((PExpr) newChild);
+                    newChild.parent(this);
+                    oldChild.parent(null);
+                    return;
+                }
 
-        if(this._exprList_ == oldChild)
-        {
-            setExprList((PExprList) newChild);
-            return;
-        }
-
-        if(this._rPar_ == oldChild)
-        {
-            setRPar((TRPar) newChild);
-            return;
+                i.remove();
+                oldChild.parent(null);
+                return;
+            }
         }
 
         throw new RuntimeException("Not a child.");

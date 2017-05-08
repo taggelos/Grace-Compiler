@@ -7,7 +7,8 @@ import compiler.analysis.*;
 @SuppressWarnings("nls")
 public final class AAssignmentStmt extends PStmt
 {
-    private PAssignment _assignment_;
+    private PLVal _left_;
+    private PExpr _right_;
 
     public AAssignmentStmt()
     {
@@ -15,10 +16,13 @@ public final class AAssignmentStmt extends PStmt
     }
 
     public AAssignmentStmt(
-        @SuppressWarnings("hiding") PAssignment _assignment_)
+        @SuppressWarnings("hiding") PLVal _left_,
+        @SuppressWarnings("hiding") PExpr _right_)
     {
         // Constructor
-        setAssignment(_assignment_);
+        setLeft(_left_);
+
+        setRight(_right_);
 
     }
 
@@ -26,7 +30,8 @@ public final class AAssignmentStmt extends PStmt
     public Object clone()
     {
         return new AAssignmentStmt(
-            cloneNode(this._assignment_));
+            cloneNode(this._left_),
+            cloneNode(this._right_));
     }
 
     @Override
@@ -35,16 +40,16 @@ public final class AAssignmentStmt extends PStmt
         ((Analysis) sw).caseAAssignmentStmt(this);
     }
 
-    public PAssignment getAssignment()
+    public PLVal getLeft()
     {
-        return this._assignment_;
+        return this._left_;
     }
 
-    public void setAssignment(PAssignment node)
+    public void setLeft(PLVal node)
     {
-        if(this._assignment_ != null)
+        if(this._left_ != null)
         {
-            this._assignment_.parent(null);
+            this._left_.parent(null);
         }
 
         if(node != null)
@@ -57,23 +62,55 @@ public final class AAssignmentStmt extends PStmt
             node.parent(this);
         }
 
-        this._assignment_ = node;
+        this._left_ = node;
+    }
+
+    public PExpr getRight()
+    {
+        return this._right_;
+    }
+
+    public void setRight(PExpr node)
+    {
+        if(this._right_ != null)
+        {
+            this._right_.parent(null);
+        }
+
+        if(node != null)
+        {
+            if(node.parent() != null)
+            {
+                node.parent().removeChild(node);
+            }
+
+            node.parent(this);
+        }
+
+        this._right_ = node;
     }
 
     @Override
     public String toString()
     {
         return ""
-            + toString(this._assignment_);
+            + toString(this._left_)
+            + toString(this._right_);
     }
 
     @Override
     void removeChild(@SuppressWarnings("unused") Node child)
     {
         // Remove child
-        if(this._assignment_ == child)
+        if(this._left_ == child)
         {
-            this._assignment_ = null;
+            this._left_ = null;
+            return;
+        }
+
+        if(this._right_ == child)
+        {
+            this._right_ = null;
             return;
         }
 
@@ -84,9 +121,15 @@ public final class AAssignmentStmt extends PStmt
     void replaceChild(@SuppressWarnings("unused") Node oldChild, @SuppressWarnings("unused") Node newChild)
     {
         // Replace child
-        if(this._assignment_ == oldChild)
+        if(this._left_ == oldChild)
         {
-            setAssignment((PAssignment) newChild);
+            setLeft((PLVal) newChild);
+            return;
+        }
+
+        if(this._right_ == oldChild)
+        {
+            setRight((PExpr) newChild);
             return;
         }
 

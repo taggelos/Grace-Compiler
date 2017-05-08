@@ -7,26 +7,16 @@ import compiler.analysis.*;
 @SuppressWarnings("nls")
 public final class ASemiStmt extends PStmt
 {
-    private TSemi _semi_;
 
     public ASemiStmt()
     {
         // Constructor
     }
 
-    public ASemiStmt(
-        @SuppressWarnings("hiding") TSemi _semi_)
-    {
-        // Constructor
-        setSemi(_semi_);
-
-    }
-
     @Override
     public Object clone()
     {
-        return new ASemiStmt(
-            cloneNode(this._semi_));
+        return new ASemiStmt();
     }
 
     @Override
@@ -35,48 +25,16 @@ public final class ASemiStmt extends PStmt
         ((Analysis) sw).caseASemiStmt(this);
     }
 
-    public TSemi getSemi()
-    {
-        return this._semi_;
-    }
-
-    public void setSemi(TSemi node)
-    {
-        if(this._semi_ != null)
-        {
-            this._semi_.parent(null);
-        }
-
-        if(node != null)
-        {
-            if(node.parent() != null)
-            {
-                node.parent().removeChild(node);
-            }
-
-            node.parent(this);
-        }
-
-        this._semi_ = node;
-    }
-
     @Override
     public String toString()
     {
-        return ""
-            + toString(this._semi_);
+        return "";
     }
 
     @Override
     void removeChild(@SuppressWarnings("unused") Node child)
     {
         // Remove child
-        if(this._semi_ == child)
-        {
-            this._semi_ = null;
-            return;
-        }
-
         throw new RuntimeException("Not a child.");
     }
 
@@ -84,12 +42,6 @@ public final class ASemiStmt extends PStmt
     void replaceChild(@SuppressWarnings("unused") Node oldChild, @SuppressWarnings("unused") Node newChild)
     {
         // Replace child
-        if(this._semi_ == oldChild)
-        {
-            setSemi((TSemi) newChild);
-            return;
-        }
-
         throw new RuntimeException("Not a child.");
     }
 }

@@ -2,16 +2,14 @@
 
 package compiler.node;
 
+import java.util.*;
 import compiler.analysis.*;
 
 @SuppressWarnings("nls")
 public final class AVarDef extends PVarDef
 {
-    private TVar _var_;
-    private PVarIds _varIds_;
-    private TColon _colon_;
-    private PTypes _types_;
-    private TSemi _semi_;
+    private final LinkedList<TIdentifier> _name_ = new LinkedList<TIdentifier>();
+    private PTypes _type_;
 
     public AVarDef()
     {
@@ -19,22 +17,13 @@ public final class AVarDef extends PVarDef
     }
 
     public AVarDef(
-        @SuppressWarnings("hiding") TVar _var_,
-        @SuppressWarnings("hiding") PVarIds _varIds_,
-        @SuppressWarnings("hiding") TColon _colon_,
-        @SuppressWarnings("hiding") PTypes _types_,
-        @SuppressWarnings("hiding") TSemi _semi_)
+        @SuppressWarnings("hiding") List<?> _name_,
+        @SuppressWarnings("hiding") PTypes _type_)
     {
         // Constructor
-        setVar(_var_);
+        setName(_name_);
 
-        setVarIds(_varIds_);
-
-        setColon(_colon_);
-
-        setTypes(_types_);
-
-        setSemi(_semi_);
+        setType(_type_);
 
     }
 
@@ -42,11 +31,8 @@ public final class AVarDef extends PVarDef
     public Object clone()
     {
         return new AVarDef(
-            cloneNode(this._var_),
-            cloneNode(this._varIds_),
-            cloneNode(this._colon_),
-            cloneNode(this._types_),
-            cloneNode(this._semi_));
+            cloneList(this._name_),
+            cloneNode(this._type_));
     }
 
     @Override
@@ -55,16 +41,42 @@ public final class AVarDef extends PVarDef
         ((Analysis) sw).caseAVarDef(this);
     }
 
-    public TVar getVar()
+    public LinkedList<TIdentifier> getName()
     {
-        return this._var_;
+        return this._name_;
     }
 
-    public void setVar(TVar node)
+    public void setName(List<?> list)
     {
-        if(this._var_ != null)
+        for(TIdentifier e : this._name_)
         {
-            this._var_.parent(null);
+            e.parent(null);
+        }
+        this._name_.clear();
+
+        for(Object obj_e : list)
+        {
+            TIdentifier e = (TIdentifier) obj_e;
+            if(e.parent() != null)
+            {
+                e.parent().removeChild(e);
+            }
+
+            e.parent(this);
+            this._name_.add(e);
+        }
+    }
+
+    public PTypes getType()
+    {
+        return this._type_;
+    }
+
+    public void setType(PTypes node)
+    {
+        if(this._type_ != null)
+        {
+            this._type_.parent(null);
         }
 
         if(node != null)
@@ -77,151 +89,29 @@ public final class AVarDef extends PVarDef
             node.parent(this);
         }
 
-        this._var_ = node;
-    }
-
-    public PVarIds getVarIds()
-    {
-        return this._varIds_;
-    }
-
-    public void setVarIds(PVarIds node)
-    {
-        if(this._varIds_ != null)
-        {
-            this._varIds_.parent(null);
-        }
-
-        if(node != null)
-        {
-            if(node.parent() != null)
-            {
-                node.parent().removeChild(node);
-            }
-
-            node.parent(this);
-        }
-
-        this._varIds_ = node;
-    }
-
-    public TColon getColon()
-    {
-        return this._colon_;
-    }
-
-    public void setColon(TColon node)
-    {
-        if(this._colon_ != null)
-        {
-            this._colon_.parent(null);
-        }
-
-        if(node != null)
-        {
-            if(node.parent() != null)
-            {
-                node.parent().removeChild(node);
-            }
-
-            node.parent(this);
-        }
-
-        this._colon_ = node;
-    }
-
-    public PTypes getTypes()
-    {
-        return this._types_;
-    }
-
-    public void setTypes(PTypes node)
-    {
-        if(this._types_ != null)
-        {
-            this._types_.parent(null);
-        }
-
-        if(node != null)
-        {
-            if(node.parent() != null)
-            {
-                node.parent().removeChild(node);
-            }
-
-            node.parent(this);
-        }
-
-        this._types_ = node;
-    }
-
-    public TSemi getSemi()
-    {
-        return this._semi_;
-    }
-
-    public void setSemi(TSemi node)
-    {
-        if(this._semi_ != null)
-        {
-            this._semi_.parent(null);
-        }
-
-        if(node != null)
-        {
-            if(node.parent() != null)
-            {
-                node.parent().removeChild(node);
-            }
-
-            node.parent(this);
-        }
-
-        this._semi_ = node;
+        this._type_ = node;
     }
 
     @Override
     public String toString()
     {
         return ""
-            + toString(this._var_)
-            + toString(this._varIds_)
-            + toString(this._colon_)
-            + toString(this._types_)
-            + toString(this._semi_);
+            + toString(this._name_)
+            + toString(this._type_);
     }
 
     @Override
     void removeChild(@SuppressWarnings("unused") Node child)
     {
         // Remove child
-        if(this._var_ == child)
+        if(this._name_.remove(child))
         {
-            this._var_ = null;
             return;
         }
 
-        if(this._varIds_ == child)
+        if(this._type_ == child)
         {
-            this._varIds_ = null;
-            return;
-        }
-
-        if(this._colon_ == child)
-        {
-            this._colon_ = null;
-            return;
-        }
-
-        if(this._types_ == child)
-        {
-            this._types_ = null;
-            return;
-        }
-
-        if(this._semi_ == child)
-        {
-            this._semi_ = null;
+            this._type_ = null;
             return;
         }
 
@@ -232,33 +122,27 @@ public final class AVarDef extends PVarDef
     void replaceChild(@SuppressWarnings("unused") Node oldChild, @SuppressWarnings("unused") Node newChild)
     {
         // Replace child
-        if(this._var_ == oldChild)
+        for(ListIterator<TIdentifier> i = this._name_.listIterator(); i.hasNext();)
         {
-            setVar((TVar) newChild);
-            return;
+            if(i.next() == oldChild)
+            {
+                if(newChild != null)
+                {
+                    i.set((TIdentifier) newChild);
+                    newChild.parent(this);
+                    oldChild.parent(null);
+                    return;
+                }
+
+                i.remove();
+                oldChild.parent(null);
+                return;
+            }
         }
 
-        if(this._varIds_ == oldChild)
+        if(this._type_ == oldChild)
         {
-            setVarIds((PVarIds) newChild);
-            return;
-        }
-
-        if(this._colon_ == oldChild)
-        {
-            setColon((TColon) newChild);
-            return;
-        }
-
-        if(this._types_ == oldChild)
-        {
-            setTypes((PTypes) newChild);
-            return;
-        }
-
-        if(this._semi_ == oldChild)
-        {
-            setSemi((TSemi) newChild);
+            setType((PTypes) newChild);
             return;
         }
 

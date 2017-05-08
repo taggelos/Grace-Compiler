@@ -1,0 +1,66 @@
+Package com.example.compiler;
+
+Helpers
+    tab = 9;
+    cr = 13;
+    lf = 10;
+
+    alpha = ['a'..'z'] | ['A'..'Z'];
+    alnum = alpha | ['0'..'9'];
+
+Tokens
+    exp = 'EXP';
+    kw_if = 'if';
+    kw_then = 'then';
+    kw_else = 'else';
+    kw_while = 'while';
+
+    lbrace = '{';
+    rbrace = '}';
+
+    semicolon = ';';
+
+    identifier = alpha alnum*;
+    assign_op = '<-';
+
+    whitespace = ' ' | cr | lf | tab;
+
+Ignored Tokens
+    whitespace;
+
+Productions
+    goal {-> body} = stmt_list {-> New body([stmt_list.stmt])};
+    stmt_list {-> stmt*} = stmt* {-> [stmt.stmt]};
+    stmt {-> stmt*}
+        = {noop} noop             {-> []}
+        | {assignment} assignment {-> [assignment.stmt]}
+        | {if} if                 {-> [if.stmt]}
+        | {block} block           {-> [block.stmt]}
+        | {while} while           {-> [while.stmt]};
+
+    noop = semicolon;
+    block {-> stmt*} = lbrace stmt_list rbrace                 {-> [stmt_list.stmt]};
+    assignment {-> stmt} = identifier assign_op exp semicolon  {-> New stmt.assign(identifier)};
+    while {-> stmt} = kw_while exp stmt                        {-> New stmt.while([stmt.stmt])};
+    while_with_else {-> stmt} = kw_while exp stmt_with_else    {-> New stmt.while([stmt_with_else.stmt])};
+
+    if {-> stmt*} = if_header if_trail {-> [if_trail.stmt]};
+    if_header = kw_if exp kw_then;
+    if_trail {-> stmt}
+        = {no_else} [then]:stmt {-> New stmt.if([then.stmt], [])}
+        | {with_else} [then]:stmt_with_else kw_else [else]:stmt {-> New stmt.if([then.stmt], [else.stmt])};
+
+    stmt_with_else {-> stmt*}
+        = {noop} noop             {-> []}
+        | {assignment} assignment {-> [assignment.stmt]}
+        | {if} if_else            {-> [if_else.stmt]}
+        | {block} block           {-> [block.stmt]}
+        | {while} while_with_else {-> [while_with_else.stmt]};
+    if_else {-> stmt} = if_header [then]:stmt_with_else kw_else [else]:stmt_with_else
+        {-> New stmt.if([then.stmt], [else.stmt])};
+
+Abstract Syntax Tree
+    body = [stmts]:stmt*;
+    stmt = {assign} [variable]:identifier
+         | {if} [then]:stmt* [else]:stmt*
+         | {while} [body]:stmt*;

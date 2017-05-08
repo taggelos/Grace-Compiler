@@ -9,7 +9,7 @@ import compiler.analysis.*;
 public final class AArrayTypes extends PTypes
 {
     private PDataTypes _dataTypes_;
-    private final LinkedList<PArrayTypes> _arrayTypes_ = new LinkedList<PArrayTypes>();
+    private final LinkedList<TIntegers> _integers_ = new LinkedList<TIntegers>();
 
     public AArrayTypes()
     {
@@ -18,12 +18,12 @@ public final class AArrayTypes extends PTypes
 
     public AArrayTypes(
         @SuppressWarnings("hiding") PDataTypes _dataTypes_,
-        @SuppressWarnings("hiding") List<?> _arrayTypes_)
+        @SuppressWarnings("hiding") List<?> _integers_)
     {
         // Constructor
         setDataTypes(_dataTypes_);
 
-        setArrayTypes(_arrayTypes_);
+        setIntegers(_integers_);
 
     }
 
@@ -32,7 +32,7 @@ public final class AArrayTypes extends PTypes
     {
         return new AArrayTypes(
             cloneNode(this._dataTypes_),
-            cloneList(this._arrayTypes_));
+            cloneList(this._integers_));
     }
 
     @Override
@@ -66,29 +66,29 @@ public final class AArrayTypes extends PTypes
         this._dataTypes_ = node;
     }
 
-    public LinkedList<PArrayTypes> getArrayTypes()
+    public LinkedList<TIntegers> getIntegers()
     {
-        return this._arrayTypes_;
+        return this._integers_;
     }
 
-    public void setArrayTypes(List<?> list)
+    public void setIntegers(List<?> list)
     {
-        for(PArrayTypes e : this._arrayTypes_)
+        for(TIntegers e : this._integers_)
         {
             e.parent(null);
         }
-        this._arrayTypes_.clear();
+        this._integers_.clear();
 
         for(Object obj_e : list)
         {
-            PArrayTypes e = (PArrayTypes) obj_e;
+            TIntegers e = (TIntegers) obj_e;
             if(e.parent() != null)
             {
                 e.parent().removeChild(e);
             }
 
             e.parent(this);
-            this._arrayTypes_.add(e);
+            this._integers_.add(e);
         }
     }
 
@@ -97,7 +97,7 @@ public final class AArrayTypes extends PTypes
     {
         return ""
             + toString(this._dataTypes_)
-            + toString(this._arrayTypes_);
+            + toString(this._integers_);
     }
 
     @Override
@@ -110,7 +110,7 @@ public final class AArrayTypes extends PTypes
             return;
         }
 
-        if(this._arrayTypes_.remove(child))
+        if(this._integers_.remove(child))
         {
             return;
         }
@@ -128,13 +128,13 @@ public final class AArrayTypes extends PTypes
             return;
         }
 
-        for(ListIterator<PArrayTypes> i = this._arrayTypes_.listIterator(); i.hasNext();)
+        for(ListIterator<TIntegers> i = this._integers_.listIterator(); i.hasNext();)
         {
             if(i.next() == oldChild)
             {
                 if(newChild != null)
                 {
-                    i.set((PArrayTypes) newChild);
+                    i.set((TIntegers) newChild);
                     newChild.parent(this);
                     oldChild.parent(null);
                     return;

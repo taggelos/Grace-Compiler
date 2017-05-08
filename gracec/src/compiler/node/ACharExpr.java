@@ -5,46 +5,46 @@ package compiler.node;
 import compiler.analysis.*;
 
 @SuppressWarnings("nls")
-public final class AReturnstmtStmt extends PStmt
+public final class ACharExpr extends PExpr
 {
-    private PExpr _returnexpr_;
+    private TCharConst _charConst_;
 
-    public AReturnstmtStmt()
+    public ACharExpr()
     {
         // Constructor
     }
 
-    public AReturnstmtStmt(
-        @SuppressWarnings("hiding") PExpr _returnexpr_)
+    public ACharExpr(
+        @SuppressWarnings("hiding") TCharConst _charConst_)
     {
         // Constructor
-        setReturnexpr(_returnexpr_);
+        setCharConst(_charConst_);
 
     }
 
     @Override
     public Object clone()
     {
-        return new AReturnstmtStmt(
-            cloneNode(this._returnexpr_));
+        return new ACharExpr(
+            cloneNode(this._charConst_));
     }
 
     @Override
     public void apply(Switch sw)
     {
-        ((Analysis) sw).caseAReturnstmtStmt(this);
+        ((Analysis) sw).caseACharExpr(this);
     }
 
-    public PExpr getReturnexpr()
+    public TCharConst getCharConst()
     {
-        return this._returnexpr_;
+        return this._charConst_;
     }
 
-    public void setReturnexpr(PExpr node)
+    public void setCharConst(TCharConst node)
     {
-        if(this._returnexpr_ != null)
+        if(this._charConst_ != null)
         {
-            this._returnexpr_.parent(null);
+            this._charConst_.parent(null);
         }
 
         if(node != null)
@@ -57,23 +57,23 @@ public final class AReturnstmtStmt extends PStmt
             node.parent(this);
         }
 
-        this._returnexpr_ = node;
+        this._charConst_ = node;
     }
 
     @Override
     public String toString()
     {
         return ""
-            + toString(this._returnexpr_);
+            + toString(this._charConst_);
     }
 
     @Override
     void removeChild(@SuppressWarnings("unused") Node child)
     {
         // Remove child
-        if(this._returnexpr_ == child)
+        if(this._charConst_ == child)
         {
-            this._returnexpr_ = null;
+            this._charConst_ = null;
             return;
         }
 
@@ -84,9 +84,9 @@ public final class AReturnstmtStmt extends PStmt
     void replaceChild(@SuppressWarnings("unused") Node oldChild, @SuppressWarnings("unused") Node newChild)
     {
         // Replace child
-        if(this._returnexpr_ == oldChild)
+        if(this._charConst_ == oldChild)
         {
-            setReturnexpr((PExpr) newChild);
+            setCharConst((TCharConst) newChild);
             return;
         }
 

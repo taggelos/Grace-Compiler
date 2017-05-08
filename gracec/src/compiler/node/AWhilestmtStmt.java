@@ -2,12 +2,14 @@
 
 package compiler.node;
 
+import java.util.*;
 import compiler.analysis.*;
 
 @SuppressWarnings("nls")
 public final class AWhilestmtStmt extends PStmt
 {
-    private PWhilestmt _whilestmt_;
+    private PExpr _cond_;
+    private final LinkedList<PStmt> _body_ = new LinkedList<PStmt>();
 
     public AWhilestmtStmt()
     {
@@ -15,10 +17,13 @@ public final class AWhilestmtStmt extends PStmt
     }
 
     public AWhilestmtStmt(
-        @SuppressWarnings("hiding") PWhilestmt _whilestmt_)
+        @SuppressWarnings("hiding") PExpr _cond_,
+        @SuppressWarnings("hiding") List<?> _body_)
     {
         // Constructor
-        setWhilestmt(_whilestmt_);
+        setCond(_cond_);
+
+        setBody(_body_);
 
     }
 
@@ -26,7 +31,8 @@ public final class AWhilestmtStmt extends PStmt
     public Object clone()
     {
         return new AWhilestmtStmt(
-            cloneNode(this._whilestmt_));
+            cloneNode(this._cond_),
+            cloneList(this._body_));
     }
 
     @Override
@@ -35,16 +41,16 @@ public final class AWhilestmtStmt extends PStmt
         ((Analysis) sw).caseAWhilestmtStmt(this);
     }
 
-    public PWhilestmt getWhilestmt()
+    public PExpr getCond()
     {
-        return this._whilestmt_;
+        return this._cond_;
     }
 
-    public void setWhilestmt(PWhilestmt node)
+    public void setCond(PExpr node)
     {
-        if(this._whilestmt_ != null)
+        if(this._cond_ != null)
         {
-            this._whilestmt_.parent(null);
+            this._cond_.parent(null);
         }
 
         if(node != null)
@@ -57,23 +63,55 @@ public final class AWhilestmtStmt extends PStmt
             node.parent(this);
         }
 
-        this._whilestmt_ = node;
+        this._cond_ = node;
+    }
+
+    public LinkedList<PStmt> getBody()
+    {
+        return this._body_;
+    }
+
+    public void setBody(List<?> list)
+    {
+        for(PStmt e : this._body_)
+        {
+            e.parent(null);
+        }
+        this._body_.clear();
+
+        for(Object obj_e : list)
+        {
+            PStmt e = (PStmt) obj_e;
+            if(e.parent() != null)
+            {
+                e.parent().removeChild(e);
+            }
+
+            e.parent(this);
+            this._body_.add(e);
+        }
     }
 
     @Override
     public String toString()
     {
         return ""
-            + toString(this._whilestmt_);
+            + toString(this._cond_)
+            + toString(this._body_);
     }
 
     @Override
     void removeChild(@SuppressWarnings("unused") Node child)
     {
         // Remove child
-        if(this._whilestmt_ == child)
+        if(this._cond_ == child)
         {
-            this._whilestmt_ = null;
+            this._cond_ = null;
+            return;
+        }
+
+        if(this._body_.remove(child))
+        {
             return;
         }
 
@@ -84,10 +122,28 @@ public final class AWhilestmtStmt extends PStmt
     void replaceChild(@SuppressWarnings("unused") Node oldChild, @SuppressWarnings("unused") Node newChild)
     {
         // Replace child
-        if(this._whilestmt_ == oldChild)
+        if(this._cond_ == oldChild)
         {
-            setWhilestmt((PWhilestmt) newChild);
+            setCond((PExpr) newChild);
             return;
+        }
+
+        for(ListIterator<PStmt> i = this._body_.listIterator(); i.hasNext();)
+        {
+            if(i.next() == oldChild)
+            {
+                if(newChild != null)
+                {
+                    i.set((PStmt) newChild);
+                    newChild.parent(this);
+                    oldChild.parent(null);
+                    return;
+                }
+
+                i.remove();
+                oldChild.parent(null);
+                return;
+            }
         }
 
         throw new RuntimeException("Not a child.");

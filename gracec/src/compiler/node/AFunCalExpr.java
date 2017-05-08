@@ -5,46 +5,46 @@ package compiler.node;
 import compiler.analysis.*;
 
 @SuppressWarnings("nls")
-public final class AReturnstmtStmt extends PStmt
+public final class AFunCalExpr extends PExpr
 {
-    private PExpr _returnexpr_;
+    private PFunCal _funCal_;
 
-    public AReturnstmtStmt()
+    public AFunCalExpr()
     {
         // Constructor
     }
 
-    public AReturnstmtStmt(
-        @SuppressWarnings("hiding") PExpr _returnexpr_)
+    public AFunCalExpr(
+        @SuppressWarnings("hiding") PFunCal _funCal_)
     {
         // Constructor
-        setReturnexpr(_returnexpr_);
+        setFunCal(_funCal_);
 
     }
 
     @Override
     public Object clone()
     {
-        return new AReturnstmtStmt(
-            cloneNode(this._returnexpr_));
+        return new AFunCalExpr(
+            cloneNode(this._funCal_));
     }
 
     @Override
     public void apply(Switch sw)
     {
-        ((Analysis) sw).caseAReturnstmtStmt(this);
+        ((Analysis) sw).caseAFunCalExpr(this);
     }
 
-    public PExpr getReturnexpr()
+    public PFunCal getFunCal()
     {
-        return this._returnexpr_;
+        return this._funCal_;
     }
 
-    public void setReturnexpr(PExpr node)
+    public void setFunCal(PFunCal node)
     {
-        if(this._returnexpr_ != null)
+        if(this._funCal_ != null)
         {
-            this._returnexpr_.parent(null);
+            this._funCal_.parent(null);
         }
 
         if(node != null)
@@ -57,23 +57,23 @@ public final class AReturnstmtStmt extends PStmt
             node.parent(this);
         }
 
-        this._returnexpr_ = node;
+        this._funCal_ = node;
     }
 
     @Override
     public String toString()
     {
         return ""
-            + toString(this._returnexpr_);
+            + toString(this._funCal_);
     }
 
     @Override
     void removeChild(@SuppressWarnings("unused") Node child)
     {
         // Remove child
-        if(this._returnexpr_ == child)
+        if(this._funCal_ == child)
         {
-            this._returnexpr_ = null;
+            this._funCal_ = null;
             return;
         }
 
@@ -84,9 +84,9 @@ public final class AReturnstmtStmt extends PStmt
     void replaceChild(@SuppressWarnings("unused") Node oldChild, @SuppressWarnings("unused") Node newChild)
     {
         // Replace child
-        if(this._returnexpr_ == oldChild)
+        if(this._funCal_ == oldChild)
         {
-            setReturnexpr((PExpr) newChild);
+            setFunCal((PFunCal) newChild);
             return;
         }
 

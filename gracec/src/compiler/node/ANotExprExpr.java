@@ -5,23 +5,19 @@ package compiler.node;
 import compiler.analysis.*;
 
 @SuppressWarnings("nls")
-public final class AIdBracketsLVal extends PLVal
+public final class ANotExprExpr extends PExpr
 {
-    private PLVal _lVal_;
     private PExpr _expr_;
 
-    public AIdBracketsLVal()
+    public ANotExprExpr()
     {
         // Constructor
     }
 
-    public AIdBracketsLVal(
-        @SuppressWarnings("hiding") PLVal _lVal_,
+    public ANotExprExpr(
         @SuppressWarnings("hiding") PExpr _expr_)
     {
         // Constructor
-        setLVal(_lVal_);
-
         setExpr(_expr_);
 
     }
@@ -29,40 +25,14 @@ public final class AIdBracketsLVal extends PLVal
     @Override
     public Object clone()
     {
-        return new AIdBracketsLVal(
-            cloneNode(this._lVal_),
+        return new ANotExprExpr(
             cloneNode(this._expr_));
     }
 
     @Override
     public void apply(Switch sw)
     {
-        ((Analysis) sw).caseAIdBracketsLVal(this);
-    }
-
-    public PLVal getLVal()
-    {
-        return this._lVal_;
-    }
-
-    public void setLVal(PLVal node)
-    {
-        if(this._lVal_ != null)
-        {
-            this._lVal_.parent(null);
-        }
-
-        if(node != null)
-        {
-            if(node.parent() != null)
-            {
-                node.parent().removeChild(node);
-            }
-
-            node.parent(this);
-        }
-
-        this._lVal_ = node;
+        ((Analysis) sw).caseANotExprExpr(this);
     }
 
     public PExpr getExpr()
@@ -94,7 +64,6 @@ public final class AIdBracketsLVal extends PLVal
     public String toString()
     {
         return ""
-            + toString(this._lVal_)
             + toString(this._expr_);
     }
 
@@ -102,12 +71,6 @@ public final class AIdBracketsLVal extends PLVal
     void removeChild(@SuppressWarnings("unused") Node child)
     {
         // Remove child
-        if(this._lVal_ == child)
-        {
-            this._lVal_ = null;
-            return;
-        }
-
         if(this._expr_ == child)
         {
             this._expr_ = null;
@@ -121,12 +84,6 @@ public final class AIdBracketsLVal extends PLVal
     void replaceChild(@SuppressWarnings("unused") Node oldChild, @SuppressWarnings("unused") Node newChild)
     {
         // Replace child
-        if(this._lVal_ == oldChild)
-        {
-            setLVal((PLVal) newChild);
-            return;
-        }
-
         if(this._expr_ == oldChild)
         {
             setExpr((PExpr) newChild);

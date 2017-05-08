@@ -7,9 +7,7 @@ import compiler.analysis.*;
 @SuppressWarnings("nls")
 public final class AMultParFparDef extends PFparDef
 {
-    private TRef _ref_;
-    private TIdentifier _identifier_;
-    private TComma _comma_;
+    private TIdentifier _name_;
     private PFparDef _fparDef_;
 
     public AMultParFparDef()
@@ -18,17 +16,11 @@ public final class AMultParFparDef extends PFparDef
     }
 
     public AMultParFparDef(
-        @SuppressWarnings("hiding") TRef _ref_,
-        @SuppressWarnings("hiding") TIdentifier _identifier_,
-        @SuppressWarnings("hiding") TComma _comma_,
+        @SuppressWarnings("hiding") TIdentifier _name_,
         @SuppressWarnings("hiding") PFparDef _fparDef_)
     {
         // Constructor
-        setRef(_ref_);
-
-        setIdentifier(_identifier_);
-
-        setComma(_comma_);
+        setName(_name_);
 
         setFparDef(_fparDef_);
 
@@ -38,9 +30,7 @@ public final class AMultParFparDef extends PFparDef
     public Object clone()
     {
         return new AMultParFparDef(
-            cloneNode(this._ref_),
-            cloneNode(this._identifier_),
-            cloneNode(this._comma_),
+            cloneNode(this._name_),
             cloneNode(this._fparDef_));
     }
 
@@ -50,16 +40,16 @@ public final class AMultParFparDef extends PFparDef
         ((Analysis) sw).caseAMultParFparDef(this);
     }
 
-    public TRef getRef()
+    public TIdentifier getName()
     {
-        return this._ref_;
+        return this._name_;
     }
 
-    public void setRef(TRef node)
+    public void setName(TIdentifier node)
     {
-        if(this._ref_ != null)
+        if(this._name_ != null)
         {
-            this._ref_.parent(null);
+            this._name_.parent(null);
         }
 
         if(node != null)
@@ -72,57 +62,7 @@ public final class AMultParFparDef extends PFparDef
             node.parent(this);
         }
 
-        this._ref_ = node;
-    }
-
-    public TIdentifier getIdentifier()
-    {
-        return this._identifier_;
-    }
-
-    public void setIdentifier(TIdentifier node)
-    {
-        if(this._identifier_ != null)
-        {
-            this._identifier_.parent(null);
-        }
-
-        if(node != null)
-        {
-            if(node.parent() != null)
-            {
-                node.parent().removeChild(node);
-            }
-
-            node.parent(this);
-        }
-
-        this._identifier_ = node;
-    }
-
-    public TComma getComma()
-    {
-        return this._comma_;
-    }
-
-    public void setComma(TComma node)
-    {
-        if(this._comma_ != null)
-        {
-            this._comma_.parent(null);
-        }
-
-        if(node != null)
-        {
-            if(node.parent() != null)
-            {
-                node.parent().removeChild(node);
-            }
-
-            node.parent(this);
-        }
-
-        this._comma_ = node;
+        this._name_ = node;
     }
 
     public PFparDef getFparDef()
@@ -154,9 +94,7 @@ public final class AMultParFparDef extends PFparDef
     public String toString()
     {
         return ""
-            + toString(this._ref_)
-            + toString(this._identifier_)
-            + toString(this._comma_)
+            + toString(this._name_)
             + toString(this._fparDef_);
     }
 
@@ -164,21 +102,9 @@ public final class AMultParFparDef extends PFparDef
     void removeChild(@SuppressWarnings("unused") Node child)
     {
         // Remove child
-        if(this._ref_ == child)
+        if(this._name_ == child)
         {
-            this._ref_ = null;
-            return;
-        }
-
-        if(this._identifier_ == child)
-        {
-            this._identifier_ = null;
-            return;
-        }
-
-        if(this._comma_ == child)
-        {
-            this._comma_ = null;
+            this._name_ = null;
             return;
         }
 
@@ -195,21 +121,9 @@ public final class AMultParFparDef extends PFparDef
     void replaceChild(@SuppressWarnings("unused") Node oldChild, @SuppressWarnings("unused") Node newChild)
     {
         // Replace child
-        if(this._ref_ == oldChild)
+        if(this._name_ == oldChild)
         {
-            setRef((TRef) newChild);
-            return;
-        }
-
-        if(this._identifier_ == oldChild)
-        {
-            setIdentifier((TIdentifier) newChild);
-            return;
-        }
-
-        if(this._comma_ == oldChild)
-        {
-            setComma((TComma) newChild);
+            setName((TIdentifier) newChild);
             return;
         }
 

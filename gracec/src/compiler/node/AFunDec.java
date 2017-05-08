@@ -8,7 +8,6 @@ import compiler.analysis.*;
 public final class AFunDec extends PFunDec
 {
     private PHeader _header_;
-    private TSemi _semi_;
 
     public AFunDec()
     {
@@ -16,13 +15,10 @@ public final class AFunDec extends PFunDec
     }
 
     public AFunDec(
-        @SuppressWarnings("hiding") PHeader _header_,
-        @SuppressWarnings("hiding") TSemi _semi_)
+        @SuppressWarnings("hiding") PHeader _header_)
     {
         // Constructor
         setHeader(_header_);
-
-        setSemi(_semi_);
 
     }
 
@@ -30,8 +26,7 @@ public final class AFunDec extends PFunDec
     public Object clone()
     {
         return new AFunDec(
-            cloneNode(this._header_),
-            cloneNode(this._semi_));
+            cloneNode(this._header_));
     }
 
     @Override
@@ -65,37 +60,11 @@ public final class AFunDec extends PFunDec
         this._header_ = node;
     }
 
-    public TSemi getSemi()
-    {
-        return this._semi_;
-    }
-
-    public void setSemi(TSemi node)
-    {
-        if(this._semi_ != null)
-        {
-            this._semi_.parent(null);
-        }
-
-        if(node != null)
-        {
-            if(node.parent() != null)
-            {
-                node.parent().removeChild(node);
-            }
-
-            node.parent(this);
-        }
-
-        this._semi_ = node;
-    }
-
     @Override
     public String toString()
     {
         return ""
-            + toString(this._header_)
-            + toString(this._semi_);
+            + toString(this._header_);
     }
 
     @Override
@@ -105,12 +74,6 @@ public final class AFunDec extends PFunDec
         if(this._header_ == child)
         {
             this._header_ = null;
-            return;
-        }
-
-        if(this._semi_ == child)
-        {
-            this._semi_ = null;
             return;
         }
 
@@ -124,12 +87,6 @@ public final class AFunDec extends PFunDec
         if(this._header_ == oldChild)
         {
             setHeader((PHeader) newChild);
-            return;
-        }
-
-        if(this._semi_ == oldChild)
-        {
-            setSemi((TSemi) newChild);
             return;
         }
 

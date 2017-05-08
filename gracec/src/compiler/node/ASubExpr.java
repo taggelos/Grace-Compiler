@@ -7,9 +7,8 @@ import compiler.analysis.*;
 @SuppressWarnings("nls")
 public final class ASubExpr extends PExpr
 {
-    private PExpr _expr_;
-    private TMinus _minus_;
-    private PFactor _factor_;
+    private PExpr _expr1_;
+    private PExpr _expr2_;
 
     public ASubExpr()
     {
@@ -17,16 +16,13 @@ public final class ASubExpr extends PExpr
     }
 
     public ASubExpr(
-        @SuppressWarnings("hiding") PExpr _expr_,
-        @SuppressWarnings("hiding") TMinus _minus_,
-        @SuppressWarnings("hiding") PFactor _factor_)
+        @SuppressWarnings("hiding") PExpr _expr1_,
+        @SuppressWarnings("hiding") PExpr _expr2_)
     {
         // Constructor
-        setExpr(_expr_);
+        setExpr1(_expr1_);
 
-        setMinus(_minus_);
-
-        setFactor(_factor_);
+        setExpr2(_expr2_);
 
     }
 
@@ -34,9 +30,8 @@ public final class ASubExpr extends PExpr
     public Object clone()
     {
         return new ASubExpr(
-            cloneNode(this._expr_),
-            cloneNode(this._minus_),
-            cloneNode(this._factor_));
+            cloneNode(this._expr1_),
+            cloneNode(this._expr2_));
     }
 
     @Override
@@ -45,16 +40,16 @@ public final class ASubExpr extends PExpr
         ((Analysis) sw).caseASubExpr(this);
     }
 
-    public PExpr getExpr()
+    public PExpr getExpr1()
     {
-        return this._expr_;
+        return this._expr1_;
     }
 
-    public void setExpr(PExpr node)
+    public void setExpr1(PExpr node)
     {
-        if(this._expr_ != null)
+        if(this._expr1_ != null)
         {
-            this._expr_.parent(null);
+            this._expr1_.parent(null);
         }
 
         if(node != null)
@@ -67,19 +62,19 @@ public final class ASubExpr extends PExpr
             node.parent(this);
         }
 
-        this._expr_ = node;
+        this._expr1_ = node;
     }
 
-    public TMinus getMinus()
+    public PExpr getExpr2()
     {
-        return this._minus_;
+        return this._expr2_;
     }
 
-    public void setMinus(TMinus node)
+    public void setExpr2(PExpr node)
     {
-        if(this._minus_ != null)
+        if(this._expr2_ != null)
         {
-            this._minus_.parent(null);
+            this._expr2_.parent(null);
         }
 
         if(node != null)
@@ -92,62 +87,30 @@ public final class ASubExpr extends PExpr
             node.parent(this);
         }
 
-        this._minus_ = node;
-    }
-
-    public PFactor getFactor()
-    {
-        return this._factor_;
-    }
-
-    public void setFactor(PFactor node)
-    {
-        if(this._factor_ != null)
-        {
-            this._factor_.parent(null);
-        }
-
-        if(node != null)
-        {
-            if(node.parent() != null)
-            {
-                node.parent().removeChild(node);
-            }
-
-            node.parent(this);
-        }
-
-        this._factor_ = node;
+        this._expr2_ = node;
     }
 
     @Override
     public String toString()
     {
         return ""
-            + toString(this._expr_)
-            + toString(this._minus_)
-            + toString(this._factor_);
+            + toString(this._expr1_)
+            + toString(this._expr2_);
     }
 
     @Override
     void removeChild(@SuppressWarnings("unused") Node child)
     {
         // Remove child
-        if(this._expr_ == child)
+        if(this._expr1_ == child)
         {
-            this._expr_ = null;
+            this._expr1_ = null;
             return;
         }
 
-        if(this._minus_ == child)
+        if(this._expr2_ == child)
         {
-            this._minus_ = null;
-            return;
-        }
-
-        if(this._factor_ == child)
-        {
-            this._factor_ = null;
+            this._expr2_ = null;
             return;
         }
 
@@ -158,21 +121,15 @@ public final class ASubExpr extends PExpr
     void replaceChild(@SuppressWarnings("unused") Node oldChild, @SuppressWarnings("unused") Node newChild)
     {
         // Replace child
-        if(this._expr_ == oldChild)
+        if(this._expr1_ == oldChild)
         {
-            setExpr((PExpr) newChild);
+            setExpr1((PExpr) newChild);
             return;
         }
 
-        if(this._minus_ == oldChild)
+        if(this._expr2_ == oldChild)
         {
-            setMinus((TMinus) newChild);
-            return;
-        }
-
-        if(this._factor_ == oldChild)
-        {
-            setFactor((PFactor) newChild);
+            setExpr2((PExpr) newChild);
             return;
         }
 
