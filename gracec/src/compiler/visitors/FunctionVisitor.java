@@ -137,6 +137,10 @@ public class FunctionVisitor extends DepthFirstAdapter
     public void caseASimpleParFparDef(ASimpleParFparDef node)
     {
         inASimpleParFparDef(node);
+        if(node.getRef() != null)
+        {
+            node.getRef().apply(this);
+        }
         if(node.getName() != null)
         {
             node.getName().apply(this);
@@ -162,6 +166,10 @@ public class FunctionVisitor extends DepthFirstAdapter
     public void caseAMultParFparDef(AMultParFparDef node)
     {
         inAMultParFparDef(node);
+        if(node.getRef() != null)
+        {
+            node.getRef().apply(this);
+        }
         if(node.getName() != null)
         {
             node.getName().apply(this);
@@ -187,6 +195,10 @@ public class FunctionVisitor extends DepthFirstAdapter
     public void caseAMultTypesFparDef(AMultTypesFparDef node)
     {
         inAMultTypesFparDef(node);
+        if(node.getRef() != null)
+        {
+            node.getRef().apply(this);
+        }
         if(node.getName() != null)
         {
             node.getName().apply(this);
@@ -216,6 +228,10 @@ public class FunctionVisitor extends DepthFirstAdapter
     public void caseASemiParFparDef(ASemiParFparDef node)
     {
         inASemiParFparDef(node);
+        if(node.getRef() != null)
+        {
+            node.getRef().apply(this);
+        }
         if(node.getName() != null)
         {
             node.getName().apply(this);
@@ -374,6 +390,35 @@ public class FunctionVisitor extends DepthFirstAdapter
         outACharDataTypes(node);
     }
 
+    public void inABracketsArrayTypes(ABracketsArrayTypes node)
+    {
+        defaultIn(node);
+    }
+
+    public void outABracketsArrayTypes(ABracketsArrayTypes node)
+    {
+        defaultOut(node);
+    }
+
+    @Override
+    public void caseABracketsArrayTypes(ABracketsArrayTypes node)
+    {
+        inABracketsArrayTypes(node);
+        if(node.getLBr() != null)
+        {
+            node.getLBr().apply(this);
+        }
+        if(node.getIntegers() != null)
+        {
+            node.getIntegers().apply(this);
+        }
+        if(node.getRBr() != null)
+        {
+            node.getRBr().apply(this);
+        }
+        outABracketsArrayTypes(node);
+    }
+
     public void inASimpleTypes(ASimpleTypes node)
     {
         defaultIn(node);
@@ -414,8 +459,8 @@ public class FunctionVisitor extends DepthFirstAdapter
             node.getDataTypes().apply(this);
         }
         {
-            List<TIntegers> copy = new ArrayList<TIntegers>(node.getIntegers());
-            for(TIntegers e : copy)
+            List<PArrayTypes> copy = new ArrayList<PArrayTypes>(node.getArrayTypes());
+            for(PArrayTypes e : copy)
             {
                 e.apply(this);
             }

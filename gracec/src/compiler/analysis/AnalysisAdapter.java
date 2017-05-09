@@ -255,6 +255,12 @@ public class AnalysisAdapter implements Analysis
     }
 
     @Override
+    public void caseAParExpr(AParExpr node)
+    {
+        defaultCase(node);
+    }
+
+    @Override
     public void caseALessThanExpr(ALessThanExpr node)
     {
         defaultCase(node);
@@ -340,12 +346,6 @@ public class AnalysisAdapter implements Analysis
 
     @Override
     public void caseALValExpr(ALValExpr node)
-    {
-        defaultCase(node);
-    }
-
-    @Override
-    public void caseAParExpr(AParExpr node)
     {
         defaultCase(node);
     }
@@ -538,6 +538,12 @@ public class AnalysisAdapter implements Analysis
 
     @Override
     public void caseTIntegers(TIntegers node)
+    {
+        defaultCase(node);
+    }
+
+    @Override
+    public void caseTErroneousNumber(TErroneousNumber node)
     {
         defaultCase(node);
     }

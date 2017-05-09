@@ -786,6 +786,27 @@ public class ReversedDepthFirstAdapter extends AnalysisAdapter
         outANotExprExpr(node);
     }
 
+    public void inAParExpr(AParExpr node)
+    {
+        defaultIn(node);
+    }
+
+    public void outAParExpr(AParExpr node)
+    {
+        defaultOut(node);
+    }
+
+    @Override
+    public void caseAParExpr(AParExpr node)
+    {
+        inAParExpr(node);
+        if(node.getExpr() != null)
+        {
+            node.getExpr().apply(this);
+        }
+        outAParExpr(node);
+    }
+
     public void inALessThanExpr(ALessThanExpr node)
     {
         defaultIn(node);
@@ -1143,27 +1164,6 @@ public class ReversedDepthFirstAdapter extends AnalysisAdapter
             node.getLVal().apply(this);
         }
         outALValExpr(node);
-    }
-
-    public void inAParExpr(AParExpr node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAParExpr(AParExpr node)
-    {
-        defaultOut(node);
-    }
-
-    @Override
-    public void caseAParExpr(AParExpr node)
-    {
-        inAParExpr(node);
-        if(node.getExpr() != null)
-        {
-            node.getExpr().apply(this);
-        }
-        outAParExpr(node);
     }
 
     public void inAFunCalExpr(AFunCalExpr node)

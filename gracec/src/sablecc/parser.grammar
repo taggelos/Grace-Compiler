@@ -57,6 +57,7 @@ Tokens
     identifier = latin_letter (latin_letter | digit | '_' )*;
 
     integers = digit+;
+    erroneous_number = (digit)+ (latin_letter|'_')+;
 
     char_const = ''' char_literal ''';
 
@@ -221,11 +222,11 @@ Productions
         {not_equal} [left]:comparative_expression neq [right]:relational_expression {-> New expr.not_equal(left.expr, right.expr)};
 
     relational_expression {-> expr} =
-        {additive} expr {-> expr.expr} |
-        {less_than} [left]:relational_expression lt [right]:expr {-> New expr.less_than(left.expr, right.expr)} |
-        {greater_than} [left]:relational_expression gt [right]:expr {-> New expr.greater_than(left.expr, right.expr)} |
-        {greater_equal_than} [left]:relational_expression gteq [right]:expr {-> New expr.greater_equal_than(left.expr, right.expr)} |
-        {less_equal_than} [left]:relational_expression lteq [right]:expr {-> New expr.less_equal_than(left.expr, right.expr)};
+        {par} l_par cond r_par {-> cond.expr} |
+        {less_than} [left]:expr lt [right]:expr {-> New expr.less_than(left.expr, right.expr)} |
+        {greater_than} [left]:expr gt [right]:expr {-> New expr.greater_than(left.expr, right.expr)} |
+        {greater_equal_than} [left]:expr gteq [right]:expr {-> New expr.greater_equal_than(left.expr, right.expr)} |
+        {less_equal_than} [left]:expr lteq [right]:expr {-> New expr.less_equal_than(left.expr, right.expr)};
 
     /* ---------------------------------------------------- */
 
@@ -312,10 +313,10 @@ Abstract Syntax Tree
         {with_else} [then]:stmt* [else_st]:stmt*;
 
     expr = 
-        //{if_header} [cond]:expr |
         {and_expr} [left]:expr [right]:expr |
         {or_expr} [left]:expr [right]:expr |
         {not_expr} [expr]:expr |
+        {par} [expr]:expr |
         {less_than} [left]:expr [right]:expr |
         {greater_than} [left]:expr [right]:expr |
         {greater_equal_than} [left]:expr [right]:expr |
@@ -330,8 +331,7 @@ Abstract Syntax Tree
         {plus_or_minus} [expr]:expr |
         {int} integers |
         {char} char_const | 
-        {l_val} l_val |     
-        {par} [expr]:expr |
+        {l_val} l_val |
         {fun_cal} fun_cal | 
         {returnstmt} [returnexpr]:expr;
 
