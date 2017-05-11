@@ -28,7 +28,7 @@ Helpers
 
     not_dollar = [all - '$'];
 
-    simple_comment = '$' (not_dollar input_character*)? line_terminator?;
+    simple_comment = '$' (not_dollar input_character*)? line_terminator;
     multi_comment = '$$' ('$'? not_dollar)* '$$';
 
 Tokens
@@ -338,11 +338,9 @@ Abstract Syntax Tree
     stmt =   
         {semi} |
         {assignment} [left]:l_val [right]:expr |
-        //{ifstmt} [cond]:expr [then]:stmt* [elsest]:stmt* | 
-        {ifstmt} [cond]:if_header [stmt]:if_trail |
+        {ifstmt} [cond]:if_header [then]:if_trail |
         {if_else} [cond]:if_header [then]:stmt* [else_st]:stmt*  |
         {whilestmt} [cond]:expr [body]:stmt* |
         {fun_cal} fun_cal |
         {returnstmt} [returnexpr]:expr? |
         {block} [block]:stmt* ;
-        
