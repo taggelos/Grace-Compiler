@@ -8,7 +8,7 @@ import compiler.analysis.*;
 public final class AIfstmtStmt extends PStmt
 {
     private PIfHeader _cond_;
-    private PIfTrail _stmt_;
+    private PIfTrail _then_;
 
     public AIfstmtStmt()
     {
@@ -17,12 +17,12 @@ public final class AIfstmtStmt extends PStmt
 
     public AIfstmtStmt(
         @SuppressWarnings("hiding") PIfHeader _cond_,
-        @SuppressWarnings("hiding") PIfTrail _stmt_)
+        @SuppressWarnings("hiding") PIfTrail _then_)
     {
         // Constructor
         setCond(_cond_);
 
-        setStmt(_stmt_);
+        setThen(_then_);
 
     }
 
@@ -31,7 +31,7 @@ public final class AIfstmtStmt extends PStmt
     {
         return new AIfstmtStmt(
             cloneNode(this._cond_),
-            cloneNode(this._stmt_));
+            cloneNode(this._then_));
     }
 
     @Override
@@ -65,16 +65,16 @@ public final class AIfstmtStmt extends PStmt
         this._cond_ = node;
     }
 
-    public PIfTrail getStmt()
+    public PIfTrail getThen()
     {
-        return this._stmt_;
+        return this._then_;
     }
 
-    public void setStmt(PIfTrail node)
+    public void setThen(PIfTrail node)
     {
-        if(this._stmt_ != null)
+        if(this._then_ != null)
         {
-            this._stmt_.parent(null);
+            this._then_.parent(null);
         }
 
         if(node != null)
@@ -87,7 +87,7 @@ public final class AIfstmtStmt extends PStmt
             node.parent(this);
         }
 
-        this._stmt_ = node;
+        this._then_ = node;
     }
 
     @Override
@@ -95,7 +95,7 @@ public final class AIfstmtStmt extends PStmt
     {
         return ""
             + toString(this._cond_)
-            + toString(this._stmt_);
+            + toString(this._then_);
     }
 
     @Override
@@ -108,9 +108,9 @@ public final class AIfstmtStmt extends PStmt
             return;
         }
 
-        if(this._stmt_ == child)
+        if(this._then_ == child)
         {
-            this._stmt_ = null;
+            this._then_ = null;
             return;
         }
 
@@ -127,9 +127,9 @@ public final class AIfstmtStmt extends PStmt
             return;
         }
 
-        if(this._stmt_ == oldChild)
+        if(this._then_ == oldChild)
         {
-            setStmt((PIfTrail) newChild);
+            setThen((PIfTrail) newChild);
             return;
         }
 

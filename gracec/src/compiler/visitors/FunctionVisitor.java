@@ -6,10 +6,19 @@ import java.util.*;
 
 import compiler.analysis.DepthFirstAdapter;
 import compiler.node.*;
+import compiler.symboltable.*;
 
 public class FunctionVisitor extends DepthFirstAdapter
 {
-	public void inStart(Start node)
+	public LinkedList<Method_t> methods;        // Lista twn klasewn
+    public LinkedList<String> errors;
+
+    public FunctionVisitor() { 
+    	methods = new LinkedList<Method_t>(); 
+    	errors = new LinkedList<String>(); 
+    }
+	
+    public void inStart(Start node)
     {
         defaultIn(node);
     }
@@ -76,6 +85,25 @@ public class FunctionVisitor extends DepthFirstAdapter
         if(node.getHeader() != null)
         {
             node.getHeader().apply(this);
+            AHeader header = (AHeader) node.getHeader();
+            String return_type, name;
+            return_type = header.getReturnT().toString();
+            name = header.getName().toString();
+            //List<PFparDef> copy = new ArrayList<PFparDef>(header.getPars());
+            System.out.println("--->" + header.getPars());
+            int error_count = errors.size();
+            
+            for(Method_t m : methods)
+				if(m.getName().equals(name)) 
+					errors.add("Method " + name + " already exists!");
+            
+            if(errors.size() == error_count) {
+            	Method_t NewMethod = new Method_t(return_type, name);
+            	
+            	for(Method_t m : methods)
+            	
+            	methods.add(NewMethod);
+            }
         }
         {
             List<PLocalDef> copy = new ArrayList<PLocalDef>(node.getLocal());
@@ -780,6 +808,27 @@ public class FunctionVisitor extends DepthFirstAdapter
         outANotExprExpr(node);
     }
 
+    public void inAParExpr(AParExpr node)
+    {
+        defaultIn(node);
+    }
+
+    public void outAParExpr(AParExpr node)
+    {
+        defaultOut(node);
+    }
+
+    @Override
+    public void caseAParExpr(AParExpr node)
+    {
+        inAParExpr(node);
+        if(node.getExpr() != null)
+        {
+            node.getExpr().apply(this);
+        }
+        outAParExpr(node);
+    }
+
     public void inALessThanExpr(ALessThanExpr node)
     {
         defaultIn(node);
@@ -1139,27 +1188,6 @@ public class FunctionVisitor extends DepthFirstAdapter
         outALValExpr(node);
     }
 
-    public void inAParExpr(AParExpr node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAParExpr(AParExpr node)
-    {
-        defaultOut(node);
-    }
-
-    @Override
-    public void caseAParExpr(AParExpr node)
-    {
-        inAParExpr(node);
-        if(node.getExpr() != null)
-        {
-            node.getExpr().apply(this);
-        }
-        outAParExpr(node);
-    }
-
     public void inAFunCalExpr(AFunCalExpr node)
     {
         defaultIn(node);
@@ -1262,9 +1290,9 @@ public class FunctionVisitor extends DepthFirstAdapter
         {
             node.getCond().apply(this);
         }
-        if(node.getStmt() != null)
+        if(node.getThen() != null)
         {
-            node.getStmt().apply(this);
+            node.getThen().apply(this);
         }
         outAIfstmtStmt(node);
     }

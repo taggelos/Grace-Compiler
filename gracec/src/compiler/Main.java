@@ -14,7 +14,7 @@ import compiler.node.EOF;
 import compiler.node.Start;
 import compiler.node.Token;
 import compiler.parser.*;
-import compiler.visitors.SyntaxCheck;
+import compiler.visitors.FunctionVisitor;
 
 public class Main {
 
@@ -62,7 +62,7 @@ public class Main {
                     Start tree = p.parse();
                     System.out.println(tree.toString());
                     
-                    SyntaxCheck sc = new SyntaxCheck();
+                    FunctionVisitor sc = new FunctionVisitor();
                     tree.apply(sc);
                     
         			fop.flush();

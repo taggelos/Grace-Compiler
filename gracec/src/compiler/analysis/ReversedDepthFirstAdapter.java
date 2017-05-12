@@ -1264,9 +1264,9 @@ public class ReversedDepthFirstAdapter extends AnalysisAdapter
     public void caseAIfstmtStmt(AIfstmtStmt node)
     {
         inAIfstmtStmt(node);
-        if(node.getStmt() != null)
+        if(node.getThen() != null)
         {
-            node.getStmt().apply(this);
+            node.getThen().apply(this);
         }
         if(node.getCond() != null)
         {
