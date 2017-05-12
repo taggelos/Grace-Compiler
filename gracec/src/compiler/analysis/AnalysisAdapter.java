@@ -93,31 +93,7 @@ public class AnalysisAdapter implements Analysis
     }
 
     @Override
-    public void caseASimpleParFparDef(ASimpleParFparDef node)
-    {
-        defaultCase(node);
-    }
-
-    @Override
-    public void caseAMultParFparDef(AMultParFparDef node)
-    {
-        defaultCase(node);
-    }
-
-    @Override
-    public void caseAMultTypesFparDef(AMultTypesFparDef node)
-    {
-        defaultCase(node);
-    }
-
-    @Override
-    public void caseASemiParFparDef(ASemiParFparDef node)
-    {
-        defaultCase(node);
-    }
-
-    @Override
-    public void caseANoneFparDef(ANoneFparDef node)
+    public void caseAFparDef(AFparDef node)
     {
         defaultCase(node);
     }

@@ -28,7 +28,7 @@ Helpers
 
     not_dollar = [all - '$'];
 
-    simple_comment = '$' (not_dollar input_character*)? line_terminator?;
+    simple_comment = '$' not_dollar input_character* line_terminator?;
     multi_comment = '$$' ('$'? not_dollar)* '$$';
 
 Tokens
@@ -57,6 +57,7 @@ Tokens
     identifier = latin_letter (latin_letter | digit | '_' )*;
 
     integers = digit+;
+    erroneous_number = (digit)+ (latin_letter|'_')+;
 
     char_const = ''' char_literal ''';
 
@@ -100,15 +101,20 @@ Productions
         {-> New fun_def(header, [local_def], [block.stmt])};
 
     header =
-        fun [name]:identifier l_par [pars]:fpar_def r_par colon return_type {-> New header(name, pars, return_type)};
+        fun [name]:identifier l_par [pars]:par_list r_par colon return_type {-> New header(name, [pars.fpar_def], return_type)};
+
+    par_list {-> fpar_def*} =
+        {simple} fpar_def {-> [fpar_def]} |
+        {list} fpar_def semi par_list {-> [fpar_def, par_list.fpar_def]} |
+        {none} {-> []};
 
     fpar_def =
-        {simple_par} ref? identifier colon types {-> New fpar_def.simple_par(ref, identifier, types)} |
-        {mult_par} ref? identifier comma fpar_def {-> New fpar_def.mult_par(ref, identifier, fpar_def)} |
-        {mult_types} ref? identifier colon types comma fpar_def {-> New fpar_def.mult_types(ref, identifier, types, fpar_def)} |
-        {semi_par} ref? identifier colon types semi fpar_def {-> New fpar_def.semi_par(ref, identifier, types, fpar_def)} |
-        {none} ;
+        ref? id_list colon types {-> New fpar_def(ref, [id_list.identifier], types)};
 
+    id_list {-> identifier*} = 
+        {simple} identifier {-> [identifier]} |
+        {list} id_list comma identifier {-> [id_list.identifier, identifier]} |
+        {none} {-> []};
 
     data_types =
         {int} int {-> New data_types.int(int)} |
@@ -221,11 +227,11 @@ Productions
         {not_equal} [left]:comparative_expression neq [right]:relational_expression {-> New expr.not_equal(left.expr, right.expr)};
 
     relational_expression {-> expr} =
-        {additive} expr {-> expr.expr} |
-        {less_than} [left]:relational_expression lt [right]:expr {-> New expr.less_than(left.expr, right.expr)} |
-        {greater_than} [left]:relational_expression gt [right]:expr {-> New expr.greater_than(left.expr, right.expr)} |
-        {greater_equal_than} [left]:relational_expression gteq [right]:expr {-> New expr.greater_equal_than(left.expr, right.expr)} |
-        {less_equal_than} [left]:relational_expression lteq [right]:expr {-> New expr.less_equal_than(left.expr, right.expr)};
+        {par} l_par cond r_par {-> cond.expr} |
+        {less_than} [left]:expr lt [right]:expr {-> New expr.less_than(left.expr, right.expr)} |
+        {greater_than} [left]:expr gt [right]:expr {-> New expr.greater_than(left.expr, right.expr)} |
+        {greater_equal_than} [left]:expr gteq [right]:expr {-> New expr.greater_equal_than(left.expr, right.expr)} |
+        {less_equal_than} [left]:expr lteq [right]:expr {-> New expr.less_equal_than(left.expr, right.expr)};
 
     /* ---------------------------------------------------- */
 
@@ -263,14 +269,18 @@ Abstract Syntax Tree
         header [local]:local_def* [block]:stmt*;
 
     header =
-        [name]:identifier [pars]:fpar_def [return_t]:return_type;
+        [name]:identifier [pars]:fpar_def* [return_t]:return_type;
 
-    fpar_def =
+    /* fpar_def =
         {simple_par} [ref]:ref? [name]:identifier [type]:types |
         {mult_par} [ref]:ref? [name]:identifier [fpar_def]:fpar_def |
         {mult_types} [ref]:ref? [name]:identifier [type]:types [fpar_def]:fpar_def |
         {semi_par} [ref]:ref? [name]:identifier [type]:types [fpar_def]:fpar_def |
         {none} ;
+        */
+
+    fpar_def =
+        ref? [names]:identifier* [types]:types;
 
     local_def =
         {fun} fun_def |
@@ -312,10 +322,10 @@ Abstract Syntax Tree
         {with_else} [then]:stmt* [else_st]:stmt*;
 
     expr = 
-        //{if_header} [cond]:expr |
         {and_expr} [left]:expr [right]:expr |
         {or_expr} [left]:expr [right]:expr |
         {not_expr} [expr]:expr |
+        {par} [expr]:expr |
         {less_than} [left]:expr [right]:expr |
         {greater_than} [left]:expr [right]:expr |
         {greater_equal_than} [left]:expr [right]:expr |
@@ -330,19 +340,16 @@ Abstract Syntax Tree
         {plus_or_minus} [expr]:expr |
         {int} integers |
         {char} char_const | 
-        {l_val} l_val |     
-        {par} [expr]:expr |
+        {l_val} l_val |
         {fun_cal} fun_cal | 
         {returnstmt} [returnexpr]:expr;
 
     stmt =   
         {semi} |
         {assignment} [left]:l_val [right]:expr |
-        //{ifstmt} [cond]:expr [then]:stmt* [elsest]:stmt* | 
-        {ifstmt} [cond]:if_header [stmt]:if_trail |
+        {ifstmt} [cond]:if_header [then]:if_trail |
         {if_else} [cond]:if_header [then]:stmt* [else_st]:stmt*  |
         {whilestmt} [cond]:expr [body]:stmt* |
         {fun_cal} fun_cal |
         {returnstmt} [returnexpr]:expr? |
         {block} [block]:stmt* ;
-        

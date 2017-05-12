@@ -6,56 +6,56 @@ import java.util.*;
 import compiler.analysis.*;
 
 @SuppressWarnings("nls")
-public final class AHeader extends PHeader
+public final class AFparDef extends PFparDef
 {
-    private TIdentifier _name_;
-    private final LinkedList<PFparDef> _pars_ = new LinkedList<PFparDef>();
-    private PReturnType _returnT_;
+    private TRef _ref_;
+    private final LinkedList<TIdentifier> _names_ = new LinkedList<TIdentifier>();
+    private PTypes _types_;
 
-    public AHeader()
+    public AFparDef()
     {
         // Constructor
     }
 
-    public AHeader(
-        @SuppressWarnings("hiding") TIdentifier _name_,
-        @SuppressWarnings("hiding") List<?> _pars_,
-        @SuppressWarnings("hiding") PReturnType _returnT_)
+    public AFparDef(
+        @SuppressWarnings("hiding") TRef _ref_,
+        @SuppressWarnings("hiding") List<?> _names_,
+        @SuppressWarnings("hiding") PTypes _types_)
     {
         // Constructor
-        setName(_name_);
+        setRef(_ref_);
 
-        setPars(_pars_);
+        setNames(_names_);
 
-        setReturnT(_returnT_);
+        setTypes(_types_);
 
     }
 
     @Override
     public Object clone()
     {
-        return new AHeader(
-            cloneNode(this._name_),
-            cloneList(this._pars_),
-            cloneNode(this._returnT_));
+        return new AFparDef(
+            cloneNode(this._ref_),
+            cloneList(this._names_),
+            cloneNode(this._types_));
     }
 
     @Override
     public void apply(Switch sw)
     {
-        ((Analysis) sw).caseAHeader(this);
+        ((Analysis) sw).caseAFparDef(this);
     }
 
-    public TIdentifier getName()
+    public TRef getRef()
     {
-        return this._name_;
+        return this._ref_;
     }
 
-    public void setName(TIdentifier node)
+    public void setRef(TRef node)
     {
-        if(this._name_ != null)
+        if(this._ref_ != null)
         {
-            this._name_.parent(null);
+            this._ref_.parent(null);
         }
 
         if(node != null)
@@ -68,45 +68,45 @@ public final class AHeader extends PHeader
             node.parent(this);
         }
 
-        this._name_ = node;
+        this._ref_ = node;
     }
 
-    public LinkedList<PFparDef> getPars()
+    public LinkedList<TIdentifier> getNames()
     {
-        return this._pars_;
+        return this._names_;
     }
 
-    public void setPars(List<?> list)
+    public void setNames(List<?> list)
     {
-        for(PFparDef e : this._pars_)
+        for(TIdentifier e : this._names_)
         {
             e.parent(null);
         }
-        this._pars_.clear();
+        this._names_.clear();
 
         for(Object obj_e : list)
         {
-            PFparDef e = (PFparDef) obj_e;
+            TIdentifier e = (TIdentifier) obj_e;
             if(e.parent() != null)
             {
                 e.parent().removeChild(e);
             }
 
             e.parent(this);
-            this._pars_.add(e);
+            this._names_.add(e);
         }
     }
 
-    public PReturnType getReturnT()
+    public PTypes getTypes()
     {
-        return this._returnT_;
+        return this._types_;
     }
 
-    public void setReturnT(PReturnType node)
+    public void setTypes(PTypes node)
     {
-        if(this._returnT_ != null)
+        if(this._types_ != null)
         {
-            this._returnT_.parent(null);
+            this._types_.parent(null);
         }
 
         if(node != null)
@@ -119,36 +119,36 @@ public final class AHeader extends PHeader
             node.parent(this);
         }
 
-        this._returnT_ = node;
+        this._types_ = node;
     }
 
     @Override
     public String toString()
     {
         return ""
-            + toString(this._name_)
-            + toString(this._pars_)
-            + toString(this._returnT_);
+            + toString(this._ref_)
+            + toString(this._names_)
+            + toString(this._types_);
     }
 
     @Override
     void removeChild(@SuppressWarnings("unused") Node child)
     {
         // Remove child
-        if(this._name_ == child)
+        if(this._ref_ == child)
         {
-            this._name_ = null;
+            this._ref_ = null;
             return;
         }
 
-        if(this._pars_.remove(child))
+        if(this._names_.remove(child))
         {
             return;
         }
 
-        if(this._returnT_ == child)
+        if(this._types_ == child)
         {
-            this._returnT_ = null;
+            this._types_ = null;
             return;
         }
 
@@ -159,19 +159,19 @@ public final class AHeader extends PHeader
     void replaceChild(@SuppressWarnings("unused") Node oldChild, @SuppressWarnings("unused") Node newChild)
     {
         // Replace child
-        if(this._name_ == oldChild)
+        if(this._ref_ == oldChild)
         {
-            setName((TIdentifier) newChild);
+            setRef((TRef) newChild);
             return;
         }
 
-        for(ListIterator<PFparDef> i = this._pars_.listIterator(); i.hasNext();)
+        for(ListIterator<TIdentifier> i = this._names_.listIterator(); i.hasNext();)
         {
             if(i.next() == oldChild)
             {
                 if(newChild != null)
                 {
-                    i.set((PFparDef) newChild);
+                    i.set((TIdentifier) newChild);
                     newChild.parent(this);
                     oldChild.parent(null);
                     return;
@@ -183,9 +183,9 @@ public final class AHeader extends PHeader
             }
         }
 
-        if(this._returnT_ == oldChild)
+        if(this._types_ == oldChild)
         {
-            setReturnT((PReturnType) newChild);
+            setTypes((PTypes) newChild);
             return;
         }
 

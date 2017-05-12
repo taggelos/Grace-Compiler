@@ -112,9 +112,13 @@ public class ReversedDepthFirstAdapter extends AnalysisAdapter
         {
             node.getReturnT().apply(this);
         }
-        if(node.getPars() != null)
         {
-            node.getPars().apply(this);
+            List<PFparDef> copy = new ArrayList<PFparDef>(node.getPars());
+            Collections.reverse(copy);
+            for(PFparDef e : copy)
+            {
+                e.apply(this);
+            }
         }
         if(node.getName() != null)
         {
@@ -123,145 +127,37 @@ public class ReversedDepthFirstAdapter extends AnalysisAdapter
         outAHeader(node);
     }
 
-    public void inASimpleParFparDef(ASimpleParFparDef node)
+    public void inAFparDef(AFparDef node)
     {
         defaultIn(node);
     }
 
-    public void outASimpleParFparDef(ASimpleParFparDef node)
+    public void outAFparDef(AFparDef node)
     {
         defaultOut(node);
     }
 
     @Override
-    public void caseASimpleParFparDef(ASimpleParFparDef node)
+    public void caseAFparDef(AFparDef node)
     {
-        inASimpleParFparDef(node);
-        if(node.getType() != null)
+        inAFparDef(node);
+        if(node.getTypes() != null)
         {
-            node.getType().apply(this);
+            node.getTypes().apply(this);
         }
-        if(node.getName() != null)
         {
-            node.getName().apply(this);
+            List<TIdentifier> copy = new ArrayList<TIdentifier>(node.getNames());
+            Collections.reverse(copy);
+            for(TIdentifier e : copy)
+            {
+                e.apply(this);
+            }
         }
         if(node.getRef() != null)
         {
             node.getRef().apply(this);
         }
-        outASimpleParFparDef(node);
-    }
-
-    public void inAMultParFparDef(AMultParFparDef node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAMultParFparDef(AMultParFparDef node)
-    {
-        defaultOut(node);
-    }
-
-    @Override
-    public void caseAMultParFparDef(AMultParFparDef node)
-    {
-        inAMultParFparDef(node);
-        if(node.getFparDef() != null)
-        {
-            node.getFparDef().apply(this);
-        }
-        if(node.getName() != null)
-        {
-            node.getName().apply(this);
-        }
-        if(node.getRef() != null)
-        {
-            node.getRef().apply(this);
-        }
-        outAMultParFparDef(node);
-    }
-
-    public void inAMultTypesFparDef(AMultTypesFparDef node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAMultTypesFparDef(AMultTypesFparDef node)
-    {
-        defaultOut(node);
-    }
-
-    @Override
-    public void caseAMultTypesFparDef(AMultTypesFparDef node)
-    {
-        inAMultTypesFparDef(node);
-        if(node.getFparDef() != null)
-        {
-            node.getFparDef().apply(this);
-        }
-        if(node.getType() != null)
-        {
-            node.getType().apply(this);
-        }
-        if(node.getName() != null)
-        {
-            node.getName().apply(this);
-        }
-        if(node.getRef() != null)
-        {
-            node.getRef().apply(this);
-        }
-        outAMultTypesFparDef(node);
-    }
-
-    public void inASemiParFparDef(ASemiParFparDef node)
-    {
-        defaultIn(node);
-    }
-
-    public void outASemiParFparDef(ASemiParFparDef node)
-    {
-        defaultOut(node);
-    }
-
-    @Override
-    public void caseASemiParFparDef(ASemiParFparDef node)
-    {
-        inASemiParFparDef(node);
-        if(node.getFparDef() != null)
-        {
-            node.getFparDef().apply(this);
-        }
-        if(node.getType() != null)
-        {
-            node.getType().apply(this);
-        }
-        if(node.getName() != null)
-        {
-            node.getName().apply(this);
-        }
-        if(node.getRef() != null)
-        {
-            node.getRef().apply(this);
-        }
-        outASemiParFparDef(node);
-    }
-
-    public void inANoneFparDef(ANoneFparDef node)
-    {
-        defaultIn(node);
-    }
-
-    public void outANoneFparDef(ANoneFparDef node)
-    {
-        defaultOut(node);
-    }
-
-    @Override
-    public void caseANoneFparDef(ANoneFparDef node)
-    {
-        inANoneFparDef(node);
-        outANoneFparDef(node);
+        outAFparDef(node);
     }
 
     public void inAFunLocalDef(AFunLocalDef node)

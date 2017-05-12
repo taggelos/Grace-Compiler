@@ -1,4 +1,4 @@
-fun main(ref i : int, j : char) : nothing
+fun main(rings : int; ref rings, rings, auxiliary : char[]) : nothing
 {
     puts("Hello!");
     
