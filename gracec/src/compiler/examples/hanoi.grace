@@ -17,6 +17,7 @@ fun solve () : nothing
       }
 
       var NumberOfRings : int;
+      var NumberOfRings : char [];
 {
   writeString("Rings: ");
   NumberOfRings <- geti();

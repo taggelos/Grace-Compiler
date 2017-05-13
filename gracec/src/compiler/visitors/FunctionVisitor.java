@@ -65,7 +65,7 @@ public class FunctionVisitor extends DepthFirstAdapter
         {
             node.getFunDef().apply(this);
         }
-        System.out.println(errors);
+        System.err.println(errors);
         outAProgram(node);
     }
 
@@ -85,7 +85,6 @@ public class FunctionVisitor extends DepthFirstAdapter
         inAFunDef(node);
         if(node.getHeader() != null)
         {
-            node.getHeader().apply(this);
             AHeader header = (AHeader) node.getHeader();
             String return_type, name;
             return_type = header.getReturnT().toString();
@@ -108,17 +107,53 @@ public class FunctionVisitor extends DepthFirstAdapter
             			if(!NewMethod.addParam(new Variable_t(((AFparDef) par).getTypes().toString(), id.toString())))
             				errors.add("Param " + id.toString() + " already exists!");
             		}
-            		
             	}
+            	List<PLocalDef> copy = new ArrayList<PLocalDef>(node.getLocal());
+                List <AVarDef> var_locals = new LinkedList <AVarDef> ();
+                for(PLocalDef e : copy)
+                {
+                    System.out.println("out of loop -- "  +e);
+                    if(e instanceof compiler.node.AVarLocalDef){
+                    	AVarLocalDef a= (AVarLocalDef) e;
+                        AVarDef n = (AVarDef) a.getVarDef();
+                        var_locals.add(n);
+                    	System.out.println("inside AVarDef -- " + n);
+                    	for (AVarDef s : var_locals){
+                    		if(!NewMethod.addVar(new Variable_t(((AVarDef) n).getType().toString(), n.toString()))){
+                    			errors.add("Variable " + s.toString() + " already exists!");
+                    		}
+                    	}
+                    }
+                 }
             	NewMethod.printMethod();
             	methods.add(NewMethod);
             }
+            node.getHeader().apply(this);
         }
         {
             List<PLocalDef> copy = new ArrayList<PLocalDef>(node.getLocal());
+            List <AVarDef> var_locals = new LinkedList <AVarDef> ();
             for(PLocalDef e : copy)
             {
                 e.apply(this);
+                /*System.out.println("out of loop -- "  +e);
+                if(e instanceof compiler.node.AVarLocalDef){
+                	AVarLocalDef a= (AVarLocalDef) e;
+                    AVarDef n = (AVarDef) a.getVarDef();
+                    var_locals.add(n);
+                	System.out.println("inside AVarDef -- " + n);
+                	for (AVarDef s : var_locals){
+                		if(s.getName()==n.getName()){
+                			errors.add("Param " + s.toString() + " already exists!");
+                		}
+                	}
+                }
+                else if(e instanceof compiler.node.AFunLocalDef){
+                	
+                }
+                else{
+                	
+                }*/
             }
         }
         {
@@ -1324,7 +1359,7 @@ public class FunctionVisitor extends DepthFirstAdapter
             List<PStmt> copy = new ArrayList<PStmt>(node.getBlock());
             for(PStmt e : copy)
             {
-                e.apply(this);
+                e.apply(this);                
             }
         }
         outABlockStmt(node);
