@@ -1,5 +1,5 @@
-fun main(rings : int; ref rings, rings, auxiliary : char[]) : nothing
+fun main(rings : int; ref a, b, auxiliary : char[]) : nothing
+var i, j : int;
 {
-    puts("Hello!");
-    
+   rings <- i + j;
 }

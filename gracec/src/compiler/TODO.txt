@@ -1,8 +1,4 @@
-expr na ektypwnoun ta lvals
-ektypwsh expr swsta sta if kai sta while 
-kai expr se brackets 
-kai expr se return stmts.
-
-assignment done <-
-
-an to cond se while stmt tote "do"?
+1. typoi se ari8mitikes pra3eis, sugkriseis kai logikes pra3eis.
+2. typoi assignment
+3. return type kai return stmt
+4. 
