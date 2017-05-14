@@ -1,4 +1,5 @@
 1. typoi se ari8mitikes pra3eis, sugkriseis kai logikes pra3eis.
-2. typoi assignment
-3. return type kai return stmt
-4. 
+2. typoi assignment.
+3. return type kai return stmt.
+4. block: metablites pou exoun dilw8ei ws param h vardef.
+5. 

@@ -6,12 +6,14 @@ public class Method_t extends MyType {
     private String return_type;
     public LinkedList<Variable_t> methodParams;
     public LinkedList<Variable_t> methodVars;
+    public Method_t from;
 
     public Method_t(String return_type, String name) {
         super(name);
         this.return_type = return_type;
         this.methodParams = new LinkedList<Variable_t>();
         this.methodVars = new LinkedList<Variable_t>();
+        this.from = null;
     }
 
     public String get_return_type() {
@@ -20,6 +22,10 @@ public class Method_t extends MyType {
 
     public LinkedList<Variable_t> getParams() {
         return this.methodParams;
+    }
+
+    public void addFrom(Method_t from) {
+        this.from = from;
     }
 
     public String methContains(String varName) {

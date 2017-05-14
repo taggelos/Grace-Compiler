@@ -17,25 +17,19 @@ public class FunctionVisitor extends DepthFirstAdapter
     	methods = new LinkedList<Method_t>(); 
     	errors = new LinkedList<String>(); 
     }
-	
-    public void inStart(Start node)
-    {
-        defaultIn(node);
-    }
-
-    public void outStart(Start node)
-    {
-        defaultOut(node);
-    }
-
-    public void defaultIn(@SuppressWarnings("unused") Node node)
-    {
-        // Do nothing
-    }
-
-    public void defaultOut(@SuppressWarnings("unused") Node node)
-    {
-        // Do nothing
+    
+    public static Variable_t getType(Variable_t var, Method_t meth) throws Exception {
+        if(var.getType() == null) {    
+            String methodvar = meth.methContains(var.getName());
+            if(methodvar == null) {             // An den brisketai se sunarthsh...
+                String fromvar = meth.from.methContains(var.getName());
+                if(fromvar == null)            // An den brisketai oute sth klash
+                    throw new Exception("Undecleared Variable " + var.getName());
+                methodvar = fromvar;
+            }
+            return new Variable_t(methodvar, var.getName());
+        }
+        return var;
     }
 
     @Override
@@ -45,16 +39,6 @@ public class FunctionVisitor extends DepthFirstAdapter
         node.getPProgram().apply(this);
         node.getEOF().apply(this);
         outStart(node);
-    }
-
-    public void inAProgram(AProgram node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAProgram(AProgram node)
-    {
-        defaultOut(node);
     }
 
     @Override
@@ -69,24 +53,15 @@ public class FunctionVisitor extends DepthFirstAdapter
         outAProgram(node);
     }
 
-    public void inAFunDef(AFunDef node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAFunDef(AFunDef node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseAFunDef(AFunDef node)
     {
+        Method_t NewMethod = null;
         inAFunDef(node);
-        if(node.getHeader() != null)
-        {
+        if(node.getHeader() != null) {
             AHeader header = (AHeader) node.getHeader();
             String return_type, name;
+            
             return_type = header.getReturnT().toString();
             name = header.getName().toString();
             //List<PFparDef> copy = new ArrayList<PFparDef>(header.getPars());
@@ -98,7 +73,7 @@ public class FunctionVisitor extends DepthFirstAdapter
 					errors.add("Method " + name + " already exists!");
             
             if(errors.size() == error_count) {
-            	Method_t NewMethod = new Method_t(return_type, name);
+            	NewMethod = new Method_t(return_type, name);
             	
             	for(PFparDef par : header.getPars()) {
             		//System.out.println("--->" + par);
@@ -108,53 +83,34 @@ public class FunctionVisitor extends DepthFirstAdapter
             				errors.add("Param " + id.toString() + " already exists!");
             		}
             	}
-            	List<PLocalDef> copy = new ArrayList<PLocalDef>(node.getLocal());
-                List <AVarDef> var_locals = new LinkedList <AVarDef> ();
-                for(PLocalDef e : copy) {
-                    System.out.println("out of loop -- "  +e);
-                    if(e instanceof AVarLocalDef){
-                    	AVarLocalDef a= (AVarLocalDef) e;
-                        AVarDef n = (AVarDef) a.getVarDef();
-                        var_locals.add(n);
-                    	System.out.println("inside AVarDef -- " + n);                   	
-                    }
-                 }
-                for(AVarDef s : var_locals) {
-            		System.out.println("--->" + s);
-            		if(!NewMethod.addVar(new Variable_t(((AVarDef) s).getType().toString(), s.getName().toString()))){
-            			errors.add("Variable " + s.getName() + " already exists!");
-            		}
-            	}
-            	NewMethod.printMethod();
-            	methods.add(NewMethod);
+            	
             }
             node.getHeader().apply(this);
         }
         {
             List<PLocalDef> copy = new ArrayList<PLocalDef>(node.getLocal());
             List <AVarDef> var_locals = new LinkedList <AVarDef> ();
-            for(PLocalDef e : copy)
-            {
-                e.apply(this);
-                /*System.out.println("out of loop -- "  +e);
-                if(e instanceof compiler.node.AVarLocalDef){
-                	AVarLocalDef a= (AVarLocalDef) e;
+            for(PLocalDef e : copy) {
+                System.out.println("out of loop -- "  +e);
+                if(e instanceof AVarLocalDef){
+                    AVarLocalDef a= (AVarLocalDef) e;
                     AVarDef n = (AVarDef) a.getVarDef();
                     var_locals.add(n);
-                	System.out.println("inside AVarDef -- " + n);
-                	for (AVarDef s : var_locals){
-                		if(s.getName()==n.getName()){
-                			errors.add("Param " + s.toString() + " already exists!");
-                		}
-                	}
+                    System.out.println("inside AVarDef -- " + n);                       
                 }
-                else if(e instanceof compiler.node.AFunLocalDef){
-                	
+                else if(e instanceof AFunLocalDef){
+                    
+                    
                 }
-                else{
-                	
-                }*/
-            }
+                e.apply(this);
+             }
+            
+            for(AVarDef s : var_locals) {
+                System.out.println("--->" + s);
+                if(!NewMethod.addVar(new Variable_t(((AVarDef) s).getType().toString(), s.getName().toString()))){
+                    errors.add("Variable " + s.getName() + " already exists!");
+                }
+            }        
         }
         {
             List<PStmt> copy = new ArrayList<PStmt>(node.getBlock());
@@ -163,17 +119,16 @@ public class FunctionVisitor extends DepthFirstAdapter
                 e.apply(this);
             }
         }
+
+        /* if(!methods.isEmpty())
+            NewMethod.addFrom(methods.getLast());
+        if(NewMethod.from!=null)
+            System.out.println("FROM: "+name+ "ths " + NewMethod.getName());
+            */
+        
+        NewMethod.printMethod();
+        methods.add(NewMethod);
         outAFunDef(node);
-    }
-
-    public void inAHeader(AHeader node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAHeader(AHeader node)
-    {
-        defaultOut(node);
     }
 
     @Override
@@ -199,16 +154,6 @@ public class FunctionVisitor extends DepthFirstAdapter
         outAHeader(node);
     }
 
-    public void inAFparDef(AFparDef node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAFparDef(AFparDef node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseAFparDef(AFparDef node)
     {
@@ -231,16 +176,6 @@ public class FunctionVisitor extends DepthFirstAdapter
         outAFparDef(node);
     }
 
-    public void inAFunLocalDef(AFunLocalDef node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAFunLocalDef(AFunLocalDef node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseAFunLocalDef(AFunLocalDef node)
     {
@@ -250,16 +185,6 @@ public class FunctionVisitor extends DepthFirstAdapter
             node.getFunDef().apply(this);
         }
         outAFunLocalDef(node);
-    }
-
-    public void inADecLocalDef(ADecLocalDef node)
-    {
-        defaultIn(node);
-    }
-
-    public void outADecLocalDef(ADecLocalDef node)
-    {
-        defaultOut(node);
     }
 
     @Override
@@ -273,16 +198,6 @@ public class FunctionVisitor extends DepthFirstAdapter
         outADecLocalDef(node);
     }
 
-    public void inAVarLocalDef(AVarLocalDef node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAVarLocalDef(AVarLocalDef node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseAVarLocalDef(AVarLocalDef node)
     {
@@ -292,16 +207,6 @@ public class FunctionVisitor extends DepthFirstAdapter
             node.getVarDef().apply(this);
         }
         outAVarLocalDef(node);
-    }
-
-    public void inAFunDec(AFunDec node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAFunDec(AFunDec node)
-    {
-        defaultOut(node);
     }
 
     @Override
@@ -315,16 +220,6 @@ public class FunctionVisitor extends DepthFirstAdapter
         outAFunDec(node);
     }
 
-    public void inAIntDataTypes(AIntDataTypes node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAIntDataTypes(AIntDataTypes node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseAIntDataTypes(AIntDataTypes node)
     {
@@ -336,16 +231,6 @@ public class FunctionVisitor extends DepthFirstAdapter
         outAIntDataTypes(node);
     }
 
-    public void inACharDataTypes(ACharDataTypes node)
-    {
-        defaultIn(node);
-    }
-
-    public void outACharDataTypes(ACharDataTypes node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseACharDataTypes(ACharDataTypes node)
     {
@@ -355,16 +240,6 @@ public class FunctionVisitor extends DepthFirstAdapter
             node.getChar().apply(this);
         }
         outACharDataTypes(node);
-    }
-
-    public void inABracketsArrayTypes(ABracketsArrayTypes node)
-    {
-        defaultIn(node);
-    }
-
-    public void outABracketsArrayTypes(ABracketsArrayTypes node)
-    {
-        defaultOut(node);
     }
 
     @Override
@@ -386,16 +261,6 @@ public class FunctionVisitor extends DepthFirstAdapter
         outABracketsArrayTypes(node);
     }
 
-    public void inASimpleTypes(ASimpleTypes node)
-    {
-        defaultIn(node);
-    }
-
-    public void outASimpleTypes(ASimpleTypes node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseASimpleTypes(ASimpleTypes node)
     {
@@ -405,16 +270,6 @@ public class FunctionVisitor extends DepthFirstAdapter
             node.getDataTypes().apply(this);
         }
         outASimpleTypes(node);
-    }
-
-    public void inAArrayTypes(AArrayTypes node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAArrayTypes(AArrayTypes node)
-    {
-        defaultOut(node);
     }
 
     @Override
@@ -435,16 +290,6 @@ public class FunctionVisitor extends DepthFirstAdapter
         outAArrayTypes(node);
     }
 
-    public void inASimpleReturnType(ASimpleReturnType node)
-    {
-        defaultIn(node);
-    }
-
-    public void outASimpleReturnType(ASimpleReturnType node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseASimpleReturnType(ASimpleReturnType node)
     {
@@ -456,16 +301,6 @@ public class FunctionVisitor extends DepthFirstAdapter
         outASimpleReturnType(node);
     }
 
-    public void inANoneReturnType(ANoneReturnType node)
-    {
-        defaultIn(node);
-    }
-
-    public void outANoneReturnType(ANoneReturnType node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseANoneReturnType(ANoneReturnType node)
     {
@@ -475,16 +310,6 @@ public class FunctionVisitor extends DepthFirstAdapter
             node.getNothing().apply(this);
         }
         outANoneReturnType(node);
-    }
-
-    public void inAVarDef(AVarDef node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAVarDef(AVarDef node)
-    {
-        defaultOut(node);
     }
 
     @Override
@@ -505,16 +330,6 @@ public class FunctionVisitor extends DepthFirstAdapter
         outAVarDef(node);
     }
 
-    public void inAFunCal(AFunCal node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAFunCal(AFunCal node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseAFunCal(AFunCal node)
     {
@@ -533,16 +348,6 @@ public class FunctionVisitor extends DepthFirstAdapter
         outAFunCal(node);
     }
 
-    public void inAIdLVal(AIdLVal node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAIdLVal(AIdLVal node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseAIdLVal(AIdLVal node)
     {
@@ -554,16 +359,6 @@ public class FunctionVisitor extends DepthFirstAdapter
         outAIdLVal(node);
     }
 
-    public void inAStringLVal(AStringLVal node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAStringLVal(AStringLVal node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseAStringLVal(AStringLVal node)
     {
@@ -573,16 +368,6 @@ public class FunctionVisitor extends DepthFirstAdapter
             node.getStringLiteral().apply(this);
         }
         outAStringLVal(node);
-    }
-
-    public void inAIdBracketsLVal(AIdBracketsLVal node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAIdBracketsLVal(AIdBracketsLVal node)
-    {
-        defaultOut(node);
     }
 
     @Override
@@ -600,16 +385,6 @@ public class FunctionVisitor extends DepthFirstAdapter
         outAIdBracketsLVal(node);
     }
 
-    public void inAIfHeader(AIfHeader node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAIfHeader(AIfHeader node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseAIfHeader(AIfHeader node)
     {
@@ -619,16 +394,6 @@ public class FunctionVisitor extends DepthFirstAdapter
             node.getCond().apply(this);
         }
         outAIfHeader(node);
-    }
-
-    public void inANoElseIfTrail(ANoElseIfTrail node)
-    {
-        defaultIn(node);
-    }
-
-    public void outANoElseIfTrail(ANoElseIfTrail node)
-    {
-        defaultOut(node);
     }
 
     @Override
@@ -643,16 +408,6 @@ public class FunctionVisitor extends DepthFirstAdapter
             }
         }
         outANoElseIfTrail(node);
-    }
-
-    public void inAWithElseIfTrail(AWithElseIfTrail node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAWithElseIfTrail(AWithElseIfTrail node)
-    {
-        defaultOut(node);
     }
 
     @Override
@@ -676,16 +431,6 @@ public class FunctionVisitor extends DepthFirstAdapter
         outAWithElseIfTrail(node);
     }
 
-    public void inAAndExprExpr(AAndExprExpr node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAAndExprExpr(AAndExprExpr node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseAAndExprExpr(AAndExprExpr node)
     {
@@ -703,16 +448,6 @@ public class FunctionVisitor extends DepthFirstAdapter
         outAAndExprExpr(node);
     }
 
-    public void inAOrExprExpr(AOrExprExpr node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAOrExprExpr(AOrExprExpr node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseAOrExprExpr(AOrExprExpr node)
     {
@@ -728,16 +463,6 @@ public class FunctionVisitor extends DepthFirstAdapter
         outAOrExprExpr(node);
     }
 
-    public void inANotExprExpr(ANotExprExpr node)
-    {
-        defaultIn(node);
-    }
-
-    public void outANotExprExpr(ANotExprExpr node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseANotExprExpr(ANotExprExpr node)
     {
@@ -749,16 +474,6 @@ public class FunctionVisitor extends DepthFirstAdapter
         outANotExprExpr(node);
     }
 
-    public void inAParExpr(AParExpr node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAParExpr(AParExpr node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseAParExpr(AParExpr node)
     {
@@ -768,16 +483,6 @@ public class FunctionVisitor extends DepthFirstAdapter
             node.getExpr().apply(this);
         }
         outAParExpr(node);
-    }
-
-    public void inALessThanExpr(ALessThanExpr node)
-    {
-        defaultIn(node);
-    }
-
-    public void outALessThanExpr(ALessThanExpr node)
-    {
-        defaultOut(node);
     }
 
     @Override
@@ -795,16 +500,6 @@ public class FunctionVisitor extends DepthFirstAdapter
         outALessThanExpr(node);
     }
 
-    public void inAGreaterThanExpr(AGreaterThanExpr node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAGreaterThanExpr(AGreaterThanExpr node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseAGreaterThanExpr(AGreaterThanExpr node)
     {
@@ -818,16 +513,6 @@ public class FunctionVisitor extends DepthFirstAdapter
             node.getRight().apply(this);
         }
         outAGreaterThanExpr(node);
-    }
-
-    public void inAGreaterEqualThanExpr(AGreaterEqualThanExpr node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAGreaterEqualThanExpr(AGreaterEqualThanExpr node)
-    {
-        defaultOut(node);
     }
 
     @Override
@@ -845,16 +530,6 @@ public class FunctionVisitor extends DepthFirstAdapter
         outAGreaterEqualThanExpr(node);
     }
 
-    public void inALessEqualThanExpr(ALessEqualThanExpr node)
-    {
-        defaultIn(node);
-    }
-
-    public void outALessEqualThanExpr(ALessEqualThanExpr node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseALessEqualThanExpr(ALessEqualThanExpr node)
     {
@@ -868,16 +543,6 @@ public class FunctionVisitor extends DepthFirstAdapter
             node.getRight().apply(this);
         }
         outALessEqualThanExpr(node);
-    }
-
-    public void inAEqualExpr(AEqualExpr node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAEqualExpr(AEqualExpr node)
-    {
-        defaultOut(node);
     }
 
     @Override
@@ -895,16 +560,6 @@ public class FunctionVisitor extends DepthFirstAdapter
         outAEqualExpr(node);
     }
 
-    public void inANotEqualExpr(ANotEqualExpr node)
-    {
-        defaultIn(node);
-    }
-
-    public void outANotEqualExpr(ANotEqualExpr node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseANotEqualExpr(ANotEqualExpr node)
     {
@@ -918,16 +573,6 @@ public class FunctionVisitor extends DepthFirstAdapter
             node.getRight().apply(this);
         }
         outANotEqualExpr(node);
-    }
-
-    public void inAAddExpr(AAddExpr node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAAddExpr(AAddExpr node)
-    {
-        defaultOut(node);
     }
 
     @Override
@@ -945,16 +590,6 @@ public class FunctionVisitor extends DepthFirstAdapter
         outAAddExpr(node);
     }
 
-    public void inASubExpr(ASubExpr node)
-    {
-        defaultIn(node);
-    }
-
-    public void outASubExpr(ASubExpr node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseASubExpr(ASubExpr node)
     {
@@ -968,16 +603,6 @@ public class FunctionVisitor extends DepthFirstAdapter
             node.getExpr2().apply(this);
         }
         outASubExpr(node);
-    }
-
-    public void inAMultExpr(AMultExpr node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAMultExpr(AMultExpr node)
-    {
-        defaultOut(node);
     }
 
     @Override
@@ -995,16 +620,6 @@ public class FunctionVisitor extends DepthFirstAdapter
         outAMultExpr(node);
     }
 
-    public void inAModExpr(AModExpr node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAModExpr(AModExpr node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseAModExpr(AModExpr node)
     {
@@ -1018,16 +633,6 @@ public class FunctionVisitor extends DepthFirstAdapter
             node.getExpr2().apply(this);
         }
         outAModExpr(node);
-    }
-
-    public void inADivExpr(ADivExpr node)
-    {
-        defaultIn(node);
-    }
-
-    public void outADivExpr(ADivExpr node)
-    {
-        defaultOut(node);
     }
 
     @Override
@@ -1045,16 +650,6 @@ public class FunctionVisitor extends DepthFirstAdapter
         outADivExpr(node);
     }
 
-    public void inAPlusOrMinusExpr(APlusOrMinusExpr node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAPlusOrMinusExpr(APlusOrMinusExpr node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseAPlusOrMinusExpr(APlusOrMinusExpr node)
     {
@@ -1064,16 +659,6 @@ public class FunctionVisitor extends DepthFirstAdapter
             node.getExpr().apply(this);
         }
         outAPlusOrMinusExpr(node);
-    }
-
-    public void inAIntExpr(AIntExpr node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAIntExpr(AIntExpr node)
-    {
-        defaultOut(node);
     }
 
     @Override
@@ -1087,16 +672,6 @@ public class FunctionVisitor extends DepthFirstAdapter
         outAIntExpr(node);
     }
 
-    public void inACharExpr(ACharExpr node)
-    {
-        defaultIn(node);
-    }
-
-    public void outACharExpr(ACharExpr node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseACharExpr(ACharExpr node)
     {
@@ -1106,16 +681,6 @@ public class FunctionVisitor extends DepthFirstAdapter
             node.getCharConst().apply(this);
         }
         outACharExpr(node);
-    }
-
-    public void inALValExpr(ALValExpr node)
-    {
-        defaultIn(node);
-    }
-
-    public void outALValExpr(ALValExpr node)
-    {
-        defaultOut(node);
     }
 
     @Override
@@ -1129,16 +694,6 @@ public class FunctionVisitor extends DepthFirstAdapter
         outALValExpr(node);
     }
 
-    public void inAFunCalExpr(AFunCalExpr node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAFunCalExpr(AFunCalExpr node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseAFunCalExpr(AFunCalExpr node)
     {
@@ -1148,16 +703,6 @@ public class FunctionVisitor extends DepthFirstAdapter
             node.getFunCal().apply(this);
         }
         outAFunCalExpr(node);
-    }
-
-    public void inAReturnstmtExpr(AReturnstmtExpr node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAReturnstmtExpr(AReturnstmtExpr node)
-    {
-        defaultOut(node);
     }
 
     @Override
@@ -1171,31 +716,11 @@ public class FunctionVisitor extends DepthFirstAdapter
         outAReturnstmtExpr(node);
     }
 
-    public void inASemiStmt(ASemiStmt node)
-    {
-        defaultIn(node);
-    }
-
-    public void outASemiStmt(ASemiStmt node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseASemiStmt(ASemiStmt node)
     {
         inASemiStmt(node);
         outASemiStmt(node);
-    }
-
-    public void inAAssignmentStmt(AAssignmentStmt node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAAssignmentStmt(AAssignmentStmt node)
-    {
-        defaultOut(node);
     }
 
     @Override
@@ -1205,22 +730,13 @@ public class FunctionVisitor extends DepthFirstAdapter
         if(node.getLeft() != null)
         {
             node.getLeft().apply(this);
+            
         }
         if(node.getRight() != null)
         {
             node.getRight().apply(this);
         }
         outAAssignmentStmt(node);
-    }
-
-    public void inAIfstmtStmt(AIfstmtStmt node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAIfstmtStmt(AIfstmtStmt node)
-    {
-        defaultOut(node);
     }
 
     @Override
@@ -1236,16 +752,6 @@ public class FunctionVisitor extends DepthFirstAdapter
             node.getThen().apply(this);
         }
         outAIfstmtStmt(node);
-    }
-
-    public void inAIfElseStmt(AIfElseStmt node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAIfElseStmt(AIfElseStmt node)
-    {
-        defaultOut(node);
     }
 
     @Override
@@ -1273,16 +779,6 @@ public class FunctionVisitor extends DepthFirstAdapter
         outAIfElseStmt(node);
     }
 
-    public void inAWhilestmtStmt(AWhilestmtStmt node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAWhilestmtStmt(AWhilestmtStmt node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseAWhilestmtStmt(AWhilestmtStmt node)
     {
@@ -1301,16 +797,6 @@ public class FunctionVisitor extends DepthFirstAdapter
         outAWhilestmtStmt(node);
     }
 
-    public void inAFunCalStmt(AFunCalStmt node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAFunCalStmt(AFunCalStmt node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseAFunCalStmt(AFunCalStmt node)
     {
@@ -1322,16 +808,6 @@ public class FunctionVisitor extends DepthFirstAdapter
         outAFunCalStmt(node);
     }
 
-    public void inAReturnstmtStmt(AReturnstmtStmt node)
-    {
-        defaultIn(node);
-    }
-
-    public void outAReturnstmtStmt(AReturnstmtStmt node)
-    {
-        defaultOut(node);
-    }
-
     @Override
     public void caseAReturnstmtStmt(AReturnstmtStmt node)
     {
@@ -1341,16 +817,6 @@ public class FunctionVisitor extends DepthFirstAdapter
             node.getReturnexpr().apply(this);
         }
         outAReturnstmtStmt(node);
-    }
-
-    public void inABlockStmt(ABlockStmt node)
-    {
-        defaultIn(node);
-    }
-
-    public void outABlockStmt(ABlockStmt node)
-    {
-        defaultOut(node);
     }
 
     @Override

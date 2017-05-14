@@ -271,14 +271,6 @@ Abstract Syntax Tree
     header =
         [name]:identifier [pars]:fpar_def* [return_t]:return_type;
 
-    /* fpar_def =
-        {simple_par} [ref]:ref? [name]:identifier [type]:types |
-        {mult_par} [ref]:ref? [name]:identifier [fpar_def]:fpar_def |
-        {mult_types} [ref]:ref? [name]:identifier [type]:types [fpar_def]:fpar_def |
-        {semi_par} [ref]:ref? [name]:identifier [type]:types [fpar_def]:fpar_def |
-        {none} ;
-        */
-
     fpar_def =
         ref? [names]:identifier* [types]:types;
 
