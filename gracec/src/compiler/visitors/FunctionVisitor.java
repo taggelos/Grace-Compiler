@@ -112,7 +112,9 @@ public class FunctionVisitor extends DepthFirstAdapter
                 NewMethod.addFrom(from);
                 if(NewMethod.from != null)
                 	System.out.println("FROM: "+ NewMethod.from.getName() + "ths " + NewMethod.getName());
-                from = NewMethod;
+                else {
+                	from = NewMethod;
+                }
                 e.apply(this);
              }
             
@@ -128,7 +130,9 @@ public class FunctionVisitor extends DepthFirstAdapter
             for(PStmt e : copy)
             {
                 e.apply(this);
-                from = NewMethod.from;
+                if(!methods.isEmpty())
+                    NewMethod.addFrom(methods.getLast());
+                //from = NewMethod.from;
             }
             
         }
@@ -138,6 +142,7 @@ public class FunctionVisitor extends DepthFirstAdapter
         if(NewMethod.from!=null)
             System.out.println("FROM: "+name+ "ths " + NewMethod.getName());
             */
+        
         
         
         NewMethod.printMethod();
