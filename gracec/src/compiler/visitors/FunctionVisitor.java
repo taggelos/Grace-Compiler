@@ -66,8 +66,6 @@ public class FunctionVisitor extends DepthFirstAdapter
             
             return_type = header.getReturnT().toString();
             name = header.getName().toString();
-            //List<PFparDef> copy = new ArrayList<PFparDef>(header.getPars());
-            //System.out.println("--->" + copy.get(1));
             int error_count = errors.size();
             
             for(Method_t m : methods)
@@ -77,9 +75,6 @@ public class FunctionVisitor extends DepthFirstAdapter
             if(errors.size() == error_count) {
             	NewMethod = new Method_t(return_type, name);
             	
-            	
-            	
-            	
             	for(PFparDef par : header.getPars()) {
             		//System.out.println("--->" + par);
             		//System.out.println("--->" + ((AFparDef) par).getNames());
@@ -88,7 +83,6 @@ public class FunctionVisitor extends DepthFirstAdapter
             				errors.add("Param " + id.toString() + " already exists!");
             		}
             	}
-            	
             }
             node.getHeader().apply(this);
         }
@@ -105,12 +99,9 @@ public class FunctionVisitor extends DepthFirstAdapter
                 }
                 else if(e instanceof AFunLocalDef){
                 	
-                	
-                	
-                    
                 }
                 NewMethod.addFrom(from);
-                if(NewMethod.from != null)
+                if(NewMethod.from != null )
                 	System.out.println("FROM: "+ NewMethod.from.getName() + "ths " + NewMethod.getName());
                 else {
                 	from = NewMethod;
@@ -130,24 +121,13 @@ public class FunctionVisitor extends DepthFirstAdapter
             for(PStmt e : copy)
             {
                 e.apply(this);
+                
                 if(!methods.isEmpty())
                     NewMethod.addFrom(methods.getLast());
-                //from = NewMethod.from;
             }
-            
         }
-
-        /* if(!methods.isEmpty())
-            NewMethod.addFrom(methods.getLast());
-        if(NewMethod.from!=null)
-            System.out.println("FROM: "+name+ "ths " + NewMethod.getName());
-            */
-        
-        
-        
         NewMethod.printMethod();
         methods.add(NewMethod);
-        //from = NewMethod;
         outAFunDef(node);
     }
 
