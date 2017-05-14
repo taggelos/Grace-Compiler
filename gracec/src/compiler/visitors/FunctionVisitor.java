@@ -12,6 +12,7 @@ public class FunctionVisitor extends DepthFirstAdapter
 {
 	public LinkedList<Method_t> methods;        // Lista twn klasewn
     public LinkedList<String> errors;
+    Method_t from = null;
 
     public FunctionVisitor() { 
     	methods = new LinkedList<Method_t>(); 
@@ -57,6 +58,7 @@ public class FunctionVisitor extends DepthFirstAdapter
     public void caseAFunDef(AFunDef node)
     {
         Method_t NewMethod = null;
+        
         inAFunDef(node);
         if(node.getHeader() != null) {
             AHeader header = (AHeader) node.getHeader();
@@ -74,6 +76,9 @@ public class FunctionVisitor extends DepthFirstAdapter
             
             if(errors.size() == error_count) {
             	NewMethod = new Method_t(return_type, name);
+            	
+            	
+            	
             	
             	for(PFparDef par : header.getPars()) {
             		//System.out.println("--->" + par);
@@ -99,9 +104,15 @@ public class FunctionVisitor extends DepthFirstAdapter
                     System.out.println("inside AVarDef -- " + n);                       
                 }
                 else if(e instanceof AFunLocalDef){
-                    
+                	
+                	
+                	
                     
                 }
+                NewMethod.addFrom(from);
+                if(NewMethod.from != null)
+                	System.out.println("FROM: "+ NewMethod.from.getName() + "ths " + NewMethod.getName());
+                from = NewMethod;
                 e.apply(this);
              }
             
@@ -117,7 +128,9 @@ public class FunctionVisitor extends DepthFirstAdapter
             for(PStmt e : copy)
             {
                 e.apply(this);
+                from = NewMethod.from;
             }
+            
         }
 
         /* if(!methods.isEmpty())
@@ -126,8 +139,10 @@ public class FunctionVisitor extends DepthFirstAdapter
             System.out.println("FROM: "+name+ "ths " + NewMethod.getName());
             */
         
+        
         NewMethod.printMethod();
         methods.add(NewMethod);
+        //from = NewMethod;
         outAFunDef(node);
     }
 
