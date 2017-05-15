@@ -66,17 +66,21 @@ public class Method_t extends MyType {
     }
 
     public void printMethod() {
-        System.out.print(return_type + " " + this.getName() + "(");
+    	String f;
+        if(this.from != null)
+        f = this.from.getName();
+        else f = "null";
+        System.out.print(return_type + " " + this.getName() + ", FROM: " + f + "(");
         int i = 0;
         while (i < methodParams.size()) {
             methodParams.get(i++).printVar();
             if (i != methodParams.size())
                 System.out.print(", ");
         }
-        System.out.println(")\n\t\t\tMethod Variables:");
+        System.out.println(")\n\tMethod Variables:");
         i = 0;
         while (i < methodVars.size()) {
-            System.out.print("\t\t\t\t");
+            System.out.print("\t\t");
             methodVars.get(i++).printVar();
             System.out.println("");
         }
