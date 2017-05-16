@@ -11,24 +11,36 @@ public class FunctionVisitor extends DepthFirstAdapter
 	public LinkedList<Method_t> methods;        // Lista twn klasewn
     public LinkedList<String> errors;
     Method_t from = null;
+    Method_t current = null;
 
     public FunctionVisitor() { 
     	methods = new LinkedList<Method_t>(); 
     	errors = new LinkedList<String>(); 
     }
     
-    public static Variable_t getType(Variable_t var, Method_t meth) throws Exception {
-        if(var.getType() == null) {    
-            String methodvar = meth.methContains(var.getName());
-            if(methodvar == null) {             // An den brisketai se sunarthsh...
-                String fromvar = meth.from.methContains(var.getName());
-                if(fromvar == null)            // An den brisketai oute sth klash
-                    throw new Exception("Undecleared Variable " + var.getName());
-                methodvar = fromvar;
-            }
-            return new Variable_t(methodvar, var.getName());
+    public Variable_t getType(String var, Method_t meth) throws Exception {
+  
+        String methodvar = meth.methContains(var);
+        if(methodvar == null) {             // An den brisketai se sunarthsh...
+            String fromvar = meth.from.methContains(var);
+            if(fromvar == null)            // An den brisketai oute sth klash
+                errors.add("Undecleared Variable " + var);
+            methodvar = fromvar;
         }
-        return var;
+        return new Variable_t(methodvar, var);
+
+    } 
+    
+    public static String CheckCall(String call_name, Method_t meth) {
+    	if(meth.getName().equals(call_name))
+			return meth.get_return_type();
+		for(Method_t m : meth.methodList) {
+			System.out.println(m.getName() +" - "+ call_name);
+			if(m.getName().equals(call_name))
+				return m.get_return_type();
+		}
+    	
+    	return null;
     }
 
     @Override
@@ -73,6 +85,8 @@ public class FunctionVisitor extends DepthFirstAdapter
             if(errors.size() == error_count) {
             	NewMethod = new Method_t(return_type, name);
             	NewMethod.addFrom(from);
+            	if(from != null)
+            	from.addMethod(NewMethod);
             	from = NewMethod;
             	
             	for(PFparDef par : header.getPars()) {
@@ -109,12 +123,15 @@ public class FunctionVisitor extends DepthFirstAdapter
             }        
         }
         {
+        	current = NewMethod;
             List<PStmt> copy = new ArrayList<PStmt>(node.getBlock());
             for(PStmt e : copy)
             {
+            	
                 e.apply(this);
-                from = NewMethod.from;
+                
             }
+            from = NewMethod.from;
         }
         NewMethod.printMethod();
         methods.add(NewMethod);
@@ -325,13 +342,25 @@ public class FunctionVisitor extends DepthFirstAdapter
         inAFunCal(node);
         if(node.getName() != null)
         {
+        	String name = node.getName().toString();
+        	System.out.println("\tMETHOD IS: "+ current.getName());
+        	System.out.println("\tCALL IS: "+ name);
+        	String call_type = CheckCall(name, current);
+        	
+        	if(call_type == null) {
+        		errors.add("Method " + name + " doesn't exists!");
+        	}
+        	
             node.getName().apply(this);
         }
         {
             List<PExpr> copy = new ArrayList<PExpr>(node.getExprs());
             for(PExpr e : copy)
             {
+            	
                 e.apply(this);
+            	System.out.println("--->"+ e.toString());
+            	
             }
         }
         outAFunCal(node);

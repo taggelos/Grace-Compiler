@@ -6,6 +6,7 @@ public class Method_t extends MyType {
     private String return_type;
     public LinkedList<Variable_t> methodParams;
     public LinkedList<Variable_t> methodVars;
+    public LinkedList<Method_t> methodList;
     public Method_t from;
 
     public Method_t(String return_type, String name) {
@@ -13,6 +14,7 @@ public class Method_t extends MyType {
         this.return_type = return_type;
         this.methodParams = new LinkedList<Variable_t>();
         this.methodVars = new LinkedList<Variable_t>();
+        this.methodList = new LinkedList<Method_t>();
         this.from = null;
     }
 
@@ -26,6 +28,24 @@ public class Method_t extends MyType {
 
     public void addFrom(Method_t from) {
         this.from = from;
+    }
+
+    public boolean addMethod(Method_t meth) {       // Pros8etoume to Method an den uparxei hdh sth lista, h' einai h main
+        for(int i = 0 ; i < methodList.size() ; i++) {
+            if(methodList.get(i).getName().equals(meth.getName()))
+                return false;
+        }
+        //meth.from = this;
+        methodList.add(meth);
+        return true;
+    }
+
+    public Method_t getMethod(String methName) {
+        for(int i = 0 ; i < methodList.size() ; i++) {
+            if(methodList.get(i).getName().equals(methName))
+                return methodList.get(i);
+        }
+        return null;
     }
 
     public String methContains(String varName) {
@@ -84,5 +104,11 @@ public class Method_t extends MyType {
             methodVars.get(i++).printVar();
             System.out.println("");
         }
+        i = 0;
+        /*while (i < methodList.size()) {
+        	System.out.println("--->"+methodList.get(i++).getName());
+            if (i != methodList.size())
+                System.out.print(", ");
+        } */
     }
 }

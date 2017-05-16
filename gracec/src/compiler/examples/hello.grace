@@ -1,5 +1,31 @@
-fun main(rings : int; ref a, b, auxiliary : char[]) : nothing
-var i, j : int;
+fun main () : nothing
+
+   fun bsort (n : int; ref x : int[]) : nothing
+
+      fun swap (ref x, y : int) : nothing
+         var t : int;
+      {
+         bla();
+      }
+
+      var changed, i : int;
+   {
+      swap(x + 1,x[i+1]);
+   }
+
+   fun putArray (ref msg : char[]; n : int; ref x : int[]) : nothing
+      var i : int;
+   {
+      puts(msg);
+      puti(x[i]);
+      puts("\n");
+   }
+
+   var seed, i : int;
+   var x : int[16];
 {
-   rings <- i + j;
+
+  putArray("Initial array: ", 16, x);
+  bsort(16,x);
+  putArray("Sorted array: ", 16, x);
 }
