@@ -12,18 +12,20 @@ public class FunctionVisitor extends DepthFirstAdapter
     public LinkedList<String> errors;
     Method_t from = null;
     Method_t current = null;
+    
+    HashMap<String, String> hm = new HashMap<String, String>();
 
     public FunctionVisitor() { 
     	methods = new LinkedList<Method_t>(); 
     	errors = new LinkedList<String>(); 
     }
     
-    public Variable_t getType(String var, Method_t meth) throws Exception {
+    public Variable_t getType(String var, Method_t meth) {
   
         String methodvar = meth.methContains(var);
         if(methodvar == null) {             // An den brisketai se sunarthsh...
             String fromvar = meth.from.methContains(var);
-            if(fromvar == null)            // An den brisketai oute sth klash
+            if(fromvar == null)            // An den brisketai oute sto from...
                 errors.add("Undecleared Variable " + var);
             methodvar = fromvar;
         }
@@ -31,13 +33,13 @@ public class FunctionVisitor extends DepthFirstAdapter
 
     } 
     
-    public static String CheckCall(String call_name, Method_t meth) {
+    public static Method_t CheckCall(String call_name, Method_t meth) {
     	if(meth.getName().equals(call_name))
-			return meth.get_return_type();
+			return meth;
 		for(Method_t m : meth.methodList) {
-			System.out.println(m.getName() +" - "+ call_name);
+			//System.out.println(m.getName() +" - "+ call_name);
 			if(m.getName().equals(call_name))
-				return m.get_return_type();
+				return m;
 		}
     	
     	return null;
@@ -60,7 +62,18 @@ public class FunctionVisitor extends DepthFirstAdapter
         {
             node.getFunDef().apply(this);
         }
-        System.err.println(errors);
+        for(String e : errors)
+        	System.err.println(e);
+
+        Set set = hm.entrySet();
+        Iterator i = set.iterator();
+        
+        // Display elements
+        while(i.hasNext()) {
+           Map.Entry me = (Map.Entry)i.next();
+           System.out.print(me.getKey() + ": ");
+           System.out.println(me.getValue());
+        }
         outAProgram(node);
     }
 
@@ -100,27 +113,23 @@ public class FunctionVisitor extends DepthFirstAdapter
         }
         {
             List<PLocalDef> copy = new ArrayList<PLocalDef>(node.getLocal());
-            List <AVarDef> var_locals = new LinkedList <AVarDef> ();
             for(PLocalDef e : copy) {
                 //System.out.println("out of loop -- "  +e);
                 if(e instanceof AVarLocalDef){
                     AVarLocalDef a= (AVarLocalDef) e;
                     AVarDef n = (AVarDef) a.getVarDef();
-                    var_locals.add(n);
+                    for(TIdentifier id : n.getName()) {
+                    	if(!NewMethod.addVar(new Variable_t(n.getType().toString(), id.toString()))){
+                            errors.add("Variable " + id + " already exists!");
+                        }
+                    }
                     //System.out.println("inside AVarDef -- " + n);                       
                 }
                 else if(e instanceof AFunLocalDef){
                 	
                 }
                 e.apply(this);
-             }
-            
-            for(AVarDef s : var_locals) {
-                //System.out.println("--->" + s);
-                if(!NewMethod.addVar(new Variable_t(((AVarDef) s).getType().toString(), s.getName().toString()))){
-                    errors.add("Variable " + s.getName() + " already exists!");
-                }
-            }        
+             }      
         }
         {
         	current = NewMethod;
@@ -340,27 +349,42 @@ public class FunctionVisitor extends DepthFirstAdapter
     public void caseAFunCal(AFunCal node)
     {
         inAFunCal(node);
+        Method_t m = null;
+        String name = null;
         if(node.getName() != null)
         {
-        	String name = node.getName().toString();
+        	name = node.getName().toString();
         	System.out.println("\tMETHOD IS: "+ current.getName());
         	System.out.println("\tCALL IS: "+ name);
-        	String call_type = CheckCall(name, current);
+        	m = CheckCall(name, current);
         	
-        	if(call_type == null) {
-        		errors.add("Method " + name + " doesn't exists!");
+        	if(m == null) {
+        		errors.add("Method " + name + " doesn't exist!");
+        		return;
         	}
         	
             node.getName().apply(this);
         }
         {
             List<PExpr> copy = new ArrayList<PExpr>(node.getExprs());
-            for(PExpr e : copy)
-            {
-            	
+            if(copy.size() != m.methodParams.size()) {
+            	errors.add("Invalid number of parameters for method " + name);
+            	return;
+            }
+            int count = 0;
+            for(PExpr e : copy) {
+            	System.out.println("-------------------------------------------");
                 e.apply(this);
-            	System.out.println("--->"+ e.toString());
-            	
+            	System.out.println("EXPR: "+ e.toString());
+            	if(!hm.isEmpty()) {
+            		if(!hm.containsKey(e.toString()))
+            			errors.add("Invalid parameter of method " + name);
+            		//else if(hm.get(e.toString()) == null)
+            		//		errors.add("Invalid parameter type.");
+            		else if(hm.get(e.toString()) == null || hm.get(e.toString()).equals(m.methodParams.get(count).getType()))
+            			errors.add("Invalid parameter type " + hm.get(e.toString()) + ". Expecting " + m.methodParams.get(count).getType());
+            	}
+            	count++;
             }
         }
         outAFunCal(node);
@@ -592,19 +616,92 @@ public class FunctionVisitor extends DepthFirstAdapter
         }
         outANotEqualExpr(node);
     }
-
+    
     @Override
     public void caseAAddExpr(AAddExpr node)
     {
         inAAddExpr(node);
-        if(node.getExpr1() != null)
-        {
+        String type = "";
+        Variable_t t = null;
+        String val;
+        if(node.getExpr1() != null) {
             node.getExpr1().apply(this);
+            val = node.getExpr1().toString();
+            if(!hm.containsKey(val)) {
+            	if(node.getExpr1() instanceof ALValExpr) {
+            		ALValExpr lval = (ALValExpr) node.getExpr1();
+            		if(lval.getLVal() instanceof AIdBracketsLVal) {
+            			//System.out.println("--->"+lval.getLVal());
+            			val = val.split(" ")[0]+" ";
+            			//System.out.println("------>"+val);
+            		}
+            		System.out.println(val + " Method: " + current.getName());
+            		t = getType(val, current);
+            		System.out.println(t.getType());
+            		if(t.getType() == null) {
+            			errors.add("Variable " + val + "not declared in method " + current.getName()+".");
+            			type = null;
+            			return;
+            		}
+            		else if(!t.getType().contains("int")) {
+            			errors.add("Invalid add expression type.");
+            			type = null;
+            			return;
+            		}
+            		else
+            			type = "int";
+            	}
+            	else if(node.getExpr1() instanceof AIntExpr) {
+            		//System.out.println(node.getExpr1());
+            		type = "int";
+            	}
+            	else {
+            		
+            		errors.add("Invalid add expression type.");
+            	}
+            	
+            }
         }
-        if(node.getExpr2() != null)
-        {
-            node.getExpr2().apply(this);
+        if(node.getExpr2() != null) {
+        	node.getExpr2().apply(this);
+            val = node.getExpr2().toString();
+            if(!hm.containsKey(node.getExpr2())) {
+            	if(node.getExpr2() instanceof ALValExpr) {
+            		ALValExpr lval = (ALValExpr) node.getExpr2();
+            		if(lval.getLVal() instanceof AIdBracketsLVal) {
+            			//System.out.println("--->"+lval.getLVal());
+            			val = val.split(" ")[0]+" ";
+            			//System.out.println("------>"+val);
+            		}
+            		System.out.println(val + " Method: " + current.getName());
+            		t = getType(val, current);
+            		System.out.println(t.getType());
+            		if(t.getType() == null) {
+            			errors.add("Variable " + val + "not declared in method " + current.getName()+".");
+            			type = null;
+            			return;
+            		}
+            		else if(!t.getType().contains("int")) {
+            			errors.add("Invalid add expression type.");
+            			type = null;
+            			return;
+            		}
+            		else
+            			type = "int";
+            	}
+            	else if(node.getExpr2() instanceof AIntExpr) {
+            		//System.out.println(node.getExpr2());
+            		type = "int";
+            	}
+            	else {
+            		errors.add("Invalid add expression type.");
+            	}
+            	
+            }
         }
+        System.out.println(node.getExpr1() + " -- " + node.getExpr2());
+        hm.put(node.toString(), type);
+        System.out.println("NODE: "+node.toString());
         outAAddExpr(node);
     }
 

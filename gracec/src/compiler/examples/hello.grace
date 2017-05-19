@@ -10,15 +10,15 @@ fun main () : nothing
 
       var changed, i : int;
    {
-      swap(x + 1,x[i+1]);
+      swap(i, x[i] + 1 + 2);
    }
 
    fun putArray (ref msg : char[]; n : int; ref x : int[]) : nothing
       var i : int;
    {
-      puts(msg);
-      puti(x[i]);
-      puts("\n");
+      $puts(msg);
+      $puti(x[i]);
+      $puts("\n");
    }
 
    var seed, i : int;

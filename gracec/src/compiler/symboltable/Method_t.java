@@ -51,6 +51,7 @@ public class Method_t extends MyType {
     public String methContains(String varName) {
         int i = 0;
         while (i < methodVars.size()) {         // Elexgoume an to onoma ths metablhths uparxei sth lista methodVars
+            System.out.println(varName + " <> "+ methodVars.get(i).getName());
             if (methodVars.get(i).getName().equals(varName))
                 return methodVars.get(i).getType();
             i++;
