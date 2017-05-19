@@ -104,7 +104,7 @@ public class FunctionVisitor extends DepthFirstAdapter
             	
             	for(PFparDef par : header.getPars()) {
             		for(TIdentifier id : ((AFparDef) par).getNames()) {
-            			if(!NewMethod.addParam(new Variable_t(((AFparDef) par).getTypes().toString(), id.toString())))
+            			if(!NewMethod.addParam(new Variable_t(((AFparDef) par).getTypes().toString().replaceAll(" ", ""), id.toString())))
             				errors.add("Param " + id.toString() + " already exists!");
             		}
             	}
@@ -119,7 +119,7 @@ public class FunctionVisitor extends DepthFirstAdapter
                     AVarLocalDef a= (AVarLocalDef) e;
                     AVarDef n = (AVarDef) a.getVarDef();
                     for(TIdentifier id : n.getName()) {
-                    	if(!NewMethod.addVar(new Variable_t(n.getType().toString(), id.toString()))){
+                    	if(!NewMethod.addVar(new Variable_t(n.getType().toString().replaceAll(" ", ""), id.toString()))){
                             errors.add("Variable " + id + " already exists!");
                         }
                     }
@@ -378,10 +378,10 @@ public class FunctionVisitor extends DepthFirstAdapter
             	System.out.println("EXPR: "+ e.toString());
             	if(!hm.isEmpty()) {
             		if(!hm.containsKey(e.toString()))
-            			errors.add("Invalid parameter of method " + name);
+            			errors.add("Invalid parameter of method " + name+" ->"+e.toString());
             		//else if(hm.get(e.toString()) == null)
             		//		errors.add("Invalid parameter type.");
-            		else if(hm.get(e.toString()) == null || hm.get(e.toString()).equals(m.methodParams.get(count).getType()))
+            		else if(hm.get(e.toString()) == null || !hm.get(e.toString()).equals(m.methodParams.get(count).getType()))
             			errors.add("Invalid parameter type " + hm.get(e.toString()) + ". Expecting " + m.methodParams.get(count).getType());
             	}
             	count++;
@@ -398,6 +398,9 @@ public class FunctionVisitor extends DepthFirstAdapter
         {
             node.getIdentifier().apply(this);
         }
+        Variable_t t = getType(node.toString(), current); 
+        System.out.println("ADDING: "+node.toString()+" "+ t.getType().replaceAll("[1234567890 ]", ""));
+        hm.put(node.toString(), t.getType().replaceAll("[1234567890 ]", ""));
         outAIdLVal(node);
     }
 
@@ -409,6 +412,7 @@ public class FunctionVisitor extends DepthFirstAdapter
         {
             node.getStringLiteral().apply(this);
         }
+        hm.put(node.toString(), "char[]");
         outAStringLVal(node);
     }
 
@@ -424,6 +428,8 @@ public class FunctionVisitor extends DepthFirstAdapter
         {
             node.getExpr().apply(this);
         }
+        //Variable_t t = getType(node.toString(), current); 
+        //hm.put(node.toString(), t.getType());
         outAIdBracketsLVal(node);
     }
 
@@ -670,7 +676,7 @@ public class FunctionVisitor extends DepthFirstAdapter
             		ALValExpr lval = (ALValExpr) node.getExpr2();
             		if(lval.getLVal() instanceof AIdBracketsLVal) {
             			//System.out.println("--->"+lval.getLVal());
-            			val = val.split(" ")[0]+" ";
+            			val = val.split(" ")[0];
             			//System.out.println("------>"+val);
             		}
             		System.out.println(val + " Method: " + current.getName());
@@ -784,6 +790,7 @@ public class FunctionVisitor extends DepthFirstAdapter
         {
             node.getIntegers().apply(this);
         }
+        hm.put(node.toString(), "int");
         outAIntExpr(node);
     }
 
@@ -795,6 +802,7 @@ public class FunctionVisitor extends DepthFirstAdapter
         {
             node.getCharConst().apply(this);
         }
+        hm.put(node.toString(), "char ");
         outACharExpr(node);
     }
 
@@ -817,6 +825,7 @@ public class FunctionVisitor extends DepthFirstAdapter
         {
             node.getFunCal().apply(this);
         }
+        
         outAFunCalExpr(node);
     }
 
