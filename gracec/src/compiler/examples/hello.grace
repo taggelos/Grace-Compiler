@@ -10,7 +10,7 @@ fun main () : nothing
 
       var changed, i : int;
    {
-      swap(x[i] + 1 + 2, n);
+      swap(x[i], n);
    }
 
    fun putArray (ref msg : char[]; n : int; ref x : int[]) : nothing

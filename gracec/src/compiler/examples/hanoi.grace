@@ -1,12 +1,12 @@
 fun solve () : nothing
-      fun hanoi (rings : int; ref rings, target, auxiliary : char[]) : nothing
+      fun hanoi (rings : int; ref source, target, auxiliary : char[]) : nothing
          fun move (ref source, target : char[]) : nothing
          {
-            puts("Moving from ");
-            puts(source);
-            puts(" to ");
-            puts(target);
-            puts(".\n");
+            $puts("Moving from ");
+            $puts(source);
+            $puts(" to ");
+            $puts(target);
+            $puts(".\n");
          }
       {
          if rings >= 1 then {
@@ -17,7 +17,6 @@ fun solve () : nothing
       }
 
       var NumberOfRings : int;
-      var NumberOfRings : char [];
 {
   writeString("Rings: ");
   NumberOfRings <- geti();

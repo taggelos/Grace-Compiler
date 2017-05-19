@@ -382,7 +382,7 @@ public class FunctionVisitor extends DepthFirstAdapter
             		//else if(hm.get(e.toString()) == null)
             		//		errors.add("Invalid parameter type.");
             		else if(hm.get(e.toString()) == null || !hm.get(e.toString()).equals(m.methodParams.get(count).getType()))
-            			errors.add("Invalid parameter type " + hm.get(e.toString()) + ". Expecting " + m.methodParams.get(count).getType());
+            			errors.add("Invalid parameter type " + hm.get(e.toString()) + ". Expecting " + m.methodParams.get(count).getType()+" ->"+e.toString());
             	}
             	count++;
             }
@@ -399,6 +399,11 @@ public class FunctionVisitor extends DepthFirstAdapter
             node.getIdentifier().apply(this);
         }
         Variable_t t = getType(node.toString(), current); 
+        if(t.getType() == null) {
+			errors.add("Variable " + node.toString() + "not declared in method " + current.getName()+".");
+			return;
+		}
+        System.out.println("LVAL ID: "+node.toString());
         System.out.println("ADDING: "+node.toString()+" "+ t.getType().replaceAll("[1234567890 ]", ""));
         hm.put(node.toString(), t.getType().replaceAll("[1234567890 ]", ""));
         outAIdLVal(node);
@@ -428,8 +433,8 @@ public class FunctionVisitor extends DepthFirstAdapter
         {
             node.getExpr().apply(this);
         }
-        //Variable_t t = getType(node.toString(), current); 
-        //hm.put(node.toString(), t.getType());
+        Variable_t t = getType(node.toString().split(" ")[0]+" ", current); 
+        hm.put(node.toString(), t.getType().split("\\[")[0]);
         outAIdBracketsLVal(node);
     }
 
@@ -715,14 +720,87 @@ public class FunctionVisitor extends DepthFirstAdapter
     public void caseASubExpr(ASubExpr node)
     {
         inASubExpr(node);
-        if(node.getExpr1() != null)
-        {
+        String type = "";
+        Variable_t t = null;
+        String val;
+        if(node.getExpr1() != null) {
             node.getExpr1().apply(this);
+            val = node.getExpr1().toString();
+            if(!hm.containsKey(val)) {
+            	if(node.getExpr1() instanceof ALValExpr) {
+            		ALValExpr lval = (ALValExpr) node.getExpr1();
+            		if(lval.getLVal() instanceof AIdBracketsLVal) {
+            			//System.out.println("--->"+lval.getLVal());
+            			val = val.split(" ")[0]+" ";
+            			//System.out.println("------>"+val);
+            		}
+            		System.out.println(val + " Method: " + current.getName());
+            		t = getType(val, current);
+            		System.out.println(t.getType());
+            		if(t.getType() == null) {
+            			errors.add("Variable " + val + "not declared in method " + current.getName()+".");
+            			type = null;
+            			return;
+            		}
+            		else if(!t.getType().contains("int")) {
+            			errors.add("Invalid sub expression type.");
+            			type = null;
+            			return;
+            		}
+            		else
+            			type = "int";
+            	}
+            	else if(node.getExpr1() instanceof AIntExpr) {
+            		//System.out.println(node.getExpr1());
+            		type = "int";
+            	}
+            	else {
+            		
+            		errors.add("Invalid add expression type.");
+            	}
+            	
+            }
         }
-        if(node.getExpr2() != null)
-        {
-            node.getExpr2().apply(this);
+        if(node.getExpr2() != null) {
+        	node.getExpr2().apply(this);
+            val = node.getExpr2().toString();
+            if(!hm.containsKey(node.getExpr2())) {
+            	if(node.getExpr2() instanceof ALValExpr) {
+            		ALValExpr lval = (ALValExpr) node.getExpr2();
+            		if(lval.getLVal() instanceof AIdBracketsLVal) {
+            			//System.out.println("--->"+lval.getLVal());
+            			val = val.split(" ")[0];
+            			//System.out.println("------>"+val);
+            		}
+            		System.out.println(val + " Method: " + current.getName());
+            		t = getType(val, current);
+            		System.out.println(t.getType());
+            		if(t.getType() == null) {
+            			errors.add("Variable " + val + "not declared in method " + current.getName()+".");
+            			type = null;
+            			return;
+            		}
+            		else if(!t.getType().contains("int")) {
+            			errors.add("Invalid sub expression type.");
+            			type = null;
+            			return;
+            		}
+            		else
+            			type = "int";
+            	}
+            	else if(node.getExpr2() instanceof AIntExpr) {
+            		//System.out.println(node.getExpr2());
+            		type = "int";
+            	}
+            	else {
+            		errors.add("Invalid add expression type.");
+            	}
+            	
+            }
         }
+        System.out.println(node.getExpr1() + " -- " + node.getExpr2());
+        hm.put(node.toString(), type);
+        System.out.println("NODE: "+node.toString());
         outASubExpr(node);
     }
 
@@ -730,14 +808,87 @@ public class FunctionVisitor extends DepthFirstAdapter
     public void caseAMultExpr(AMultExpr node)
     {
         inAMultExpr(node);
-        if(node.getExpr1() != null)
-        {
+        String type = "";
+        Variable_t t = null;
+        String val;
+        if(node.getExpr1() != null) {
             node.getExpr1().apply(this);
+            val = node.getExpr1().toString();
+            if(!hm.containsKey(val)) {
+            	if(node.getExpr1() instanceof ALValExpr) {
+            		ALValExpr lval = (ALValExpr) node.getExpr1();
+            		if(lval.getLVal() instanceof AIdBracketsLVal) {
+            			//System.out.println("--->"+lval.getLVal());
+            			val = val.split(" ")[0]+" ";
+            			//System.out.println("------>"+val);
+            		}
+            		System.out.println(val + " Method: " + current.getName());
+            		t = getType(val, current);
+            		System.out.println(t.getType());
+            		if(t.getType() == null) {
+            			errors.add("Variable " + val + "not declared in method " + current.getName()+".");
+            			type = null;
+            			return;
+            		}
+            		else if(!t.getType().contains("int")) {
+            			errors.add("Invalid mult expression type.");
+            			type = null;
+            			return;
+            		}
+            		else
+            			type = "int";
+            	}
+            	else if(node.getExpr1() instanceof AIntExpr) {
+            		//System.out.println(node.getExpr1());
+            		type = "int";
+            	}
+            	else {
+            		
+            		errors.add("Invalid add expression type.");
+            	}
+            	
+            }
         }
-        if(node.getExpr2() != null)
-        {
-            node.getExpr2().apply(this);
+        if(node.getExpr2() != null) {
+        	node.getExpr2().apply(this);
+            val = node.getExpr2().toString();
+            if(!hm.containsKey(node.getExpr2())) {
+            	if(node.getExpr2() instanceof ALValExpr) {
+            		ALValExpr lval = (ALValExpr) node.getExpr2();
+            		if(lval.getLVal() instanceof AIdBracketsLVal) {
+            			//System.out.println("--->"+lval.getLVal());
+            			val = val.split(" ")[0];
+            			//System.out.println("------>"+val);
+            		}
+            		System.out.println(val + " Method: " + current.getName());
+            		t = getType(val, current);
+            		System.out.println(t.getType());
+            		if(t.getType() == null) {
+            			errors.add("Variable " + val + "not declared in method " + current.getName()+".");
+            			type = null;
+            			return;
+            		}
+            		else if(!t.getType().contains("int")) {
+            			errors.add("Invalid mult expression type.");
+            			type = null;
+            			return;
+            		}
+            		else
+            			type = "int";
+            	}
+            	else if(node.getExpr2() instanceof AIntExpr) {
+            		//System.out.println(node.getExpr2());
+            		type = "int";
+            	}
+            	else {
+            		errors.add("Invalid add expression type.");
+            	}
+            	
+            }
         }
+        System.out.println(node.getExpr1() + " -- " + node.getExpr2());
+        hm.put(node.toString(), type);
+        System.out.println("NODE: "+node.toString());
         outAMultExpr(node);
     }
 
@@ -745,14 +896,87 @@ public class FunctionVisitor extends DepthFirstAdapter
     public void caseAModExpr(AModExpr node)
     {
         inAModExpr(node);
-        if(node.getExpr1() != null)
-        {
+        String type = "";
+        Variable_t t = null;
+        String val;
+        if(node.getExpr1() != null) {
             node.getExpr1().apply(this);
+            val = node.getExpr1().toString();
+            if(!hm.containsKey(val)) {
+            	if(node.getExpr1() instanceof ALValExpr) {
+            		ALValExpr lval = (ALValExpr) node.getExpr1();
+            		if(lval.getLVal() instanceof AIdBracketsLVal) {
+            			//System.out.println("--->"+lval.getLVal());
+            			val = val.split(" ")[0]+" ";
+            			//System.out.println("------>"+val);
+            		}
+            		System.out.println(val + " Method: " + current.getName());
+            		t = getType(val, current);
+            		System.out.println(t.getType());
+            		if(t.getType() == null) {
+            			errors.add("Variable " + val + "not declared in method " + current.getName()+".");
+            			type = null;
+            			return;
+            		}
+            		else if(!t.getType().contains("int")) {
+            			errors.add("Invalid mod expression type.");
+            			type = null;
+            			return;
+            		}
+            		else
+            			type = "int";
+            	}
+            	else if(node.getExpr1() instanceof AIntExpr) {
+            		//System.out.println(node.getExpr1());
+            		type = "int";
+            	}
+            	else {
+            		
+            		errors.add("Invalid add expression type.");
+            	}
+            	
+            }
         }
-        if(node.getExpr2() != null)
-        {
-            node.getExpr2().apply(this);
+        if(node.getExpr2() != null) {
+        	node.getExpr2().apply(this);
+            val = node.getExpr2().toString();
+            if(!hm.containsKey(node.getExpr2())) {
+            	if(node.getExpr2() instanceof ALValExpr) {
+            		ALValExpr lval = (ALValExpr) node.getExpr2();
+            		if(lval.getLVal() instanceof AIdBracketsLVal) {
+            			//System.out.println("--->"+lval.getLVal());
+            			val = val.split(" ")[0];
+            			//System.out.println("------>"+val);
+            		}
+            		System.out.println(val + " Method: " + current.getName());
+            		t = getType(val, current);
+            		System.out.println(t.getType());
+            		if(t.getType() == null) {
+            			errors.add("Variable " + val + "not declared in method " + current.getName()+".");
+            			type = null;
+            			return;
+            		}
+            		else if(!t.getType().contains("int")) {
+            			errors.add("Invalid mod expression type.");
+            			type = null;
+            			return;
+            		}
+            		else
+            			type = "int";
+            	}
+            	else if(node.getExpr2() instanceof AIntExpr) {
+            		//System.out.println(node.getExpr2());
+            		type = "int";
+            	}
+            	else {
+            		errors.add("Invalid add expression type.");
+            	}
+            	
+            }
         }
+        System.out.println(node.getExpr1() + " -- " + node.getExpr2());
+        hm.put(node.toString(), type);
+        System.out.println("NODE: "+node.toString());
         outAModExpr(node);
     }
 
@@ -760,14 +984,87 @@ public class FunctionVisitor extends DepthFirstAdapter
     public void caseADivExpr(ADivExpr node)
     {
         inADivExpr(node);
-        if(node.getExpr1() != null)
-        {
+        String type = "";
+        Variable_t t = null;
+        String val;
+        if(node.getExpr1() != null) {
             node.getExpr1().apply(this);
+            val = node.getExpr1().toString();
+            if(!hm.containsKey(val)) {
+            	if(node.getExpr1() instanceof ALValExpr) {
+            		ALValExpr lval = (ALValExpr) node.getExpr1();
+            		if(lval.getLVal() instanceof AIdBracketsLVal) {
+            			//System.out.println("--->"+lval.getLVal());
+            			val = val.split(" ")[0]+" ";
+            			//System.out.println("------>"+val);
+            		}
+            		System.out.println(val + " Method: " + current.getName());
+            		t = getType(val, current);
+            		System.out.println(t.getType());
+            		if(t.getType() == null) {
+            			errors.add("Variable " + val + "not declared in method " + current.getName()+".");
+            			type = null;
+            			return;
+            		}
+            		else if(!t.getType().contains("int")) {
+            			errors.add("Invalid div expression type.");
+            			type = null;
+            			return;
+            		}
+            		else
+            			type = "int";
+            	}
+            	else if(node.getExpr1() instanceof AIntExpr) {
+            		//System.out.println(node.getExpr1());
+            		type = "int";
+            	}
+            	else {
+            		
+            		errors.add("Invalid add expression type.");
+            	}
+            	
+            }
         }
-        if(node.getExpr2() != null)
-        {
-            node.getExpr2().apply(this);
+        if(node.getExpr2() != null) {
+        	node.getExpr2().apply(this);
+            val = node.getExpr2().toString();
+            if(!hm.containsKey(node.getExpr2())) {
+            	if(node.getExpr2() instanceof ALValExpr) {
+            		ALValExpr lval = (ALValExpr) node.getExpr2();
+            		if(lval.getLVal() instanceof AIdBracketsLVal) {
+            			//System.out.println("--->"+lval.getLVal());
+            			val = val.split(" ")[0];
+            			//System.out.println("------>"+val);
+            		}
+            		System.out.println(val + " Method: " + current.getName());
+            		t = getType(val, current);
+            		System.out.println(t.getType());
+            		if(t.getType() == null) {
+            			errors.add("Variable " + val + "not declared in method " + current.getName()+".");
+            			type = null;
+            			return;
+            		}
+            		else if(!t.getType().contains("int")) {
+            			errors.add("Invalid div expression type.");
+            			type = null;
+            			return;
+            		}
+            		else
+            			type = "int";
+            	}
+            	else if(node.getExpr2() instanceof AIntExpr) {
+            		//System.out.println(node.getExpr2());
+            		type = "int";
+            	}
+            	else {
+            		errors.add("Invalid add expression type.");
+            	}
+            	
+            }
         }
+        System.out.println(node.getExpr1() + " -- " + node.getExpr2());
+        hm.put(node.toString(), type);
+        System.out.println("NODE: "+node.toString());
         outADivExpr(node);
     }
 

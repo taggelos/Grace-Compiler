@@ -223,8 +223,8 @@ Productions
 
     comparative_expression {-> expr} =
         {relational} relational_expression {-> relational_expression.expr} |
-        {equal} [left]:comparative_expression eq [right]:relational_expression {-> New expr.equal(left.expr, right.expr)} |
-        {not_equal} [left]:comparative_expression neq [right]:relational_expression {-> New expr.not_equal(left.expr, right.expr)};
+        {equal} [left]:expr eq [right]:expr {-> New expr.equal(left.expr, right.expr)} |
+        {not_equal} [left]:expr neq [right]:expr {-> New expr.not_equal(left.expr, right.expr)};
 
     relational_expression {-> expr} =
         {par} l_par cond r_par {-> cond.expr} |
