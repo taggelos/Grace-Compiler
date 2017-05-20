@@ -8,6 +8,7 @@ public class Method_t extends MyType {
     public LinkedList<Variable_t> methodVars;
     public LinkedList<Method_t> methodList;
     public Method_t from;
+    //public boolean isDeclaration;
 
     public Method_t(String return_type, String name) {
         super(name);
@@ -16,6 +17,7 @@ public class Method_t extends MyType {
         this.methodVars = new LinkedList<Variable_t>();
         this.methodList = new LinkedList<Method_t>();
         this.from = null;
+       // this.isDeclaration=false;
     }
 
     public String get_return_type() {
