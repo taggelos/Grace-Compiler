@@ -26,7 +26,7 @@ public class FunctionVisitor extends DepthFirstAdapter
         if(methodvar == null) {             // An den brisketai se sunarthsh...
             String fromvar = meth.from.methContains(var);
             if(fromvar == null)            // An den brisketai oute sto from...
-                errors.add("Undecleared Variable " + var);
+                errors.add("Undeclared Variable " + var);
             methodvar = fromvar;
         }
         return new Variable_t(methodvar, var);
@@ -96,7 +96,7 @@ public class FunctionVisitor extends DepthFirstAdapter
 					errors.add("Method " + name + " already exists!");
             
             if(errors.size() == error_count) {
-            	NewMethod = new Method_t(return_type, name);
+            	NewMethod = new Method_t(return_type.replaceAll(" ",""), name);
             	NewMethod.addFrom(from);
             	if(from != null)
             	from.addMethod(NewMethod);
@@ -403,8 +403,8 @@ public class FunctionVisitor extends DepthFirstAdapter
 			errors.add("Variable " + node.toString() + "not declared in method " + current.getName()+".");
 			return;
 		}
-        System.out.println("LVAL ID: "+node.toString());
-        System.out.println("ADDING: "+node.toString()+" "+ t.getType().replaceAll("[1234567890 ]", ""));
+        //System.out.println("LVAL ID: "+node.toString());
+        //System.out.println("ADDING: "+node.toString()+" "+ t.getType().replaceAll("[1234567890 ]", ""));
         hm.put(node.toString(), t.getType().replaceAll("[1234567890 ]", ""));
         outAIdLVal(node);
     }
@@ -756,7 +756,7 @@ public class FunctionVisitor extends DepthFirstAdapter
             	}
             	else {
             		
-            		errors.add("Invalid add expression type.");
+            		errors.add("Invalid sub expression type.");
             	}
             	
             }
@@ -793,7 +793,7 @@ public class FunctionVisitor extends DepthFirstAdapter
             		type = "int";
             	}
             	else {
-            		errors.add("Invalid add expression type.");
+            		errors.add("Invalid sub expression type.");
             	}
             	
             }
@@ -844,7 +844,7 @@ public class FunctionVisitor extends DepthFirstAdapter
             	}
             	else {
             		
-            		errors.add("Invalid add expression type.");
+            		errors.add("Invalid mult expression type.");
             	}
             	
             }
@@ -881,14 +881,14 @@ public class FunctionVisitor extends DepthFirstAdapter
             		type = "int";
             	}
             	else {
-            		errors.add("Invalid add expression type.");
+            		errors.add("Invalid mult expression type.");
             	}
             	
             }
         }
         System.out.println(node.getExpr1() + " -- " + node.getExpr2());
         hm.put(node.toString(), type);
-        System.out.println("NODE: "+node.toString());
+        //System.out.println("NODE: "+node.toString());
         outAMultExpr(node);
     }
 
@@ -932,7 +932,7 @@ public class FunctionVisitor extends DepthFirstAdapter
             	}
             	else {
             		
-            		errors.add("Invalid add expression type.");
+            		errors.add("Invalid mod expression type.");
             	}
             	
             }
@@ -969,7 +969,7 @@ public class FunctionVisitor extends DepthFirstAdapter
             		type = "int";
             	}
             	else {
-            		errors.add("Invalid add expression type.");
+            		errors.add("Invalid mod expression type.");
             	}
             	
             }
@@ -1020,7 +1020,7 @@ public class FunctionVisitor extends DepthFirstAdapter
             	}
             	else {
             		
-            		errors.add("Invalid add expression type.");
+            		errors.add("Invalid div expression type.");
             	}
             	
             }
@@ -1057,7 +1057,7 @@ public class FunctionVisitor extends DepthFirstAdapter
             		type = "int";
             	}
             	else {
-            		errors.add("Invalid add expression type.");
+            		errors.add("Invalid div expression type.");
             	}
             	
             }
@@ -1134,6 +1134,7 @@ public class FunctionVisitor extends DepthFirstAdapter
         {
             node.getReturnexpr().apply(this);
         }
+        System.out.println("NEVER IN HERE???? ");
         outAReturnstmtExpr(node);
     }
 
@@ -1236,6 +1237,19 @@ public class FunctionVisitor extends DepthFirstAdapter
         if(node.getReturnexpr() != null)
         {
             node.getReturnexpr().apply(this);
+        }
+        System.out.println("RETURN "+node.toString());
+        Variable_t t = getType(node.toString(), current); 
+        t.printVar();
+        if(t.getType() == null ) {
+        	if(!current.get_return_type().equals("nothing")){
+	    		errors.add("Return statement is null! Required "+current.get_return_type()+ " in method " + current.getName());
+				return;	
+			}	        
+		}   
+        else if(!t.getType().equals(current.get_return_type())){
+        	errors.add("Return statement " + node.toString() +" is type of "+t.getType()+"! Required "+current.get_return_type()+ " in method " + current.getName());
+			return;
         }
         outAReturnstmtStmt(node);
     }
