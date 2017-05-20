@@ -58,6 +58,7 @@ public class Method_t extends MyType {
         }
         i = 0;
         while (i < methodParams.size()) {       // Elexgoume an to onoma ths metablhths uparxei sth lista methodParams
+            System.out.println(varName + " <> "+ methodParams.get(i).getName());
             if (methodParams.get(i).getName().equals(varName))
                 return methodParams.get(i).getType();
             i++;

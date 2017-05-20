@@ -25,8 +25,8 @@ public class FunctionVisitor extends DepthFirstAdapter
         String methodvar = meth.methContains(var);
         if(methodvar == null) {             // An den brisketai se sunarthsh...
             String fromvar = meth.from.methContains(var);
-            if(fromvar == null)            // An den brisketai oute sto from...
-                errors.add("Undeclared Variable " + var);
+            //if(fromvar == null)            // An den brisketai oute sto from...  (+ oxi sto hm?)
+                //errors.add("Undeclared Variable " + var);
             methodvar = fromvar;
         }
         return new Variable_t(methodvar, var);
@@ -681,7 +681,7 @@ public class FunctionVisitor extends DepthFirstAdapter
             		ALValExpr lval = (ALValExpr) node.getExpr2();
             		if(lval.getLVal() instanceof AIdBracketsLVal) {
             			//System.out.println("--->"+lval.getLVal());
-            			val = val.split(" ")[0];
+            			val = val.split(" ")[0]+" ";
             			//System.out.println("------>"+val);
             		}
             		System.out.println(val + " Method: " + current.getName());
@@ -1099,7 +1099,7 @@ public class FunctionVisitor extends DepthFirstAdapter
         {
             node.getCharConst().apply(this);
         }
-        hm.put(node.toString(), "char ");
+        hm.put(node.toString(), "char");
         outACharExpr(node);
     }
 
@@ -1133,6 +1133,7 @@ public class FunctionVisitor extends DepthFirstAdapter
         if(node.getReturnexpr() != null)
         {
             node.getReturnexpr().apply(this);
+            System.out.println(node.toString());
         }
         System.out.println("NEVER IN HERE???? ");
         outAReturnstmtExpr(node);
@@ -1236,21 +1237,36 @@ public class FunctionVisitor extends DepthFirstAdapter
         inAReturnstmtStmt(node);
         if(node.getReturnexpr() != null)
         {
+        	String type;
             node.getReturnexpr().apply(this);
+            System.out.println("RETURN "+node.toString());
+            Variable_t t = getType(node.toString(), current); 
+            t.printVar();
+            System.out.println("HM::: "+hm);
+            if(t.getType() == null ) {
+            	System.out.println("AAAAAA");
+            	/* if(!current.get_return_type().equals("nothing")){
+    	    		errors.add("Return statement is null! Required "+current.get_return_type()+ " in method " + current.getName());
+    				return;	
+    			} */
+            	if(hm.containsKey(node.toString())) {
+            		type = hm.get(node.toString());
+            		System.out.println(type+"<->" +current.get_return_type());
+            		if(!type.equals(current.get_return_type())) {
+            			errors.add("Return statement " + node.toString() +" is type of "+type+"! Required "+current.get_return_type()+ " in method " + current.getName());
+            			return;
+            		}
+            	}
+            	else {
+    	    		errors.add("Unknown return expression.");
+            	}
+    		}   
+            else if(!t.getType().equals(current.get_return_type())){
+            	errors.add("Return statement " + node.toString() +" is type of "+t.getType()+"! Required "+current.get_return_type()+ " in method " + current.getName());
+    			return;
+            }
         }
-        System.out.println("RETURN "+node.toString());
-        Variable_t t = getType(node.toString(), current); 
-        t.printVar();
-        if(t.getType() == null ) {
-        	if(!current.get_return_type().equals("nothing")){
-	    		errors.add("Return statement is null! Required "+current.get_return_type()+ " in method " + current.getName());
-				return;	
-			}	        
-		}   
-        else if(!t.getType().equals(current.get_return_type())){
-        	errors.add("Return statement " + node.toString() +" is type of "+t.getType()+"! Required "+current.get_return_type()+ " in method " + current.getName());
-			return;
-        }
+        
         outAReturnstmtStmt(node);
     }
 

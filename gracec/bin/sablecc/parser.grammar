@@ -334,7 +334,7 @@ Abstract Syntax Tree
         {char} char_const | 
         {l_val} l_val |
         {fun_cal} fun_cal | 
-        {returnstmt} [returnexpr]:expr;
+        {returnstmt} [returnexpr]:expr?;
 
     stmt =   
         {semi} |

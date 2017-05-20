@@ -1,6 +1,6 @@
 fun main () : nothing
 
-   fun bsort (n : int; ref x : int[]) : nothing
+   fun bsort (n : int; ref x : int[]) : int
 
       fun swap (ref x, y : int) : nothing
          var t : int;
@@ -11,6 +11,7 @@ fun main () : nothing
       var changed, i : int;
    {
       swap(x[i], n);
+      return 1 + x[i];
    }
 
    fun putArray (ref msg : char[]; n : int; ref x : int[]) : nothing
