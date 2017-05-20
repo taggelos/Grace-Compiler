@@ -1,5 +1,6 @@
 fun main () : nothing
-
+    
+   
    fun bsort (n : int; ref x : int[]) : nothing
 
       fun swap (ref x, y : int) : nothing
@@ -14,6 +15,7 @@ fun main () : nothing
       return;
    }
 
+   fun putArray (ref msg : char[]; n : int; ref x : int[]) : nothing;
    fun putArray (ref msg : char[]; n : int; ref x : int[]) : nothing
       var i : int;
    {

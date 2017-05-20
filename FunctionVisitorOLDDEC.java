@@ -10,7 +10,6 @@ public class FunctionVisitor extends DepthFirstAdapter
 {
 	public LinkedList<Method_t> methods;        // Lista twn klasewn
     public LinkedList<String> errors;
-    public LinkedList<Method_t> fun_decs;
     Method_t from = null;
     Method_t current = null;
     
@@ -19,7 +18,6 @@ public class FunctionVisitor extends DepthFirstAdapter
     public FunctionVisitor() { 
     	methods = new LinkedList<Method_t>(); 
     	errors = new LinkedList<String>(); 
-    	fun_decs = new LinkedList<Method_t>(); 
     }
     
     public Variable_t getType(String var, Method_t meth) {
@@ -86,51 +84,49 @@ public class FunctionVisitor extends DepthFirstAdapter
         
         inAFunDef(node);
         if(node.getHeader() != null) {
-            AHeader header = (AHeader) node.getHeader();
             String return_type, name;
-            
+            AHeader header = (AHeader) node.getHeader();	            
             return_type = header.getReturnT().toString();
             name = header.getName().toString();
-            int error_count = errors.size();
-            
-            for(Method_t m : methods)
-				if(m.getName().equals(name)) 
-					errors.add("Method " + name + " already exists!");
-            
-            if(errors.size() == error_count) {
-            	NewMethod = new Method_t(return_type.replaceAll(" ",""), name);
-            	NewMethod.addFrom(from);
-            	if(from != null)
-            	from.addMethod(NewMethod);
-            	from = NewMethod;
-            	
-            	for(PFparDef par : header.getPars()) {
-            		for(TIdentifier id : ((AFparDef) par).getNames()) {
-            			if(!NewMethod.addParam(new Variable_t(((AFparDef) par).getTypes().toString().replaceAll(" ", ""), id.toString())))
-            				errors.add("Param " + id.toString() + " already exists!");
-            		}
-            	}
-            }
+            boolean flag = false;
+        	for(Method_t m : methods) {
+
+				System.out.println(m.getName() + "---->><><><" + name);
+				if(m.getName().equals(name) ){	
+					flag = true;
+					if(m.isDef!=true){
+						NewMethod = m.getMethod(name);
+					}
+					else{
+						errors.add("Method def " + name + " already exists!");
+					}
+					break;
+				}
+        	}
+			if(!flag) {
+				int error_count = errors.size();
+				
+				for(Method_t m2 : methods)
+					if(m2.getName().equals(name)) 
+						errors.add("Method " + name + " already exists!");
+	            if(errors.size() == error_count) {
+	            	NewMethod = new Method_t(return_type.replaceAll(" ",""), name);
+	            	NewMethod.addFrom(from);
+	            	if(from != null)
+	            	from.addMethod(NewMethod);
+	            	from = NewMethod;
+	            	NewMethod.isDef = true;
+	            	for(PFparDef par : header.getPars()) {
+	            		for(TIdentifier id : ((AFparDef) par).getNames()) {
+	            			if(!NewMethod.addParam(new Variable_t(((AFparDef) par).getTypes().toString().replaceAll(" ", ""), id.toString())))
+	            				errors.add("Param " + id.toString() + " already exists!");
+	            		}
+	            	}
+	            }
+			}
             node.getHeader().apply(this);
-            for(Method_t meth: fun_decs){
-            	if(meth.getName().equals(name)){
-            		if(meth.methodParams.size()!=NewMethod.methodParams.size()){
-            			errors.add("Function Definition "+ meth.getName() + "does not match Function Declaration.");
-            		}
-            		else{
-            			int count=0;
-            			for(Variable_t var: meth.methodParams){
-            				if(!var.getType().equals(NewMethod.methodParams.get(count).getType())){
-            					errors.add("Function Definition of Parameter with type "+ var.getType() + " does not match type "+NewMethod.methodParams.get(count).getType()+".");
-            				}
-            				count++;
-            			}
-            		}
-            	}
-            }
         }
         {
-        	current = NewMethod;
             List<PLocalDef> copy = new ArrayList<PLocalDef>(node.getLocal());
             for(PLocalDef e : copy) {
                 //System.out.println("out of loop -- "  +e);
@@ -253,48 +249,43 @@ public class FunctionVisitor extends DepthFirstAdapter
     @Override
     public void caseAFunDec(AFunDec node)
     {
-    	Method_t NewMethod =null;
-        inAFunDec(node);
+        Method_t NewMethod = null;
+        inAFunDec(node);        
         if(node.getHeader() != null)
         {
+            AHeader header = (AHeader) node.getHeader();
+            String return_type, name;
+            
+            return_type = header.getReturnT().toString();
+            name = header.getName().toString();
+            int error_count = errors.size();
+            for(Method_t m : methods) {
+    			if(m.getName().equals(name) ){	
+    				if(m.isDef==true){    					
+    					errors.add("Method def " + name + " already exists!");
+    					return;
+    				}
+        			break;
+    			}				
+        	}
+            if(errors.size() == error_count) {
+            	NewMethod = new Method_t(return_type.replaceAll(" ",""), name);
+            	NewMethod.addFrom(from);
+            	if(from != null)
+            	from.addMethod(NewMethod);
+            	from = NewMethod;
+            	
+            	for(PFparDef par : header.getPars()) {
+            		for(TIdentifier id : ((AFparDef) par).getNames()) {
+            			if(!NewMethod.addParam(new Variable_t(((AFparDef) par).getTypes().toString().replaceAll(" ", ""), id.toString())))
+            				errors.add("Param " + id.toString() + " already exists!");
+            		}
+            	}
+            }            
             node.getHeader().apply(this);
-        }        
-        AHeader header = (AHeader) node.getHeader();
-        String return_type, name;
-        
-        return_type = header.getReturnT().toString();
-        name = header.getName().toString();
-        int error_count = errors.size();
-        
-        for(Method_t m : methods)
-			if(m.getName().equals(name)) 
-				errors.add("Method " + name + " already exists!");
-        
-        if(errors.size() == error_count) {
-        	NewMethod = new Method_t(return_type.replaceAll(" ",""), name);        	
-        	for(PFparDef par : header.getPars()) {
-        		for(TIdentifier id : ((AFparDef) par).getNames()) {
-        			if(!NewMethod.addParam(new Variable_t(((AFparDef) par).getTypes().toString().replaceAll(" ", ""), id.toString())))
-        				errors.add("Param " + id.toString() + " already exists!");
-        		}
-        	}
         }
-        for(Method_t meth: methods){
-        	System.out.println(meth.getName()+ "345345435");
-        	if(current.getName().equals(name)){
-        		errors.add("Method Already defined!");
-        		return;
-        	}
-        }
-        for(Method_t fun: fun_decs){
-        	if(fun.getName().equals(name)){
-        		errors.add("Method Already declared!");
-        		return;
-        	}
-        }
-        fun_decs.add(NewMethod);
-        NewMethod.printMethod();
-        //System.out.println(NewMethod.getName()+ "435545453!!");
+        System.out.println(NewMethod.getName()+" 6666666666sadasdasd");
+        methods.add(NewMethod);
         outAFunDec(node);
     }
 
