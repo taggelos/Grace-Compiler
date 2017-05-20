@@ -132,14 +132,21 @@ public class FunctionVisitor extends DepthFirstAdapter
              }      
         }
         {
+        	boolean ret = false;
         	current = NewMethod;
             List<PStmt> copy = new ArrayList<PStmt>(node.getBlock());
             for(PStmt e : copy)
             {
-            	
                 e.apply(this);
-                
+                if(e instanceof AReturnstmtStmt) {
+                	//System.out.println("BLOCK_RETURN: "+e);
+                	System.out.println(((AReturnstmtStmt) e).getReturnexpr()+"<---------");
+                	if(((AReturnstmtStmt) e).getReturnexpr() != null) ret = true;
+                }
             }
+            if(!current.get_return_type().equals("nothing") && !ret) {
+            	errors.add("Expecting return statment for method "+current.getName()+".");
+        	}
             from = NewMethod.from;
         }
         NewMethod.printMethod();
@@ -1244,14 +1251,12 @@ public class FunctionVisitor extends DepthFirstAdapter
             t.printVar();
             System.out.println("HM::: "+hm);
             if(t.getType() == null ) {
-            	System.out.println("AAAAAA");
             	/* if(!current.get_return_type().equals("nothing")){
     	    		errors.add("Return statement is null! Required "+current.get_return_type()+ " in method " + current.getName());
     				return;	
     			} */
             	if(hm.containsKey(node.toString())) {
             		type = hm.get(node.toString());
-            		System.out.println(type+"<->" +current.get_return_type());
             		if(!type.equals(current.get_return_type())) {
             			errors.add("Return statement " + node.toString() +" is type of "+type+"! Required "+current.get_return_type()+ " in method " + current.getName());
             			return;
