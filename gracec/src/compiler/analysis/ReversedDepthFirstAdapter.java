@@ -521,9 +521,17 @@ public class ReversedDepthFirstAdapter extends AnalysisAdapter
     public void caseAIdBracketsLVal(AIdBracketsLVal node)
     {
         inAIdBracketsLVal(node);
+        if(node.getRBr() != null)
+        {
+            node.getRBr().apply(this);
+        }
         if(node.getExpr() != null)
         {
             node.getExpr().apply(this);
+        }
+        if(node.getLBr() != null)
+        {
+            node.getLBr().apply(this);
         }
         if(node.getLVal() != null)
         {

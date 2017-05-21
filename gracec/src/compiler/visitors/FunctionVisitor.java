@@ -11,7 +11,7 @@ public class FunctionVisitor extends DepthFirstAdapter
 	public LinkedList<Method_t> methods;        // Lista twn klasewn
     public LinkedList<String> errors;
     public LinkedList<Method_t> fun_decs;
-    public LinkedList<String> booleans;
+    public LinkedList<String> bools;
     Method_t from = null;
     Method_t current = null;
     boolean ret;
@@ -19,22 +19,23 @@ public class FunctionVisitor extends DepthFirstAdapter
     HashMap<String, String> hm = new HashMap<String, String>();
 
     
-    String[] smethodnames = {
-  		  "puti", 
-  		  "putc", 
-  		  "puts", 
-  		  "geti", 
-  		  "getc", 
-  		  "gets", 
-  		  "abs",
-  		  "ord",
-  		  "chr",
-  		  "strlen",
-  		  "strcmp",
-  		  "strcpy",
-  		  "strcat",
+    static String[] smethodnames = {
+  		  "puti ", 
+  		  "putc ", 
+  		  "puts ", 
+  		  "geti ", 
+  		  "getc ", 
+  		  "gets ", 
+  		  "abs ",
+  		  "ord ",
+  		  "chr ",
+  		  "strlen ",
+  		  "strcmp ",
+  		  "strcpy ",
+  		  "strcat ",
+  		  "writeString "
   		};
-    String[] smethodreturns = {
+    static String[] smethodreturns = {
   		  "nothing", 
   		  "nothing", 
   		  "nothing",  
@@ -48,13 +49,14 @@ public class FunctionVisitor extends DepthFirstAdapter
   		  "int",
   		  "nothing",
   		  "nothing",
+  		  "nothing"
   		};
-    String[] smethodparams = {
+    static String[] smethodparams = {
   		  "int", 
   		  "char", 
   		  "char[]",  
-  		  "none", 
-  		  "none", 
+  		  "", 
+  		  "", 
   		  "int, char[]", 
   		  "int",
   		  "char",
@@ -63,6 +65,7 @@ public class FunctionVisitor extends DepthFirstAdapter
   		  "char[], char[]",
   		  "char[], char[]",
   		  "char[], char[]",
+  		  "char[]"
   		};
     
 
@@ -70,7 +73,7 @@ public class FunctionVisitor extends DepthFirstAdapter
     	methods = new LinkedList<Method_t>(); 
     	errors = new LinkedList<String>(); 
     	fun_decs = new LinkedList<Method_t>(); 
-    	booleans = new LinkedList<String>(); 
+    	bools = new LinkedList<String>(); 
     }
     
     public Variable_t getType(String var, Method_t meth) {
@@ -94,6 +97,23 @@ public class FunctionVisitor extends DepthFirstAdapter
 			if(m.getName().equals(call_name))
 				return m;
 		}
+		
+		for(int i = 0; i<smethodnames.length; i++){
+			String[] spl=null;
+			if(call_name.equals(smethodnames[i])) {
+				Method_t smeth = new Method_t(smethodreturns[i], smethodnames[i]);
+				if(!smethodparams[i].isEmpty()) {
+					spl = smethodparams[i].split(", ");
+					for(int j=0; j< spl.length; j++)
+						smeth.addParam(new Variable_t(spl[j], "arg"+j));
+				}
+				
+				System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+				smeth.printMethod();
+				System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+				return smeth;
+			}
+		}
     	
     	return null;
     }
@@ -102,12 +122,6 @@ public class FunctionVisitor extends DepthFirstAdapter
     public void caseStart(Start node)
     {
         inStart(node); 
-        for(int i = 0; i<smethodnames.length; i++){
-            StandardMethod m =new StandardMethod(smethodnames[i],
-            		smethodreturns[i],
-            		smethodparams[i]);
-            errors.add(m.getName() +" - "+ m.getParams() +" - "+m.getReturnType() +" - ");
-        }   
         node.getPProgram().apply(this);
         node.getEOF().apply(this);
         outStart(node);
@@ -150,14 +164,10 @@ public class FunctionVisitor extends DepthFirstAdapter
             name = header.getName().toString();
             int error_count = errors.size();
             
-            for(Method_t m : methods){
-            	for(String n: smethodnames){
-                    if(n.equals(m.getName()))
-                    	break;
-                }
-				if(m.getName().equals(name)) 
+            for(Method_t m : methods)
+            	if(m.getName().equals(name)) 
 					errors.add("Method " + name + " already exists!");
-            }
+            
             if(errors.size() == error_count) {
             	NewMethod = new Method_t(return_type.replaceAll(" ",""), name);
             	NewMethod.addFrom(from);
@@ -499,14 +509,14 @@ public class FunctionVisitor extends DepthFirstAdapter
             for(PExpr e : copy) {
             	System.out.println("-------------------------------------------");
                 e.apply(this);
-            	System.out.println("EXPR: "+ e.toString());
+            	System.out.println("EXPR--: "+ e.toString());
             	if(!hm.isEmpty()) {
             		if(!hm.containsKey(e.toString()))
-            			errors.add("Invalid parameter of method " + name+" ->"+e.toString());
+            			errors.add("Invalid parameter of method " + name+"."+e.toString());
             		//else if(hm.get(e.toString()) == null)
             		//		errors.add("Invalid parameter type.");
             		else if(hm.get(e.toString()) == null || !hm.get(e.toString()).equals(m.methodParams.get(count).getType()))
-            			errors.add("Invalid parameter type " + hm.get(e.toString()) + ". Expecting " + m.methodParams.get(count).getType()+" ->"+e.toString());
+            			errors.add("Invalid parameter type " + hm.get(e.toString()) + ". Expecting " + m.methodParams.get(count).getType()+".");
             	}
             	count++;
             }
@@ -558,8 +568,9 @@ public class FunctionVisitor extends DepthFirstAdapter
         {
             node.getExpr().apply(this);
         }
+        String name = node.getLVal().toString()+"[ "+node.getExpr().toString()+"] ";
         Variable_t t = getType(node.toString().split(" ")[0]+" ", current); 
-        hm.put(node.toString(), t.getType().split("\\[")[0]);
+        hm.put(name, t.getType().split("\\[")[0]);
         outAIdBracketsLVal(node);
     }
 
@@ -620,7 +631,7 @@ public class FunctionVisitor extends DepthFirstAdapter
         {
             node.getLeft().apply(this);
             /*val = node.getLeft().toString();
-            for(String b: booleans){
+            for(String b: bools){
             	
             	}*/
          }
@@ -630,8 +641,8 @@ public class FunctionVisitor extends DepthFirstAdapter
             node.getRight().apply(this);
         }
         //System.out.println(node.getLeft() + " -- " + node.getRight());
-        booleans.add(node.toString());
-        errors.add(booleans.toString());
+        bools.add(node.toString());
+        //errors.add(bools.toString());
         outAAndExprExpr(node);
     }
 
@@ -704,7 +715,7 @@ public class FunctionVisitor extends DepthFirstAdapter
         			" does not match type \""+ typel +"\". Type \""+typer+"\" found.");
         	return;
         }
-        booleans.add(node.toString());
+        bools.add(node.toString());
         outALessThanExpr(node);
     }
 
@@ -740,7 +751,7 @@ public class FunctionVisitor extends DepthFirstAdapter
         	errors.add("Less-Than Expression of "+ node.getLeft().toString() +" does not match type \""+ typel +"\". Type \""+typer+"\" found.");
         	return;
         }
-        booleans.add(node.toString());
+        bools.add(node.toString());
         outAGreaterThanExpr(node);
     }
 
@@ -776,7 +787,7 @@ public class FunctionVisitor extends DepthFirstAdapter
         	errors.add("Less-Than Expression of "+ node.getLeft().toString() +" does not match type \""+ typel +"\". Type \""+typer+"\" found.");
         	return;
         }
-        booleans.add(node.toString());
+        bools.add(node.toString());
         outAGreaterEqualThanExpr(node);
     }
 
@@ -812,7 +823,7 @@ public class FunctionVisitor extends DepthFirstAdapter
         	errors.add("Less-Than Expression of "+ node.getLeft().toString() +" does not match type \""+ typel +"\". Type \""+typer+"\" found.");
         	return;
         }
-        booleans.add(node.toString());
+        bools.add(node.toString());
         outALessEqualThanExpr(node);
     }
 
@@ -848,7 +859,7 @@ public class FunctionVisitor extends DepthFirstAdapter
         	errors.add("Less-Than Expression of "+ node.getLeft().toString() +" does not match type \""+ typel +"\". Type \""+typer+"\" found.");
         	return;
         }
-        booleans.add(node.toString());
+        bools.add(node.toString());
         outAEqualExpr(node);
     }
 
@@ -884,7 +895,7 @@ public class FunctionVisitor extends DepthFirstAdapter
         	errors.add("Less-Than Expression of "+ node.getLeft().toString() +" does not match type \""+ typel +"\". Type \""+typer+"\" found.");
         	return;
         }
-        booleans.add(node.toString());
+        bools.add(node.toString());
         outANotEqualExpr(node);
     }
     
@@ -903,7 +914,7 @@ public class FunctionVisitor extends DepthFirstAdapter
             		ALValExpr lval = (ALValExpr) node.getExpr1();
             		if(lval.getLVal() instanceof AIdBracketsLVal) {
             			//System.out.println("--->"+lval.getLVal());
-            			val = val.split(" ")[0]+" ";
+            			//val = val.split(" ")[0]+" ";
             			//System.out.println("------>"+val);
             		}
             		System.out.println(val + " Method: " + current.getName());
@@ -914,7 +925,7 @@ public class FunctionVisitor extends DepthFirstAdapter
             			type = null;
             			return;
             		}
-            		else if(!t.getType().contains("int")) {
+            		else if(!t.getType().equals("int")) {
             			errors.add("Invalid add expression type.");
             			type = null;
             			return;
@@ -952,7 +963,7 @@ public class FunctionVisitor extends DepthFirstAdapter
             			type = null;
             			return;
             		}
-            		else if(!t.getType().contains("int")) {
+            		else if(!t.getType().equals("int")) {
             			errors.add("Invalid add expression type.");
             			type = null;
             			return;
@@ -1002,7 +1013,7 @@ public class FunctionVisitor extends DepthFirstAdapter
             			type = null;
             			return;
             		}
-            		else if(!t.getType().contains("int")) {
+            		else if(!t.getType().equals("int")) {
             			errors.add("Invalid sub expression type.");
             			type = null;
             			return;
@@ -1040,7 +1051,7 @@ public class FunctionVisitor extends DepthFirstAdapter
             			type = null;
             			return;
             		}
-            		else if(!t.getType().contains("int")) {
+            		else if(!t.getType().equals("int")) {
             			errors.add("Invalid sub expression type.");
             			type = null;
             			return;
@@ -1090,7 +1101,7 @@ public class FunctionVisitor extends DepthFirstAdapter
             			type = null;
             			return;
             		}
-            		else if(!t.getType().contains("int")) {
+            		else if(!t.getType().equals("int")) {
             			errors.add("Invalid mult expression type.");
             			type = null;
             			return;
@@ -1128,7 +1139,7 @@ public class FunctionVisitor extends DepthFirstAdapter
             			type = null;
             			return;
             		}
-            		else if(!t.getType().contains("int")) {
+            		else if(!t.getType().equals("int")) {
             			errors.add("Invalid mult expression type.");
             			type = null;
             			return;
@@ -1178,7 +1189,7 @@ public class FunctionVisitor extends DepthFirstAdapter
             			type = null;
             			return;
             		}
-            		else if(!t.getType().contains("int")) {
+            		else if(!t.getType().equals("int")) {
             			errors.add("Invalid mod expression type.");
             			type = null;
             			return;
@@ -1216,7 +1227,7 @@ public class FunctionVisitor extends DepthFirstAdapter
             			type = null;
             			return;
             		}
-            		else if(!t.getType().contains("int")) {
+            		else if(!t.getType().equals("int")) {
             			errors.add("Invalid mod expression type.");
             			type = null;
             			return;
@@ -1266,7 +1277,7 @@ public class FunctionVisitor extends DepthFirstAdapter
             			type = null;
             			return;
             		}
-            		else if(!t.getType().contains("int")) {
+            		else if(!t.getType().equals("int")) {
             			errors.add("Invalid div expression type.");
             			type = null;
             			return;
@@ -1304,7 +1315,7 @@ public class FunctionVisitor extends DepthFirstAdapter
             			type = null;
             			return;
             		}
-            		else if(!t.getType().contains("int")) {
+            		else if(!t.getType().equals("int")) {
             			errors.add("Invalid div expression type.");
             			type = null;
             			return;

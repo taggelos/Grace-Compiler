@@ -1611,11 +1611,15 @@ public class Parser
         {
             // Block
         PLVal plvalNode2;
-        PExpr pexprNode3;
+        TLBr tlbrNode3;
+        PExpr pexprNode4;
+        TRBr trbrNode5;
         plvalNode2 = (PLVal)nodeArrayList1.get(0);
-        pexprNode3 = (PExpr)nodeArrayList3.get(0);
+        tlbrNode3 = (TLBr)nodeArrayList2.get(0);
+        pexprNode4 = (PExpr)nodeArrayList3.get(0);
+        trbrNode5 = (TRBr)nodeArrayList4.get(0);
 
-        plvalNode1 = new AIdBracketsLVal(plvalNode2, pexprNode3);
+        plvalNode1 = new AIdBracketsLVal(plvalNode2, tlbrNode3, pexprNode4, trbrNode5);
         }
 	nodeList.add(plvalNode1);
         return nodeList;

@@ -13,6 +13,9 @@ public class Variable_t extends MyType {
     }
 
     public void printVar() {
-		System.out.print(this.type + " " + this.getName());
+    	if(this.getName() == null)
+    		System.out.print(this.type + " null");
+    	else
+    		System.out.print(this.type + " " + this.getName());
 	}
 }

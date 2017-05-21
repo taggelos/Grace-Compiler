@@ -1,7 +1,7 @@
 fun main () : nothing
     
    
-   fun bsort (n : int; ref x : int[]) : nothing
+   fun bsort (n : int; ref x : int[]) : int
 
       fun swap (ref x, y : int) : nothing
          var t : int;
@@ -12,15 +12,15 @@ fun main () : nothing
       var changed, i : int;
       var c : char[];
    {
-      $x <- x[i+x]; 
+      x[i] <- x[i+x]; 
       c <- "aaa";
       swap(x[i], n);
       $if "a">2 then {return;}
-      if i # i[2] and swap(x[i]+1, n) = 1 and 1=1 then {
+      $if i # i[2] and swap(x[i]+1, n) = 1 and 1=1 then {
       if "a" < i and i # i and 1=1 then {
-        return;
+        return geti();
       }
-      }
+      $}
    }
 
    fun putArray (ref msg : char[]; n : int; ref x : int[]) : nothing

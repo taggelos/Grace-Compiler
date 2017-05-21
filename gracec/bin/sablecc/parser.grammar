@@ -157,7 +157,7 @@ Productions
     l_val =
         {id} identifier {-> New l_val.id(identifier)} | 
         {string} string_literal {-> New l_val.string(string_literal)} | 
-        {id_brackets} l_val l_br expr r_br {-> New l_val.id_brackets(l_val, expr)};
+        {id_brackets} l_val l_br expr r_br {-> New l_val.id_brackets(l_val, l_br, expr, r_br)};
 
     fun_cal =
         [name]:identifier l_par [exprs]:expr_list r_par {-> New fun_cal(name, [exprs.expr])};
@@ -304,7 +304,7 @@ Abstract Syntax Tree
     l_val =
         {id} identifier | 
         {string} string_literal | 
-        {id_brackets} l_val expr;
+        {id_brackets} l_val l_br expr r_br;
 
     if_header =
         [cond]:expr;
