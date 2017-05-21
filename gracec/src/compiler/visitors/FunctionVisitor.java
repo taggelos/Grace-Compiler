@@ -11,15 +11,18 @@ public class FunctionVisitor extends DepthFirstAdapter
 	public LinkedList<Method_t> methods;        // Lista twn klasewn
     public LinkedList<String> errors;
     public LinkedList<Method_t> fun_decs;
+    public LinkedList<String> booleans;
     Method_t from = null;
     Method_t current = null;
     
     HashMap<String, String> hm = new HashMap<String, String>();
 
+
     public FunctionVisitor() { 
     	methods = new LinkedList<Method_t>(); 
     	errors = new LinkedList<String>(); 
     	fun_decs = new LinkedList<Method_t>(); 
+    	booleans = new LinkedList<String>(); 
     }
     
     public Variable_t getType(String var, Method_t meth) {
@@ -551,16 +554,25 @@ public class FunctionVisitor extends DepthFirstAdapter
     public void caseAAndExprExpr(AAndExprExpr node)
     {
         inAAndExprExpr(node);
+        String type = "";
+        Variable_t t = null;
+        String val;
         if(node.getLeft() != null)
         {
             node.getLeft().apply(this);
-        }
+            /*val = node.getLeft().toString();
+            for(String b: booleans){
+            	
+            	}*/
+         }
+          
         if(node.getRight() != null)
         {
             node.getRight().apply(this);
         }
-        System.out.println(node.getLeft() + " + " + node.getRight());
-        
+        System.out.println(node.getLeft() + " -- " + node.getRight());
+        booleans.add(node.toString());
+        errors.add(booleans.toString());
         outAAndExprExpr(node);
     }
 
@@ -613,6 +625,20 @@ public class FunctionVisitor extends DepthFirstAdapter
         {
             node.getRight().apply(this);
         }
+        System.out.println(node.getLeft() + " + " + node.getRight());
+        String typel = null,typer = null;
+        //System.out.println("ASSIGNMENT "+node.toString());
+        //Variable_t tl = getType(node.getLeft().toString(), current); 
+        //Variable_t tr = getType(node.getRight().toString(), current); 
+        //tl.printVar();tr.printVar();
+        booleans.add(node.toString());
+        System.out.println("HM::: "+hm);
+    	typel = hm.get(node.getLeft().toString());
+        typer = hm.get(node.getRight().toString());
+        //errors.add("nodes -> "+ node.getLeft()+"--"+node.getRight()+"typel,r --> "+typel+ " 222 "+ typer + hm);
+        if(typel!=null && typer!=null && !typel.equals(typer)){
+        	errors.add("Less-Than Expression of "+ node.getLeft().toString().replaceAll(" ","") +" does not match type \""+ typel +"\". Type \""+typer+"\" found.");
+        }
         outALessThanExpr(node);
     }
 
@@ -627,6 +653,20 @@ public class FunctionVisitor extends DepthFirstAdapter
         if(node.getRight() != null)
         {
             node.getRight().apply(this);
+        }
+        System.out.println(node.getLeft() + " + " + node.getRight());
+        String typel = null,typer = null;
+        //System.out.println("ASSIGNMENT "+node.toString());
+        //Variable_t tl = getType(node.getLeft().toString(), current); 
+        //Variable_t tr = getType(node.getRight().toString(), current); 
+        //tl.printVar();tr.printVar();
+        booleans.add(node.toString());
+        System.out.println("HM::: "+hm);
+    	typel = hm.get(node.getLeft().toString());
+        typer = hm.get(node.getRight().toString());
+        //errors.add("nodes -> "+ node.getLeft()+"--"+node.getRight()+"typel,r --> "+typel+ " 222 "+ typer + hm);
+        if(typel!=null && typer!=null && !typel.equals(typer)){
+        	errors.add("Greater-Than Expression of "+ node.getLeft().toString().replaceAll(" ","") +" does not match type \""+ typel +"\". Type \""+typer+"\" found.");
         }
         outAGreaterThanExpr(node);
     }
@@ -643,6 +683,20 @@ public class FunctionVisitor extends DepthFirstAdapter
         {
             node.getRight().apply(this);
         }
+        System.out.println(node.getLeft() + " + " + node.getRight());
+        String typel = null,typer = null;
+        //System.out.println("ASSIGNMENT "+node.toString());
+        //Variable_t tl = getType(node.getLeft().toString(), current); 
+        //Variable_t tr = getType(node.getRight().toString(), current); 
+        //tl.printVar();tr.printVar();
+        booleans.add(node.toString());
+        System.out.println("HM::: "+hm);
+    	typel = hm.get(node.getLeft().toString());
+        typer = hm.get(node.getRight().toString());
+        //errors.add("nodes -> "+ node.getLeft()+"--"+node.getRight()+"typel,r --> "+typel+ " 222 "+ typer + hm);
+        if(typel!=null && typer!=null && !typel.equals(typer)){
+        	errors.add("Greater-Equal Expression of "+ node.getLeft().toString().replaceAll(" ","") +" does not match type \""+ typel +"\". Type \""+typer+"\" found.");
+        }
         outAGreaterEqualThanExpr(node);
     }
 
@@ -657,6 +711,20 @@ public class FunctionVisitor extends DepthFirstAdapter
         if(node.getRight() != null)
         {
             node.getRight().apply(this);
+        }
+        System.out.println(node.getLeft() + " + " + node.getRight());
+        String typel = null,typer = null;
+        //System.out.println("ASSIGNMENT "+node.toString());
+        //Variable_t tl = getType(node.getLeft().toString(), current); 
+        //Variable_t tr = getType(node.getRight().toString(), current); 
+        //tl.printVar();tr.printVar();
+        booleans.add(node.toString());
+        System.out.println("HM::: "+hm);
+    	typel = hm.get(node.getLeft().toString());
+        typer = hm.get(node.getRight().toString());
+        //errors.add("nodes -> "+ node.getLeft()+"--"+node.getRight()+"typel,r --> "+typel+ " 222 "+ typer + hm);
+        if(typel!=null && typer!=null && !typel.equals(typer)){
+        	errors.add("Less-Equal Expression of "+ node.getLeft().toString().replaceAll(" ","") +" does not match type \""+ typel +"\". Type \""+typer+"\" found.");
         }
         outALessEqualThanExpr(node);
     }
@@ -673,6 +741,20 @@ public class FunctionVisitor extends DepthFirstAdapter
         {
             node.getRight().apply(this);
         }
+        System.out.println(node.getLeft() + " + " + node.getRight());
+        String typel = null,typer = null;
+        //System.out.println("ASSIGNMENT "+node.toString());
+        //Variable_t tl = getType(node.getLeft().toString(), current); 
+        //Variable_t tr = getType(node.getRight().toString(), current); 
+        //tl.printVar();tr.printVar();
+        booleans.add(node.toString());
+        System.out.println("HM::: "+hm);
+    	typel = hm.get(node.getLeft().toString());
+        typer = hm.get(node.getRight().toString());
+        //errors.add("nodes -> "+ node.getLeft()+"--"+node.getRight()+"typel,r --> "+typel+ " 222 "+ typer + hm);
+        if(typel!=null && typer!=null && !typel.equals(typer)){
+        	errors.add("Equal Expression of "+ node.getLeft().toString().replaceAll(" ","") +" does not match type \""+ typel +"\". Type \""+typer+"\" found.");
+        }
         outAEqualExpr(node);
     }
 
@@ -687,6 +769,20 @@ public class FunctionVisitor extends DepthFirstAdapter
         if(node.getRight() != null)
         {
             node.getRight().apply(this);
+        }
+        System.out.println(node.getLeft() + " + " + node.getRight());
+        String typel = null,typer = null;
+        //System.out.println("ASSIGNMENT "+node.toString());
+        //Variable_t tl = getType(node.getLeft().toString(), current); 
+        //Variable_t tr = getType(node.getRight().toString(), current); 
+        //tl.printVar();tr.printVar();
+        booleans.add(node.toString());
+        System.out.println("HM::: "+hm);
+    	typel = hm.get(node.getLeft().toString());
+        typer = hm.get(node.getRight().toString());
+        //errors.add("nodes -> "+ node.getLeft()+"--"+node.getRight()+"typel,r --> "+typel+ " 222 "+ typer + hm);
+        if(typel!=null && typer!=null && !typel.equals(typer)){
+        	errors.add("Not Equal Expression of "+ node.getLeft().toString().replaceAll(" ","") +" does not match type \""+ typel +"\". Type \""+typer+"\" found.");
         }
         outANotEqualExpr(node);
     }
@@ -1222,6 +1318,19 @@ public class FunctionVisitor extends DepthFirstAdapter
         {
             node.getRight().apply(this);
         }
+        System.out.println("yoloAAA " + node.getLeft() + " -- "+ node.getRight() );
+        String typel = null,typer = null;
+        //System.out.println("ASSIGNMENT "+node.toString());
+        //Variable_t tl = getType(node.getLeft().toString(), current); 
+        //Variable_t tr = getType(node.getRight().toString(), current); 
+        //tl.printVar();tr.printVar();
+        System.out.println("HM::: "+hm);
+    	typel = hm.get(node.getLeft().toString());
+        typer = hm.get(node.getRight().toString());
+        //
+        if(typel!=null && typer!=null && !typel.equals(typer)){
+        	errors.add("Assignment of "+ node.getLeft().toString().replaceAll(" ","") +" does not match type \""+ typel +"\". Type \""+typer+"\" found.");
+        }
         outAAssignmentStmt(node);
     }
 
@@ -1314,7 +1423,7 @@ public class FunctionVisitor extends DepthFirstAdapter
             	if(hm.containsKey(node.toString())) {
             		type = hm.get(node.toString());
             		if(!type.equals(current.get_return_type())) {
-            			errors.add("Return statement " + node.toString() +" is type of "+type+"! Required "+current.get_return_type()+ " in method " + current.getName());
+            			errors.add("Return statement " + node.toString() +" is type of \""+type+"\"! Required \""+current.get_return_type()+ "\" in method " + current.getName());
             			return;
             		}
             	}
@@ -1323,7 +1432,7 @@ public class FunctionVisitor extends DepthFirstAdapter
             	}
     		}   
             else if(!t.getType().equals(current.get_return_type())){
-            	errors.add("Return statement " + node.toString() +" is type of "+t.getType()+"! Required "+current.get_return_type()+ " in method " + current.getName());
+            	errors.add("Return statement " + node.toString() +" is type of \""+t.getType()+"\"! Required \""+current.get_return_type()+ "\" in method " + current.getName());
     			return;
             }
         }
