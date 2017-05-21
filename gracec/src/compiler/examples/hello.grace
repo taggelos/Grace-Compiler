@@ -26,7 +26,7 @@ fun main () : nothing
    fun putArray (ref msg : char[]; n : int; ref x : int[]) : nothing
       var i : int;
    {
-      $puts(msg);
+      puts(msg);
       $puti(x[i]);
       $puts("\n");
    }

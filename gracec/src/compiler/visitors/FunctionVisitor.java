@@ -18,6 +18,53 @@ public class FunctionVisitor extends DepthFirstAdapter
     
     HashMap<String, String> hm = new HashMap<String, String>();
 
+    
+    String[] smethodnames = {
+  		  "puti", 
+  		  "putc", 
+  		  "puts", 
+  		  "geti", 
+  		  "getc", 
+  		  "gets", 
+  		  "abs",
+  		  "ord",
+  		  "chr",
+  		  "strlen",
+  		  "strcmp",
+  		  "strcpy",
+  		  "strcat",
+  		};
+    String[] smethodreturns = {
+  		  "nothing", 
+  		  "nothing", 
+  		  "nothing",  
+  		  "int", 
+  		  "char", 
+  		  "nothing", 
+  		  "int",
+  		  "int",
+  		  "char",
+  		  "int",
+  		  "int",
+  		  "nothing",
+  		  "nothing",
+  		};
+    String[] smethodparams = {
+  		  "int", 
+  		  "char", 
+  		  "char[]",  
+  		  "none", 
+  		  "none", 
+  		  "int, char[]", 
+  		  "int",
+  		  "char",
+  		  "int",
+  		  "char[]",
+  		  "char[], char[]",
+  		  "char[], char[]",
+  		  "char[], char[]",
+  		};
+    
 
     public FunctionVisitor() { 
     	methods = new LinkedList<Method_t>(); 
@@ -54,7 +101,13 @@ public class FunctionVisitor extends DepthFirstAdapter
     @Override
     public void caseStart(Start node)
     {
-        inStart(node);
+        inStart(node); 
+        for(int i = 0; i<smethodnames.length; i++){
+            StandardMethod m =new StandardMethod(smethodnames[i],
+            		smethodreturns[i],
+            		smethodparams[i]);
+            errors.add(m.getName() +" - "+ m.getParams() +" - "+m.getReturnType() +" - ");
+        }   
         node.getPProgram().apply(this);
         node.getEOF().apply(this);
         outStart(node);
@@ -97,10 +150,14 @@ public class FunctionVisitor extends DepthFirstAdapter
             name = header.getName().toString();
             int error_count = errors.size();
             
-            for(Method_t m : methods)
+            for(Method_t m : methods){
+            	for(String n: smethodnames){
+                    if(n.equals(m.getName()))
+                    	break;
+                }
 				if(m.getName().equals(name)) 
 					errors.add("Method " + name + " already exists!");
-            
+            }
             if(errors.size() == error_count) {
             	NewMethod = new Method_t(return_type.replaceAll(" ",""), name);
             	NewMethod.addFrom(from);
