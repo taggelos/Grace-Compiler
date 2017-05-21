@@ -14,6 +14,7 @@ public class FunctionVisitor extends DepthFirstAdapter
     public LinkedList<String> booleans;
     Method_t from = null;
     Method_t current = null;
+    boolean ret;
     
     HashMap<String, String> hm = new HashMap<String, String>();
 
@@ -28,11 +29,11 @@ public class FunctionVisitor extends DepthFirstAdapter
     public Variable_t getType(String var, Method_t meth) {
   
         String methodvar = meth.methContains(var);
-        if(methodvar == null) {             // An den brisketai se sunarthsh...
+        if(methodvar == null && meth.from != null) {             // An den brisketai se sunarthsh...
             String fromvar = meth.from.methContains(var);
-            //if(fromvar == null)            // An den brisketai oute sto from...  (+ oxi sto hm?)
+            if(fromvar != null)            // An den brisketai oute sto from...  (+ oxi sto hm?)
                 //errors.add("Undeclared Variable " + var);
-            methodvar = fromvar;
+            	methodvar = fromvar;
         }
         return new Variable_t(methodvar, var);
 
@@ -154,7 +155,7 @@ public class FunctionVisitor extends DepthFirstAdapter
              }      
         }
         {
-        	boolean ret = false;
+        	ret = false;
         	current = NewMethod;
             List<PStmt> copy = new ArrayList<PStmt>(node.getBlock());
             for(PStmt e : copy)
@@ -453,6 +454,7 @@ public class FunctionVisitor extends DepthFirstAdapter
             	count++;
             }
         }
+        hm.put(node.toString(), m.get_return_type());
         outAFunCal(node);
     }
 
@@ -570,7 +572,7 @@ public class FunctionVisitor extends DepthFirstAdapter
         {
             node.getRight().apply(this);
         }
-        System.out.println(node.getLeft() + " -- " + node.getRight());
+        //System.out.println(node.getLeft() + " -- " + node.getRight());
         booleans.add(node.toString());
         errors.add(booleans.toString());
         outAAndExprExpr(node);
@@ -625,20 +627,27 @@ public class FunctionVisitor extends DepthFirstAdapter
         {
             node.getRight().apply(this);
         }
-        System.out.println(node.getLeft() + " + " + node.getRight());
         String typel = null,typer = null;
-        //System.out.println("ASSIGNMENT "+node.toString());
-        //Variable_t tl = getType(node.getLeft().toString(), current); 
-        //Variable_t tr = getType(node.getRight().toString(), current); 
-        //tl.printVar();tr.printVar();
-        booleans.add(node.toString());
-        System.out.println("HM::: "+hm);
-    	typel = hm.get(node.getLeft().toString());
-        typer = hm.get(node.getRight().toString());
-        //errors.add("nodes -> "+ node.getLeft()+"--"+node.getRight()+"typel,r --> "+typel+ " 222 "+ typer + hm);
+        Variable_t varl = null, varr = null;
+        
+        varl = getType(node.getLeft().toString(), current);
+        varr = getType(node.getRight().toString(), current);
+        
+        if(varl.getType() == null)
+        	typel = hm.get(node.getLeft().toString());
+        else
+        	typel = varl.getType();
+        
+        if(varr.getType() == null)
+        	typer = hm.get(node.getRight().toString());
+        else
+        	typer = varr.getType();
         if(typel!=null && typer!=null && !typel.equals(typer)){
-        	errors.add("Less-Than Expression of "+ node.getLeft().toString().replaceAll(" ","") +" does not match type \""+ typel +"\". Type \""+typer+"\" found.");
+        	errors.add("Less-Than Expression of "+ node.getLeft().toString() +
+        			" does not match type \""+ typel +"\". Type \""+typer+"\" found.");
+        	return;
         }
+        booleans.add(node.toString());
         outALessThanExpr(node);
     }
 
@@ -654,20 +663,27 @@ public class FunctionVisitor extends DepthFirstAdapter
         {
             node.getRight().apply(this);
         }
-        System.out.println(node.getLeft() + " + " + node.getRight());
         String typel = null,typer = null;
-        //System.out.println("ASSIGNMENT "+node.toString());
-        //Variable_t tl = getType(node.getLeft().toString(), current); 
-        //Variable_t tr = getType(node.getRight().toString(), current); 
-        //tl.printVar();tr.printVar();
-        booleans.add(node.toString());
-        System.out.println("HM::: "+hm);
-    	typel = hm.get(node.getLeft().toString());
-        typer = hm.get(node.getRight().toString());
-        //errors.add("nodes -> "+ node.getLeft()+"--"+node.getRight()+"typel,r --> "+typel+ " 222 "+ typer + hm);
+        Variable_t varl = null, varr = null;
+        
+        varl = getType(node.getLeft().toString(), current);
+        varr = getType(node.getRight().toString(), current);
+        
+        if(varl.getType() == null)
+        	typel = hm.get(node.getLeft().toString());
+        else
+        	typel = varl.getType();
+        
+        if(varr.getType() == null)
+        	typer = hm.get(node.getRight().toString());
+        else
+        	typer = varr.getType();
+
         if(typel!=null && typer!=null && !typel.equals(typer)){
-        	errors.add("Greater-Than Expression of "+ node.getLeft().toString().replaceAll(" ","") +" does not match type \""+ typel +"\". Type \""+typer+"\" found.");
+        	errors.add("Less-Than Expression of "+ node.getLeft().toString() +" does not match type \""+ typel +"\". Type \""+typer+"\" found.");
+        	return;
         }
+        booleans.add(node.toString());
         outAGreaterThanExpr(node);
     }
 
@@ -683,20 +699,27 @@ public class FunctionVisitor extends DepthFirstAdapter
         {
             node.getRight().apply(this);
         }
-        System.out.println(node.getLeft() + " + " + node.getRight());
         String typel = null,typer = null;
-        //System.out.println("ASSIGNMENT "+node.toString());
-        //Variable_t tl = getType(node.getLeft().toString(), current); 
-        //Variable_t tr = getType(node.getRight().toString(), current); 
-        //tl.printVar();tr.printVar();
-        booleans.add(node.toString());
-        System.out.println("HM::: "+hm);
-    	typel = hm.get(node.getLeft().toString());
-        typer = hm.get(node.getRight().toString());
-        //errors.add("nodes -> "+ node.getLeft()+"--"+node.getRight()+"typel,r --> "+typel+ " 222 "+ typer + hm);
+        Variable_t varl = null, varr = null;
+        
+        varl = getType(node.getLeft().toString(), current);
+        varr = getType(node.getRight().toString(), current);
+        
+        if(varl.getType() == null)
+        	typel = hm.get(node.getLeft().toString());
+        else
+        	typel = varl.getType();
+        
+        if(varr.getType() == null)
+        	typer = hm.get(node.getRight().toString());
+        else
+        	typer = varr.getType();
+
         if(typel!=null && typer!=null && !typel.equals(typer)){
-        	errors.add("Greater-Equal Expression of "+ node.getLeft().toString().replaceAll(" ","") +" does not match type \""+ typel +"\". Type \""+typer+"\" found.");
+        	errors.add("Less-Than Expression of "+ node.getLeft().toString() +" does not match type \""+ typel +"\". Type \""+typer+"\" found.");
+        	return;
         }
+        booleans.add(node.toString());
         outAGreaterEqualThanExpr(node);
     }
 
@@ -712,20 +735,27 @@ public class FunctionVisitor extends DepthFirstAdapter
         {
             node.getRight().apply(this);
         }
-        System.out.println(node.getLeft() + " + " + node.getRight());
         String typel = null,typer = null;
-        //System.out.println("ASSIGNMENT "+node.toString());
-        //Variable_t tl = getType(node.getLeft().toString(), current); 
-        //Variable_t tr = getType(node.getRight().toString(), current); 
-        //tl.printVar();tr.printVar();
-        booleans.add(node.toString());
-        System.out.println("HM::: "+hm);
-    	typel = hm.get(node.getLeft().toString());
-        typer = hm.get(node.getRight().toString());
-        //errors.add("nodes -> "+ node.getLeft()+"--"+node.getRight()+"typel,r --> "+typel+ " 222 "+ typer + hm);
+        Variable_t varl = null, varr = null;
+        
+        varl = getType(node.getLeft().toString(), current);
+        varr = getType(node.getRight().toString(), current);
+        
+        if(varl.getType() == null)
+        	typel = hm.get(node.getLeft().toString());
+        else
+        	typel = varl.getType();
+        
+        if(varr.getType() == null)
+        	typer = hm.get(node.getRight().toString());
+        else
+        	typer = varr.getType();
+
         if(typel!=null && typer!=null && !typel.equals(typer)){
-        	errors.add("Less-Equal Expression of "+ node.getLeft().toString().replaceAll(" ","") +" does not match type \""+ typel +"\". Type \""+typer+"\" found.");
+        	errors.add("Less-Than Expression of "+ node.getLeft().toString() +" does not match type \""+ typel +"\". Type \""+typer+"\" found.");
+        	return;
         }
+        booleans.add(node.toString());
         outALessEqualThanExpr(node);
     }
 
@@ -741,20 +771,27 @@ public class FunctionVisitor extends DepthFirstAdapter
         {
             node.getRight().apply(this);
         }
-        System.out.println(node.getLeft() + " + " + node.getRight());
         String typel = null,typer = null;
-        //System.out.println("ASSIGNMENT "+node.toString());
-        //Variable_t tl = getType(node.getLeft().toString(), current); 
-        //Variable_t tr = getType(node.getRight().toString(), current); 
-        //tl.printVar();tr.printVar();
-        booleans.add(node.toString());
-        System.out.println("HM::: "+hm);
-    	typel = hm.get(node.getLeft().toString());
-        typer = hm.get(node.getRight().toString());
-        //errors.add("nodes -> "+ node.getLeft()+"--"+node.getRight()+"typel,r --> "+typel+ " 222 "+ typer + hm);
+        Variable_t varl = null, varr = null;
+        
+        varl = getType(node.getLeft().toString(), current);
+        varr = getType(node.getRight().toString(), current);
+        
+        if(varl.getType() == null)
+        	typel = hm.get(node.getLeft().toString());
+        else
+        	typel = varl.getType();
+        
+        if(varr.getType() == null)
+        	typer = hm.get(node.getRight().toString());
+        else
+        	typer = varr.getType();
+
         if(typel!=null && typer!=null && !typel.equals(typer)){
-        	errors.add("Equal Expression of "+ node.getLeft().toString().replaceAll(" ","") +" does not match type \""+ typel +"\". Type \""+typer+"\" found.");
+        	errors.add("Less-Than Expression of "+ node.getLeft().toString() +" does not match type \""+ typel +"\". Type \""+typer+"\" found.");
+        	return;
         }
+        booleans.add(node.toString());
         outAEqualExpr(node);
     }
 
@@ -770,20 +807,27 @@ public class FunctionVisitor extends DepthFirstAdapter
         {
             node.getRight().apply(this);
         }
-        System.out.println(node.getLeft() + " + " + node.getRight());
         String typel = null,typer = null;
-        //System.out.println("ASSIGNMENT "+node.toString());
-        //Variable_t tl = getType(node.getLeft().toString(), current); 
-        //Variable_t tr = getType(node.getRight().toString(), current); 
-        //tl.printVar();tr.printVar();
-        booleans.add(node.toString());
-        System.out.println("HM::: "+hm);
-    	typel = hm.get(node.getLeft().toString());
-        typer = hm.get(node.getRight().toString());
-        //errors.add("nodes -> "+ node.getLeft()+"--"+node.getRight()+"typel,r --> "+typel+ " 222 "+ typer + hm);
+        Variable_t varl = null, varr = null;
+        
+        varl = getType(node.getLeft().toString(), current);
+        varr = getType(node.getRight().toString(), current);
+        
+        if(varl.getType() == null)
+        	typel = hm.get(node.getLeft().toString());
+        else
+        	typel = varl.getType();
+        
+        if(varr.getType() == null)
+        	typer = hm.get(node.getRight().toString());
+        else
+        	typer = varr.getType();
+
         if(typel!=null && typer!=null && !typel.equals(typer)){
-        	errors.add("Not Equal Expression of "+ node.getLeft().toString().replaceAll(" ","") +" does not match type \""+ typel +"\". Type \""+typer+"\" found.");
+        	errors.add("Less-Than Expression of "+ node.getLeft().toString() +" does not match type \""+ typel +"\". Type \""+typer+"\" found.");
+        	return;
         }
+        booleans.add(node.toString());
         outANotEqualExpr(node);
     }
     
@@ -1292,9 +1336,7 @@ public class FunctionVisitor extends DepthFirstAdapter
         if(node.getReturnexpr() != null)
         {
             node.getReturnexpr().apply(this);
-            System.out.println(node.toString());
         }
-        System.out.println("NEVER IN HERE???? ");
         outAReturnstmtExpr(node);
     }
 
@@ -1318,16 +1360,22 @@ public class FunctionVisitor extends DepthFirstAdapter
         {
             node.getRight().apply(this);
         }
-        System.out.println("yoloAAA " + node.getLeft() + " -- "+ node.getRight() );
         String typel = null,typer = null;
-        //System.out.println("ASSIGNMENT "+node.toString());
-        //Variable_t tl = getType(node.getLeft().toString(), current); 
-        //Variable_t tr = getType(node.getRight().toString(), current); 
-        //tl.printVar();tr.printVar();
-        System.out.println("HM::: "+hm);
-    	typel = hm.get(node.getLeft().toString());
-        typer = hm.get(node.getRight().toString());
-        //
+        Variable_t varl = null, varr = null;
+        
+        varl = getType(node.getLeft().toString(), current);
+        varr = getType(node.getRight().toString(), current);
+        
+        if(varl.getType() == null)
+        	typel = hm.get(node.getLeft().toString());
+        else
+        	typel = varl.getType();
+        
+        if(varr.getType() == null)
+        	typer = hm.get(node.getRight().toString());
+        else
+        	typer = varr.getType();
+
         if(typel!=null && typer!=null && !typel.equals(typer)){
         	errors.add("Assignment of "+ node.getLeft().toString().replaceAll(" ","") +" does not match type \""+ typel +"\". Type \""+typer+"\" found.");
         }
@@ -1409,6 +1457,7 @@ public class FunctionVisitor extends DepthFirstAdapter
         inAReturnstmtStmt(node);
         if(node.getReturnexpr() != null)
         {
+        	ret = true;
         	String type;
             node.getReturnexpr().apply(this);
             System.out.println("RETURN "+node.toString());
@@ -1422,13 +1471,14 @@ public class FunctionVisitor extends DepthFirstAdapter
     			} */
             	if(hm.containsKey(node.toString())) {
             		type = hm.get(node.toString());
+            		System.out.println(type+"<----");
             		if(!type.equals(current.get_return_type())) {
             			errors.add("Return statement " + node.toString() +" is type of \""+type+"\"! Required \""+current.get_return_type()+ "\" in method " + current.getName());
             			return;
             		}
             	}
             	else {
-    	    		errors.add("Unknown return expression.");
+    	    		errors.add("Unknown return expression."+node.toString());
             	}
     		}   
             else if(!t.getType().equals(current.get_return_type())){
