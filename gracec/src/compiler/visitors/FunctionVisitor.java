@@ -568,9 +568,24 @@ public class FunctionVisitor extends DepthFirstAdapter
         {
             node.getExpr().apply(this);
         }
+        int i = 0;
         String name = node.getLVal().toString()+"[ "+node.getExpr().toString()+"] ";
+        for(int z=0; z<name.length(); z++) {
+        	if(name.charAt(z) == '[')
+        		i++;
+        }
         Variable_t t = getType(node.toString().split(" ")[0]+" ", current); 
-        hm.put(name, t.getType().split("\\[")[0]);
+        
+        String type= t.getType();
+        type = type.replaceAll("[0123456789 ]", "");
+        for(int j=0; j<i; j++) {
+        	type = type.replaceFirst("\\[", "");
+        	type = type.replaceFirst("]", "");
+        	//errors.add(type);
+        }
+
+        //errors.add(name+" -- "+ type+" i: "+i);
+        hm.put(name, type);
         outAIdBracketsLVal(node);
     }
 

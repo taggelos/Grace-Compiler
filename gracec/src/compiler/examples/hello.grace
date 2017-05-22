@@ -10,10 +10,10 @@ fun main () : nothing
       }
 
       var changed, i : int;
-      var c : char[];
+      var c : int[][12];
    {
-      x[i] <- x[i+x] + x[0]; 
-      c <- "aaa";
+      x[i] <- x[i] + c[0][1]; 
+      x[1] <- c[1];
       swap(x[i], n);
       $if "a">2 then {return;}
       $if i # i[2] and swap(x[i]+1, n) = 1 and 1=1 then {
