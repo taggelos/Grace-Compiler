@@ -1,5 +1,5 @@
 fun solve () : nothing
-      fun hanoi (rings : int; ref source, target, auxiliary : char[]) : int
+      fun hanoi (rings : int; ref source, target, auxiliary : char[]) : nothing
          fun move (ref source, target : char[]) : nothing
          {
             puts("Moving from ");
@@ -10,10 +10,9 @@ fun solve () : nothing
          }
       {
          if rings >= 1 then {
-            hanoi(rings-hanoi(1,source, auxiliary, target), source, auxiliary, target);
+            hanoi(rings-1, source, auxiliary, target);
             move(source, target);
             hanoi(rings-1, auxiliary, target, source);
-            return 1;
          }
       }
 

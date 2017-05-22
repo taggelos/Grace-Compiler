@@ -3,14 +3,11 @@ fun main () : nothing
    fun bsort (n : int; ref x : int[]) : nothing
 
       fun swap (ref x, y : int) : nothing
-         var t : char;
+         var t : int;
       {
          t <- x;
          x <- y;
          y <- t;
-         if 1>2 then {
-          return;
-          }
       }
 
       var changed, i : int;
@@ -55,5 +52,4 @@ fun main () : nothing
   putArray("Initial array: ", 16, x);
   bsort(16,x);
   putArray("Sorted array: ", 16, x);
-
 }
