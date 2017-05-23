@@ -10,11 +10,9 @@ import java.io.InputStreamReader;
 import java.io.PushbackReader;
 
 import compiler.lexer.Lexer;
-import compiler.node.EOF;
 import compiler.node.Start;
-import compiler.node.Token;
 import compiler.parser.*;
-import compiler.visitors.FunctionVisitor;
+import compiler.visitors.*;
 
 public class Main {
 
@@ -31,7 +29,7 @@ public class Main {
         for(int i = 0; i < args.length; i++) {
             try {
                 fis = new FileInputStream(args[i]);
-                file = new File(args[i].replace(".", "_")+"output.txt");
+                file = new File(args[i].replace(".", "_")+"_ir.txt");
     			fop = new FileOutputStream(file);
     			if (!file.exists()) {
     				file.createNewFile();
@@ -62,8 +60,14 @@ public class Main {
                     Start tree = p.parse();
                     System.out.println(tree.toString());
                     
-                    FunctionVisitor sc = new FunctionVisitor();
-                    tree.apply(sc);
+                    FunctionVisitor fv = new FunctionVisitor();
+                    //tree.apply(fv);
+                    if(fv.errors.isEmpty()){
+                    	IrVisitor iv = new IrVisitor();
+                    	tree.apply(iv);
+                    	byte[] contentInBytes = iv.out.toString().getBytes();
+            			fop.write(contentInBytes);
+                    }
                     
         			fop.flush();
         			fop.close();
