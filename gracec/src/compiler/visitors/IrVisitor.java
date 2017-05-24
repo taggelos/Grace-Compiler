@@ -348,9 +348,11 @@ public class IrVisitor extends DepthFirstAdapter
     public void caseAIdBracketsLVal(AIdBracketsLVal node)
     {
         inAIdBracketsLVal(node);
+        String lval = null, index = null;
         if(node.getLVal() != null)
         {
             node.getLVal().apply(this);
+            lval = value;
         }
         if(node.getLBr() != null)
         {
@@ -359,12 +361,13 @@ public class IrVisitor extends DepthFirstAdapter
         if(node.getExpr() != null)
         {
             node.getExpr().apply(this);
+            index= value;
         }
         if(node.getRBr() != null)
         {
             node.getRBr().apply(this);
         }
-        makeArray(node.toString(), node.getLVal().toString(), node.getExpr().toString());
+        makeArray(node.toString(), lval, index);
         value=getlastreg();
         outAIdBracketsLVal(node);
     }

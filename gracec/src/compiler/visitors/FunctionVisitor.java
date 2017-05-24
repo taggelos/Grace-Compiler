@@ -570,18 +570,33 @@ public class FunctionVisitor extends DepthFirstAdapter
         if(node.getExpr() != null)
         {
             node.getExpr().apply(this);
+            if(!(node.getExpr() instanceof AIntExpr)) {
+            	if(!hm.get(node.getExpr().toString()).equals("int")) {
+            		errors.add("Invalid array input. Integer expected.");
+            		return;
+            	}
+            }
         }
-        int i = 0;
+        int i = 0, j=0;
         String name = node.getLVal().toString()+"[ "+node.getExpr().toString()+"] ";
         for(int z=0; z<name.length(); z++) {
         	if(name.charAt(z) == '[')
         		i++;
         }
+        
         Variable_t t = getType(node.toString().split(" ")[0]+" ", current); 
         
         String type= t.getType();
         type = type.replaceAll("[0123456789 ]", "");
-        for(int j=0; j<i; j++) {
+        
+        for(int z=0; z<type.length(); z++) {
+        	if(type.charAt(z) == '[')
+        		j++;
+        }
+        if(i>j)
+        	errors.add("Invalid array type. "+type +" expected.");
+        
+        for(j=0; j<i; j++) {
         	type = type.replaceFirst("\\[", "");
         	type = type.replaceFirst("]", "");
         	//errors.add(type);

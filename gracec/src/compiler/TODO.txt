@@ -3,3 +3,6 @@
 3. return type kai return stmt. DONE
 4. block: metablites pou exoun dilw8ei ws param h vardef. DONE
 5. Mege8os pinaka.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+6. a['a']: to expr stis agkiles tou lval na einai typou int.
+7. a[1][2] <- a[1][2][3]: oi diastaseis na mhn 3epernoun ton typo dhlwshs.
