@@ -5,11 +5,11 @@ fun swap (ref x, y : int[]) : int
    {
       i<-i+1+2+x[i];
       x[0]<-x[i];
-      return 1;
+      return x[i];
    }
 
-         var t : int;
+         var t : int[];
       {
-         $bla();
+         swap(t,t);
       }
 

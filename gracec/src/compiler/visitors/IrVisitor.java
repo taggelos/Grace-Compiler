@@ -13,6 +13,7 @@ public class IrVisitor extends DepthFirstAdapter
 	HashMap<String, String> regs = new HashMap<String, String>();
 	int curline =1;
 	int regcount=1;
+	String value;
 	
 	Helpers h = new Helpers();
 	
@@ -294,17 +295,28 @@ public class IrVisitor extends DepthFirstAdapter
     public void caseAFunCal(AFunCal node)
     {
         inAFunCal(node);
+        String name = null;
+        String type;
         if(node.getName() != null)
         {
             node.getName().apply(this);
+            name = node.getName().toString();
         }
         {
             List<PExpr> copy = new ArrayList<PExpr>(node.getExprs());
+            int i=0;
             for(PExpr e : copy)
             {
                 e.apply(this);
+                if(st.contains(name).getParams().get(i++).isRef())
+                	type = "R";
+                else 
+                	type = "V";
+                h.genQuad("par", value, type, "-");
             }
         }
+        h.genQuad("call", "-", "-", node.getName().toString());
+        value = getlastreg();
         outAFunCal(node);
     }
     
@@ -316,6 +328,7 @@ public class IrVisitor extends DepthFirstAdapter
         {
             node.getIdentifier().apply(this);
         }
+        value=node.getIdentifier().toString();
         outAIdLVal(node);
     }
     
@@ -327,6 +340,7 @@ public class IrVisitor extends DepthFirstAdapter
         {
             node.getStringLiteral().apply(this);
         }
+        value=node.getStringLiteral().toString();
         outAStringLVal(node);
     }
     
@@ -351,6 +365,7 @@ public class IrVisitor extends DepthFirstAdapter
             node.getRBr().apply(this);
         }
         makeArray(node.toString(), node.getLVal().toString(), node.getExpr().toString());
+        value=getlastreg();
         outAIdBracketsLVal(node);
     }
     
@@ -551,28 +566,12 @@ public class IrVisitor extends DepthFirstAdapter
         if(node.getExpr1() != null)
         {
             node.getExpr1().apply(this);
-            if(node.getExpr1() instanceof ALValExpr) {
-        		ALValExpr lval = (ALValExpr) node.getExpr1();
-        		if(lval.getLVal() instanceof AIdBracketsLVal) {
-        			left = "["+getlastreg()+"]";
-        		}
-            }
-            else if(!(node.getExpr1() instanceof AIntExpr)) {
-            	left = getlastreg();
-            }
+            left = value;
         }
         if(node.getExpr2() != null)
         {
             node.getExpr2().apply(this);
-            if(node.getExpr2() instanceof ALValExpr) {
-        		ALValExpr lval = (ALValExpr) node.getExpr2();
-        		if(lval.getLVal() instanceof AIdBracketsLVal) {
-        			right = "["+getlastreg()+"]";
-        		}
-            }
-            else if(!(node.getExpr2() instanceof AIntExpr)) {
-            	right = getlastreg();
-            }
+            right = value;
         }  
         
         String reg= getRegt();
@@ -580,6 +579,7 @@ public class IrVisitor extends DepthFirstAdapter
         h.genQuad("+" , left, right, reg);
         //h.printLast();
         //out.append(getline()+ "+, " +node.getExpr1()+", " + node.getExpr2()+", "+reg+"\n" );
+        value = getlastreg();
         outAAddExpr(node);
     }
     
@@ -587,14 +587,25 @@ public class IrVisitor extends DepthFirstAdapter
     public void caseASubExpr(ASubExpr node)
     {
         inASubExpr(node);
+        String left = node.getExpr1().toString(), right = node.getExpr2().toString();
+
         if(node.getExpr1() != null)
         {
             node.getExpr1().apply(this);
+            left = value;
         }
         if(node.getExpr2() != null)
         {
             node.getExpr2().apply(this);
-        }
+            right = value;
+        }  
+        
+        String reg= getRegt();
+        regs.put(left+"- "+ right, reg);
+        h.genQuad("-" , left, right, reg);
+        //h.printLast();
+        //out.append(getline()+ "+, " +node.getExpr1()+", " + node.getExpr2()+", "+reg+"\n" );
+        value = getlastreg();
         outASubExpr(node);
     }
     
@@ -602,14 +613,25 @@ public class IrVisitor extends DepthFirstAdapter
     public void caseAMultExpr(AMultExpr node)
     {
         inAMultExpr(node);
+        String left = node.getExpr1().toString(), right = node.getExpr2().toString();
+
         if(node.getExpr1() != null)
         {
             node.getExpr1().apply(this);
+            left = value;
         }
         if(node.getExpr2() != null)
         {
             node.getExpr2().apply(this);
-        }
+            right = value;
+        }  
+        
+        String reg= getRegt();
+        regs.put(left+"* "+ right, reg);
+        h.genQuad("*" , left, right, reg);
+        //h.printLast();
+        //out.append(getline()+ "+, " +node.getExpr1()+", " + node.getExpr2()+", "+reg+"\n" );
+        value = getlastreg();
         outAMultExpr(node);
     }
     
@@ -617,14 +639,25 @@ public class IrVisitor extends DepthFirstAdapter
     public void caseAModExpr(AModExpr node)
     {
         inAModExpr(node);
+        String left = node.getExpr1().toString(), right = node.getExpr2().toString();
+
         if(node.getExpr1() != null)
         {
             node.getExpr1().apply(this);
+            left = value;
         }
         if(node.getExpr2() != null)
         {
             node.getExpr2().apply(this);
-        }
+            right = value;
+        }  
+        
+        String reg= getRegt();
+        regs.put(left+"mod "+ right, reg);
+        h.genQuad("mod" , left, right, reg);
+        //h.printLast();
+        //out.append(getline()+ "+, " +node.getExpr1()+", " + node.getExpr2()+", "+reg+"\n" );
+        value = getlastreg();
         outAModExpr(node);
     }
     
@@ -632,14 +665,25 @@ public class IrVisitor extends DepthFirstAdapter
     public void caseADivExpr(ADivExpr node)
     {
         inADivExpr(node);
+        String left = node.getExpr1().toString(), right = node.getExpr2().toString();
+
         if(node.getExpr1() != null)
         {
             node.getExpr1().apply(this);
+            left = value;
         }
         if(node.getExpr2() != null)
         {
             node.getExpr2().apply(this);
-        }
+            right = value;
+        }  
+        
+        String reg= getRegt();
+        regs.put(left+"/ "+ right, reg);
+        h.genQuad("/" , left, right, reg);
+        //h.printLast();
+        //out.append(getline()+ "+, " +node.getExpr1()+", " + node.getExpr2()+", "+reg+"\n" );
+        value = getlastreg();
         outADivExpr(node);
     }
     
@@ -662,6 +706,7 @@ public class IrVisitor extends DepthFirstAdapter
         {
             node.getIntegers().apply(this);
         }
+        value = node.getIntegers().toString();
         outAIntExpr(node);
     }
     
@@ -673,6 +718,7 @@ public class IrVisitor extends DepthFirstAdapter
         {
             node.getCharConst().apply(this);
         }
+        value = node.getCharConst().toString();
         outACharExpr(node);
     }
     
@@ -819,7 +865,10 @@ public class IrVisitor extends DepthFirstAdapter
         if(node.getFunCal() != null)
         {
             node.getFunCal().apply(this);
+            
         }
+        
+        
         outAFunCalStmt(node);
     }
     
@@ -827,9 +876,22 @@ public class IrVisitor extends DepthFirstAdapter
     public void caseAReturnstmtStmt(AReturnstmtStmt node)
     {
         inAReturnstmtStmt(node);
+        String ret;
         if(node.getReturnexpr() != null)
         {
             node.getReturnexpr().apply(this);
+            ret=node.getReturnexpr().toString();
+            if(node.getReturnexpr() instanceof ALValExpr) {
+        		ALValExpr lval = (ALValExpr) node.getReturnexpr();
+        		if(lval.getLVal() instanceof AIdBracketsLVal) {
+        			ret = "["+getlastreg()+"]";
+        		}
+            }
+            else if(!(node.getReturnexpr() instanceof AIntExpr)) {
+            	ret = getlastreg();
+            }
+            
+            h.genQuad(":=" ,ret,"-","$$");
         }
         //https://piazza.com/class/j01fhuzdya46vr?cid=100
         

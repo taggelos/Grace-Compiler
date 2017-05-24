@@ -177,7 +177,10 @@ public class FunctionVisitor extends DepthFirstAdapter
             	
             	for(PFparDef par : header.getPars()) {
             		for(TIdentifier id : ((AFparDef) par).getNames()) {
-            			if(!NewMethod.addParam(new Variable_t(((AFparDef) par).getTypes().toString().replaceAll(" ", ""), id.toString())))
+            			Variable_t NewVar = new Variable_t(((AFparDef) par).getTypes().toString().replaceAll(" ", ""), id.toString());
+            			if(((AFparDef) par).getRef() != null)
+            				NewVar.setRef();
+            			if(!NewMethod.addParam(NewVar))
             				errors.add("Param " + id.toString() + " already exists!");
             		}
             	}
