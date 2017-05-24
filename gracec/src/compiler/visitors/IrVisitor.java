@@ -13,6 +13,8 @@ public class IrVisitor extends DepthFirstAdapter
 	int curline =1;
 	int regcount=1;
 	
+	Helpers h = new Helpers();
+	
 	public String getRegt(){
 		return "$"+Integer.toString(regcount++);
 	}
@@ -44,6 +46,7 @@ public class IrVisitor extends DepthFirstAdapter
             node.getFunDef().apply(this);
         }
         System.out.println(out);
+        h.printQuads();
         outAProgram(node);
     }
     
@@ -54,7 +57,9 @@ public class IrVisitor extends DepthFirstAdapter
         if(node.getHeader() != null)
         {
             node.getHeader().apply(this);
-            out.append(getline() + "unit, " + ((AHeader)node.getHeader()).getName() + ", - , - \n");
+            h.genQuad("unit" , ((AHeader)node.getHeader()).getName().toString(),"-","-");
+            ////h.printLast();
+            //out.append(getline() + "unit, " + ((AHeader)node.getHeader()).getName() + ", - , - \n");
         }
         {
             List<PLocalDef> copy = new ArrayList<PLocalDef>(node.getLocal());
@@ -71,6 +76,9 @@ public class IrVisitor extends DepthFirstAdapter
             }
         }
         outAFunDef(node);
+        h.genQuad("endu" , ((AHeader)node.getHeader()).getName().toString(),"-","-");
+        //h.printLast();
+        //out.append(getline() + "endu, " + ((AHeader)node.getHeader()).getName() +"- , - \n");
     }
     
     @Override
@@ -537,7 +545,9 @@ public class IrVisitor extends DepthFirstAdapter
         }  
         String reg= getRegt();
         regs.put(node.getExpr1().toString()+"+ "+ node.getExpr2().toString(),reg);
-        out.append(getline()+ "+, " +node.getExpr1()+", " + node.getExpr2()+", "+reg+"\n" );
+        h.genQuad("+" , node.getExpr1().toString(),node.getExpr2().toString(),reg);
+        //h.printLast();
+        //out.append(getline()+ "+, " +node.getExpr1()+", " + node.getExpr2()+", "+reg+"\n" );
         outAAddExpr(node);
     }
     
@@ -688,7 +698,9 @@ public class IrVisitor extends DepthFirstAdapter
         }
         System.err.println(regs);
         if(regs.containsKey(node.getRight().toString()))
-        	out.append(getline()+ ":=, " +regs.get(node.getRight().toString())+", - , " + node.getLeft()+"\n" );
+	        h.genQuad(":=" , regs.get(node.getRight().toString()),"-",node.getLeft().toString());
+	        //h.printLast();
+        	//out.append(getline()+ ":=, " +regs.get(node.getRight().toString())+", - , " + node.getLeft()+"\n" );
         outAAssignmentStmt(node);
     }
     
@@ -769,6 +781,12 @@ public class IrVisitor extends DepthFirstAdapter
         {
             node.getReturnexpr().apply(this);
         }
+        //https://piazza.com/class/j01fhuzdya46vr?cid=100
+        
+        h.genQuad("ret" ,"-","-","-");
+        //h.printLast();
+    	//out.append(getline()+ ":=, " +regs.get(node.getRight().toString())+", - , " + node.getLeft()+"\n" );
+        //out.append(getline() + "ret, " + "- , - , - \n");
         outAReturnstmtStmt(node);
     }
     
