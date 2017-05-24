@@ -93,7 +93,7 @@ public class FunctionVisitor extends DepthFirstAdapter
     	if(meth.getName().equals(call_name))
 			return meth;
 		for(Method_t m : meth.methodList) {
-			//System.out.println(m.getName() +" - "+ call_name);
+			////System.out.println(m.getName() +" - "+ call_name);
 			if(m.getName().equals(call_name))
 				return m;
 		}
@@ -108,9 +108,9 @@ public class FunctionVisitor extends DepthFirstAdapter
 						smeth.addParam(new Variable_t(spl[j], "arg"+j));
 				}
 				
-				System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+				//System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 				smeth.printMethod();
-				System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+				//System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 				return smeth;
 			}
 		}
@@ -144,8 +144,8 @@ public class FunctionVisitor extends DepthFirstAdapter
         // Display elements
         while(i.hasNext()) {
            Map.Entry me = (Map.Entry)i.next();
-           System.out.print(me.getKey() + ": ");
-           System.out.println(me.getValue());
+           //System.out.print(me.getKey() + ": ");
+           //System.out.println(me.getValue());
         }
         outAProgram(node);
     }
@@ -204,7 +204,7 @@ public class FunctionVisitor extends DepthFirstAdapter
         	current = NewMethod;
             List<PLocalDef> copy = new ArrayList<PLocalDef>(node.getLocal());
             for(PLocalDef e : copy) {
-                //System.out.println("out of loop -- "  +e);
+                ////System.out.println("out of loop -- "  +e);
                 if(e instanceof AVarLocalDef){
                     AVarLocalDef a= (AVarLocalDef) e;
                     AVarDef n = (AVarDef) a.getVarDef();
@@ -213,7 +213,7 @@ public class FunctionVisitor extends DepthFirstAdapter
                             errors.add("Variable " + id + " already exists!");
                         }
                     }
-                    //System.out.println("inside AVarDef -- " + n);                       
+                    ////System.out.println("inside AVarDef -- " + n);                       
                 }
                 else if(e instanceof AFunLocalDef){
                 	
@@ -229,8 +229,8 @@ public class FunctionVisitor extends DepthFirstAdapter
             {
                 e.apply(this);
                 if(e instanceof AReturnstmtStmt) {
-                	//System.out.println("BLOCK_RETURN: "+e);
-                	System.out.println(((AReturnstmtStmt) e).getReturnexpr()+"<---------");
+                	////System.out.println("BLOCK_RETURN: "+e);
+                	//System.out.println(((AReturnstmtStmt) e).getReturnexpr()+"<---------");
                 	if(((AReturnstmtStmt) e).getReturnexpr() != null) ret = true;
                 }
             }
@@ -351,7 +351,7 @@ public class FunctionVisitor extends DepthFirstAdapter
         	}
         }
         for(Method_t meth: methods){
-        	System.out.println(meth.getName()+ "345345435");
+        	//System.out.println(meth.getName()+ "345345435");
         	if(current.getName().equals(name)){
         		errors.add("Method Already defined!");
         		return;
@@ -365,7 +365,7 @@ public class FunctionVisitor extends DepthFirstAdapter
         }
         fun_decs.add(NewMethod);
         NewMethod.printMethod();
-        //System.out.println(NewMethod.getName()+ "435545453!!");
+        ////System.out.println(NewMethod.getName()+ "435545453!!");
         outAFunDec(node);
     }
 
@@ -488,8 +488,8 @@ public class FunctionVisitor extends DepthFirstAdapter
         if(node.getName() != null)
         {
         	name = node.getName().toString();
-        	System.out.println("\tMETHOD IS: "+ current.getName());
-        	System.out.println("\tCALL IS: "+ name);
+        	//System.out.println("\tMETHOD IS: "+ current.getName());
+        	//System.out.println("\tCALL IS: "+ name);
         	m = CheckCall(name, current);
         	
         	if(m == null) {
@@ -507,9 +507,9 @@ public class FunctionVisitor extends DepthFirstAdapter
             }
             int count = 0;
             for(PExpr e : copy) {
-            	System.out.println("-------------------------------------------");
+            	//System.out.println("-------------------------------------------");
                 e.apply(this);
-            	System.out.println("EXPR--: "+ e.toString());
+            	//System.out.println("EXPR--: "+ e.toString());
             	if(!hm.isEmpty()) {
             		if(!hm.containsKey(e.toString()))
             			errors.add("Invalid parameter of method " + name+"."+e.toString());
@@ -538,8 +538,8 @@ public class FunctionVisitor extends DepthFirstAdapter
 			errors.add("Variable " + node.toString() + "not declared in method " + current.getName()+".");
 			return;
 		}
-        //System.out.println("LVAL ID: "+node.toString());
-        //System.out.println("ADDING: "+node.toString()+" "+ t.getType().replaceAll("[1234567890 ]", ""));
+        ////System.out.println("LVAL ID: "+node.toString());
+        ////System.out.println("ADDING: "+node.toString()+" "+ t.getType().replaceAll("[1234567890 ]", ""));
         hm.put(node.toString(), t.getType().replaceAll("[1234567890 ]", ""));
         outAIdLVal(node);
     }
@@ -655,7 +655,7 @@ public class FunctionVisitor extends DepthFirstAdapter
         {
             node.getRight().apply(this);
         }
-        //System.out.println(node.getLeft() + " -- " + node.getRight());
+        ////System.out.println(node.getLeft() + " -- " + node.getRight());
         bools.add(node.toString());
         //errors.add(bools.toString());
         outAAndExprExpr(node);
@@ -929,13 +929,13 @@ public class FunctionVisitor extends DepthFirstAdapter
             	if(node.getExpr1() instanceof ALValExpr) {
             		ALValExpr lval = (ALValExpr) node.getExpr1();
             		if(lval.getLVal() instanceof AIdBracketsLVal) {
-            			//System.out.println("--->"+lval.getLVal());
+            			////System.out.println("--->"+lval.getLVal());
             			val = val.split(" ")[0]+" ";
-            			//System.out.println("------>"+val);
+            			////System.out.println("------>"+val);
             		}
-            		System.out.println(val + " Method: " + current.getName());
+            		//System.out.println(val + " Method: " + current.getName());
             		t = getType(val, current);
-            		System.out.println(t.getType());
+            		//System.out.println(t.getType());
             		if(t.getType() == null) {
             			errors.add("Variable " + val + "not declared in method " + current.getName()+".");
             			type1 = null;
@@ -949,7 +949,7 @@ public class FunctionVisitor extends DepthFirstAdapter
             		
             	}
             	else if(node.getExpr1() instanceof AIntExpr) {
-            		//System.out.println(node.getExpr1());
+            		////System.out.println(node.getExpr1());
             		type1 = "int";
             	}
             	else {
@@ -969,12 +969,12 @@ public class FunctionVisitor extends DepthFirstAdapter
             	if(node.getExpr2() instanceof ALValExpr) {
             		ALValExpr lval = (ALValExpr) node.getExpr2();
             		if(lval.getLVal() instanceof AIdBracketsLVal) {
-            			//System.out.println("--->"+lval.getLVal());
+            			////System.out.println("--->"+lval.getLVal());
             			val = val.split(" ")[0]+" ";
-            			//System.out.println("------>"+val);
+            			////System.out.println("------>"+val);
             			
             		}
-            		System.out.println(val + " Method: " + current.getName());
+            		//System.out.println(val + " Method: " + current.getName());
             		t = getType(val, current);
             		errors.add(t.getType());
             		if(t.getType() == null) {
@@ -990,7 +990,7 @@ public class FunctionVisitor extends DepthFirstAdapter
             		
             	}
             	else if(node.getExpr2() instanceof AIntExpr) {
-            		//System.out.println(node.getExpr2());
+            		////System.out.println(node.getExpr2());
             		type2 = "int";
             	}
             	else {
@@ -1004,10 +1004,10 @@ public class FunctionVisitor extends DepthFirstAdapter
         }
         
         if(type1.equals("int") && type2.equals("int")) {
-	        System.out.println(node.getExpr1() + " -- " + node.getExpr2());
+	        //System.out.println(node.getExpr1() + " -- " + node.getExpr2());
 	        //errors.add(node.toString() +" withtype " + type2);
 	        hm.put(node.toString(), type2);
-	        System.out.println("NODE: "+node.toString());
+	        //System.out.println("NODE: "+node.toString());
         }
         else {
         	errors.add("Invalid add expression types "+type1+ " and " + type2+".");
@@ -1030,13 +1030,13 @@ public class FunctionVisitor extends DepthFirstAdapter
             	if(node.getExpr1() instanceof ALValExpr) {
             		ALValExpr lval = (ALValExpr) node.getExpr1();
             		if(lval.getLVal() instanceof AIdBracketsLVal) {
-            			//System.out.println("--->"+lval.getLVal());
+            			////System.out.println("--->"+lval.getLVal());
             			val = val.split(" ")[0]+" ";
-            			//System.out.println("------>"+val);
+            			////System.out.println("------>"+val);
             		}
-            		System.out.println(val + " Method: " + current.getName());
+            		//System.out.println(val + " Method: " + current.getName());
             		t = getType(val, current);
-            		System.out.println(t.getType());
+            		//System.out.println(t.getType());
             		if(t.getType() == null) {
             			errors.add("Variable " + val + "not declared in method " + current.getName()+".");
             			type1 = null;
@@ -1050,7 +1050,7 @@ public class FunctionVisitor extends DepthFirstAdapter
             		
             	}
             	else if(node.getExpr1() instanceof AIntExpr) {
-            		//System.out.println(node.getExpr1());
+            		////System.out.println(node.getExpr1());
             		type1 = "int";
             	}
             	else {
@@ -1070,12 +1070,12 @@ public class FunctionVisitor extends DepthFirstAdapter
             	if(node.getExpr2() instanceof ALValExpr) {
             		ALValExpr lval = (ALValExpr) node.getExpr2();
             		if(lval.getLVal() instanceof AIdBracketsLVal) {
-            			//System.out.println("--->"+lval.getLVal());
+            			////System.out.println("--->"+lval.getLVal());
             			val = val.split(" ")[0]+" ";
-            			//System.out.println("------>"+val);
+            			////System.out.println("------>"+val);
             			
             		}
-            		System.out.println(val + " Method: " + current.getName());
+            		//System.out.println(val + " Method: " + current.getName());
             		t = getType(val, current);
             		errors.add(t.getType());
             		if(t.getType() == null) {
@@ -1091,7 +1091,7 @@ public class FunctionVisitor extends DepthFirstAdapter
             		
             	}
             	else if(node.getExpr2() instanceof AIntExpr) {
-            		//System.out.println(node.getExpr2());
+            		////System.out.println(node.getExpr2());
             		type2 = "int";
             	}
             	else {
@@ -1105,10 +1105,10 @@ public class FunctionVisitor extends DepthFirstAdapter
         }
         
         if(type1.equals("int") && type2.equals("int")) {
-	        System.out.println(node.getExpr1() + " -- " + node.getExpr2());
+	        //System.out.println(node.getExpr1() + " -- " + node.getExpr2());
 	        //errors.add(node.toString() +" withtype " + type2);
 	        hm.put(node.toString(), type2);
-	        System.out.println("NODE: "+node.toString());
+	        //System.out.println("NODE: "+node.toString());
         }
         else {
         	errors.add("Invalid sub expression types "+type1+ " and " + type2+".");
@@ -1131,13 +1131,13 @@ public class FunctionVisitor extends DepthFirstAdapter
             	if(node.getExpr1() instanceof ALValExpr) {
             		ALValExpr lval = (ALValExpr) node.getExpr1();
             		if(lval.getLVal() instanceof AIdBracketsLVal) {
-            			//System.out.println("--->"+lval.getLVal());
+            			////System.out.println("--->"+lval.getLVal());
             			val = val.split(" ")[0]+" ";
-            			//System.out.println("------>"+val);
+            			////System.out.println("------>"+val);
             		}
-            		System.out.println(val + " Method: " + current.getName());
+            		//System.out.println(val + " Method: " + current.getName());
             		t = getType(val, current);
-            		System.out.println(t.getType());
+            		//System.out.println(t.getType());
             		if(t.getType() == null) {
             			errors.add("Variable " + val + "not declared in method " + current.getName()+".");
             			type1 = null;
@@ -1151,7 +1151,7 @@ public class FunctionVisitor extends DepthFirstAdapter
             		
             	}
             	else if(node.getExpr1() instanceof AIntExpr) {
-            		//System.out.println(node.getExpr1());
+            		////System.out.println(node.getExpr1());
             		type1 = "int";
             	}
             	else {
@@ -1171,12 +1171,12 @@ public class FunctionVisitor extends DepthFirstAdapter
             	if(node.getExpr2() instanceof ALValExpr) {
             		ALValExpr lval = (ALValExpr) node.getExpr2();
             		if(lval.getLVal() instanceof AIdBracketsLVal) {
-            			//System.out.println("--->"+lval.getLVal());
+            			////System.out.println("--->"+lval.getLVal());
             			val = val.split(" ")[0]+" ";
-            			//System.out.println("------>"+val);
+            			////System.out.println("------>"+val);
             			
             		}
-            		System.out.println(val + " Method: " + current.getName());
+            		//System.out.println(val + " Method: " + current.getName());
             		t = getType(val, current);
             		errors.add(t.getType());
             		if(t.getType() == null) {
@@ -1192,7 +1192,7 @@ public class FunctionVisitor extends DepthFirstAdapter
             		
             	}
             	else if(node.getExpr2() instanceof AIntExpr) {
-            		//System.out.println(node.getExpr2());
+            		////System.out.println(node.getExpr2());
             		type2 = "int";
             	}
             	else {
@@ -1206,10 +1206,10 @@ public class FunctionVisitor extends DepthFirstAdapter
         }
         
         if(type1.equals("int") && type2.equals("int")) {
-	        System.out.println(node.getExpr1() + " -- " + node.getExpr2());
+	        //System.out.println(node.getExpr1() + " -- " + node.getExpr2());
 	        //errors.add(node.toString() +" withtype " + type2);
 	        hm.put(node.toString(), type2);
-	        System.out.println("NODE: "+node.toString());
+	        //System.out.println("NODE: "+node.toString());
         }
         else {
         	errors.add("Invalid mult expression types "+type1+ " and " + type2+".");
@@ -1232,13 +1232,13 @@ public class FunctionVisitor extends DepthFirstAdapter
             	if(node.getExpr1() instanceof ALValExpr) {
             		ALValExpr lval = (ALValExpr) node.getExpr1();
             		if(lval.getLVal() instanceof AIdBracketsLVal) {
-            			//System.out.println("--->"+lval.getLVal());
+            			////System.out.println("--->"+lval.getLVal());
             			val = val.split(" ")[0]+" ";
-            			//System.out.println("------>"+val);
+            			////System.out.println("------>"+val);
             		}
-            		System.out.println(val + " Method: " + current.getName());
+            		//System.out.println(val + " Method: " + current.getName());
             		t = getType(val, current);
-            		System.out.println(t.getType());
+            		//System.out.println(t.getType());
             		if(t.getType() == null) {
             			errors.add("Variable " + val + "not declared in method " + current.getName()+".");
             			type1 = null;
@@ -1252,7 +1252,7 @@ public class FunctionVisitor extends DepthFirstAdapter
             		
             	}
             	else if(node.getExpr1() instanceof AIntExpr) {
-            		//System.out.println(node.getExpr1());
+            		////System.out.println(node.getExpr1());
             		type1 = "int";
             	}
             	else {
@@ -1272,12 +1272,12 @@ public class FunctionVisitor extends DepthFirstAdapter
             	if(node.getExpr2() instanceof ALValExpr) {
             		ALValExpr lval = (ALValExpr) node.getExpr2();
             		if(lval.getLVal() instanceof AIdBracketsLVal) {
-            			//System.out.println("--->"+lval.getLVal());
+            			////System.out.println("--->"+lval.getLVal());
             			val = val.split(" ")[0]+" ";
-            			//System.out.println("------>"+val);
+            			////System.out.println("------>"+val);
             			
             		}
-            		System.out.println(val + " Method: " + current.getName());
+            		//System.out.println(val + " Method: " + current.getName());
             		t = getType(val, current);
             		errors.add(t.getType());
             		if(t.getType() == null) {
@@ -1293,7 +1293,7 @@ public class FunctionVisitor extends DepthFirstAdapter
             		
             	}
             	else if(node.getExpr2() instanceof AIntExpr) {
-            		//System.out.println(node.getExpr2());
+            		////System.out.println(node.getExpr2());
             		type2 = "int";
             	}
             	else {
@@ -1307,10 +1307,10 @@ public class FunctionVisitor extends DepthFirstAdapter
         }
         
         if(type1.equals("int") && type2.equals("int")) {
-	        System.out.println(node.getExpr1() + " -- " + node.getExpr2());
+	        //System.out.println(node.getExpr1() + " -- " + node.getExpr2());
 	        //errors.add(node.toString() +" withtype " + type2);
 	        hm.put(node.toString(), type2);
-	        System.out.println("NODE: "+node.toString());
+	        //System.out.println("NODE: "+node.toString());
         }
         else {
         	errors.add("Invalid mod expression types "+type1+ " and " + type2+".");
@@ -1333,13 +1333,13 @@ public class FunctionVisitor extends DepthFirstAdapter
             	if(node.getExpr1() instanceof ALValExpr) {
             		ALValExpr lval = (ALValExpr) node.getExpr1();
             		if(lval.getLVal() instanceof AIdBracketsLVal) {
-            			//System.out.println("--->"+lval.getLVal());
+            			////System.out.println("--->"+lval.getLVal());
             			val = val.split(" ")[0]+" ";
-            			//System.out.println("------>"+val);
+            			////System.out.println("------>"+val);
             		}
-            		System.out.println(val + " Method: " + current.getName());
+            		//System.out.println(val + " Method: " + current.getName());
             		t = getType(val, current);
-            		System.out.println(t.getType());
+            		//System.out.println(t.getType());
             		if(t.getType() == null) {
             			errors.add("Variable " + val + "not declared in method " + current.getName()+".");
             			type1 = null;
@@ -1353,7 +1353,7 @@ public class FunctionVisitor extends DepthFirstAdapter
             		
             	}
             	else if(node.getExpr1() instanceof AIntExpr) {
-            		//System.out.println(node.getExpr1());
+            		////System.out.println(node.getExpr1());
             		type1 = "int";
             	}
             	else {
@@ -1373,12 +1373,12 @@ public class FunctionVisitor extends DepthFirstAdapter
             	if(node.getExpr2() instanceof ALValExpr) {
             		ALValExpr lval = (ALValExpr) node.getExpr2();
             		if(lval.getLVal() instanceof AIdBracketsLVal) {
-            			//System.out.println("--->"+lval.getLVal());
+            			////System.out.println("--->"+lval.getLVal());
             			val = val.split(" ")[0]+" ";
-            			//System.out.println("------>"+val);
+            			////System.out.println("------>"+val);
             			
             		}
-            		System.out.println(val + " Method: " + current.getName());
+            		//System.out.println(val + " Method: " + current.getName());
             		t = getType(val, current);
             		errors.add(t.getType());
             		if(t.getType() == null) {
@@ -1394,7 +1394,7 @@ public class FunctionVisitor extends DepthFirstAdapter
             		
             	}
             	else if(node.getExpr2() instanceof AIntExpr) {
-            		//System.out.println(node.getExpr2());
+            		////System.out.println(node.getExpr2());
             		type2 = "int";
             	}
             	else {
@@ -1408,10 +1408,10 @@ public class FunctionVisitor extends DepthFirstAdapter
         }
         
         if(type1.equals("int") && type2.equals("int")) {
-	        System.out.println(node.getExpr1() + " -- " + node.getExpr2());
+	        //System.out.println(node.getExpr1() + " -- " + node.getExpr2());
 	        //errors.add(node.toString() +" withtype " + type2);
 	        hm.put(node.toString(), type2);
-	        System.out.println("NODE: "+node.toString());
+	        //System.out.println("NODE: "+node.toString());
         }
         else {
         	errors.add("Invalid div expression types "+type1+ " and " + type2+".");
@@ -1608,10 +1608,10 @@ public class FunctionVisitor extends DepthFirstAdapter
         	ret = true;
         	String type;
             node.getReturnexpr().apply(this);
-            System.out.println("RETURN "+node.toString());
+            //System.out.println("RETURN "+node.toString());
             Variable_t t = getType(node.toString(), current); 
             t.printVar();
-            System.out.println("HM::: "+hm);
+            //System.out.println("HM::: "+hm);
             if(t.getType() == null ) {
             	/* if(!current.get_return_type().equals("nothing")){
     	    		errors.add("Return statement is null! Required "+current.get_return_type()+ " in method " + current.getName());
@@ -1619,7 +1619,7 @@ public class FunctionVisitor extends DepthFirstAdapter
     			} */
             	if(hm.containsKey(node.toString())) {
             		type = hm.get(node.toString());
-            		System.out.println(type+"<----");
+            		//System.out.println(type+"<----");
             		if(!type.equals(current.get_return_type())) {
             			errors.add("Return statement " + node.toString() +" is type of \""+type+"\"! Required \""+current.get_return_type()+ "\" in method " + current.getName());
             			return;

@@ -8,6 +8,7 @@ import compiler.symboltable.*;
 
 public class IrVisitor extends DepthFirstAdapter
 {   
+	SymbolTable st;
 	public StringBuffer out = new StringBuffer();
 	HashMap<String, String> regs = new HashMap<String, String>();
 	int curline =1;
@@ -15,17 +16,26 @@ public class IrVisitor extends DepthFirstAdapter
 	
 	Helpers h = new Helpers();
 	
+	public IrVisitor(SymbolTable st) { 
+		this.st = st;
+	}
+	
 	public String getRegt(){
 		return "$"+Integer.toString(regcount++);
+	}
+	
+	public String getlastreg(){
+		return "$"+Integer.toString(regcount-1);
 	}
 	
 	 public String getline() {		 	
 	    	return Integer.toString(curline++)+": ";
 	    }
 	 
-	 public void makeArray(String name, String content){
-		 regs.put(name+"-"+content,getRegt());
-		 out.append(getline()+ "array, "+ name+", "+ content+", "+getRegt());
+	 public void makeArray(String expr, String name, String content){
+		 String reg = getRegt();
+		 regs.put(expr, reg);
+		 h.genQuad("array", name, content, reg);
 	 }
 	 
     @Override
@@ -47,6 +57,7 @@ public class IrVisitor extends DepthFirstAdapter
         }
         System.out.println(out);
         h.printQuads();
+        st.printST();
         outAProgram(node);
     }
     
@@ -339,7 +350,7 @@ public class IrVisitor extends DepthFirstAdapter
         {
             node.getRBr().apply(this);
         }
-        //makeArray();
+        makeArray(node.toString(), node.getLVal().toString(), node.getExpr().toString());
         outAIdBracketsLVal(node);
     }
     
@@ -535,17 +546,38 @@ public class IrVisitor extends DepthFirstAdapter
     public void caseAAddExpr(AAddExpr node)
     {
         inAAddExpr(node);
+        String left = node.getExpr1().toString(), right = node.getExpr2().toString();
+
         if(node.getExpr1() != null)
         {
             node.getExpr1().apply(this);
+            if(node.getExpr1() instanceof ALValExpr) {
+        		ALValExpr lval = (ALValExpr) node.getExpr1();
+        		if(lval.getLVal() instanceof AIdBracketsLVal) {
+        			left = "["+getlastreg()+"]";
+        		}
+            }
+            else if(!(node.getExpr1() instanceof AIntExpr)) {
+            	left = getlastreg();
+            }
         }
         if(node.getExpr2() != null)
         {
             node.getExpr2().apply(this);
+            if(node.getExpr2() instanceof ALValExpr) {
+        		ALValExpr lval = (ALValExpr) node.getExpr2();
+        		if(lval.getLVal() instanceof AIdBracketsLVal) {
+        			right = "["+getlastreg()+"]";
+        		}
+            }
+            else if(!(node.getExpr2() instanceof AIntExpr)) {
+            	right = getlastreg();
+            }
         }  
+        
         String reg= getRegt();
-        regs.put(node.getExpr1().toString()+"+ "+ node.getExpr2().toString(),reg);
-        h.genQuad("+" , node.getExpr1().toString(),node.getExpr2().toString(),reg);
+        regs.put(left+"+ "+ right, reg);
+        h.genQuad("+" , left, right, reg);
         //h.printLast();
         //out.append(getline()+ "+, " +node.getExpr1()+", " + node.getExpr2()+", "+reg+"\n" );
         outAAddExpr(node);
@@ -688,19 +720,37 @@ public class IrVisitor extends DepthFirstAdapter
     public void caseAAssignmentStmt(AAssignmentStmt node)
     {
         inAAssignmentStmt(node);
+        String left = node.getLeft().toString(), right = node.getRight().toString();
+
         if(node.getLeft() != null)
         {
             node.getLeft().apply(this);
+            if(node.getLeft() instanceof AIdBracketsLVal) {
+            	left = "["+getlastreg()+"]";
+            }
         }
         if(node.getRight() != null)
         {
             node.getRight().apply(this);
+            if(node.getRight() instanceof ALValExpr) {
+        		ALValExpr lval = (ALValExpr) node.getRight();
+        		if(lval.getLVal() instanceof AIdBracketsLVal) {
+        			right = "["+getlastreg()+"]";
+        		}
+            }
+            else if(!(node.getRight() instanceof AIntExpr)) {
+            	right = getlastreg();
+            }
         }
         System.err.println(regs);
-        if(regs.containsKey(node.getRight().toString()))
+        /* if(regs.containsKey(node.getRight().toString()))
 	        h.genQuad(":=" , regs.get(node.getRight().toString()),"-",node.getLeft().toString());
 	        //h.printLast();
         	//out.append(getline()+ ":=, " +regs.get(node.getRight().toString())+", - , " + node.getLeft()+"\n" );
+        */
+        
+        
+        h.genQuad(":=" , left,"-", right);
         outAAssignmentStmt(node);
     }
     

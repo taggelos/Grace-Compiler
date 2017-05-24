@@ -12,6 +12,7 @@ import java.io.PushbackReader;
 import compiler.lexer.Lexer;
 import compiler.node.Start;
 import compiler.parser.*;
+import compiler.symboltable.SymbolTable;
 import compiler.visitors.*;
 
 public class Main {
@@ -61,9 +62,13 @@ public class Main {
                     System.out.println(tree.toString());
                     
                     FunctionVisitor fv = new FunctionVisitor();
-                    //tree.apply(fv);
+                    tree.apply(fv);
+                    
+                    SymbolTable symboltable = new SymbolTable(fv.methods);
+                    //symboltable.printST();
+                    
                     if(fv.errors.isEmpty()){
-                    	IrVisitor iv = new IrVisitor();
+                    	IrVisitor iv = new IrVisitor(symboltable);
                     	tree.apply(iv);
                     	byte[] contentInBytes = iv.out.toString().getBytes();
             			fop.write(contentInBytes);
