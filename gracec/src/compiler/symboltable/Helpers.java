@@ -4,7 +4,8 @@ import java.util.*;
 
 public class Helpers {
 	public LinkedList<Quad> quads;
-	//public LinkedList<String> regs;
+	public LinkedList<Integer> trueList;
+	public LinkedList<Integer> falseList;
 	public Quad lastQuad;
 	public Quad firstQuad;
 	int curline;
@@ -12,7 +13,8 @@ public class Helpers {
 
     public Helpers() {
     	quads = new LinkedList<Quad>(); 
-    	//regs = new LinkedList<String>();
+    	trueList = new LinkedList<Integer>();
+    	falseList = new LinkedList<Integer>();
     	firstQuad =null;
     	lastQuad =null;
     	curline =1;
@@ -27,8 +29,25 @@ public class Helpers {
     
 	public int nextQuad(){
 		//if(lastQuad == firstQuad) return firstQuad;
-		return curline;
-	    	
+		return curline;	
+	}
+	
+	public void backpatch(boolean b, int jump) {
+		System.out.println("TREU: "+ trueList);
+		System.out.println("FALSE: "+ falseList);
+		if(b) {
+			if(!trueList.isEmpty()) {
+				quads.get(trueList.getLast().intValue()-1).d = Integer.toString(jump);
+				trueList.removeLast();
+			}
+		}
+		else {
+			if(!falseList.isEmpty()) {
+				quads.get(falseList.getLast().intValue()-1).d = Integer.toString(jump);
+				falseList.removeLast();
+			}
+		}
+			
 	}
     
 	public void printLast() {

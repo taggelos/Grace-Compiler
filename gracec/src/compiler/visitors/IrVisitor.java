@@ -373,13 +373,60 @@ public class IrVisitor extends DepthFirstAdapter
     }
     
     @Override
-    public void caseAIfHeader(AIfHeader node)
+    public void caseAIfstmtStmt(AIfstmtStmt node)
     {
-        inAIfHeader(node);
+        inAIfstmtStmt(node);
         if(node.getCond() != null)
         {
             node.getCond().apply(this);
         }
+        if(node.getThen() != null)
+        {
+            node.getThen().apply(this);
+        }
+        outAIfstmtStmt(node);
+    }
+    
+    @Override
+    public void caseAIfElseStmt(AIfElseStmt node)
+    {
+        inAIfElseStmt(node);
+        if(node.getCond() != null)
+        {
+            node.getCond().apply(this);
+        }
+        {
+        	h.backpatch(true, h.nextQuad());
+            List<PStmt> copy = new ArrayList<PStmt>(node.getThen());
+            for(PStmt e : copy)
+            {
+                e.apply(this);
+            }
+        }
+        {
+        	h.backpatch(false, h.nextQuad());
+            List<PStmt> copy = new ArrayList<PStmt>(node.getElseSt());
+            for(PStmt e : copy)
+            {
+                e.apply(this);
+            }
+        }
+        outAIfElseStmt(node);
+    }
+    
+    @Override
+    public void caseAIfHeader(AIfHeader node)
+    {
+        inAIfHeader(node);
+        h.backpatch(true, h.nextQuad());
+        if(node.getCond() != null)
+        {
+            node.getCond().apply(this);
+        }
+        //h.falseList.add(h.nextQuad());
+        //System.out.println("ADDINT TO FALSE: "+ h.nextQuad());
+        //h.genQuad("jump", "-", "-", "*");
+        //h.backpatch(true, h.nextQuad());
         outAIfHeader(node);
     }
     
@@ -387,6 +434,7 @@ public class IrVisitor extends DepthFirstAdapter
     public void caseANoElseIfTrail(ANoElseIfTrail node)
     {
         inANoElseIfTrail(node);
+        h.backpatch(true, h.nextQuad());
         {
             List<PStmt> copy = new ArrayList<PStmt>(node.getThen());
             for(PStmt e : copy)
@@ -394,6 +442,7 @@ public class IrVisitor extends DepthFirstAdapter
                 e.apply(this);
             }
         }
+        h.backpatch(false, h.nextQuad());
         outANoElseIfTrail(node);
     }
     
@@ -402,6 +451,7 @@ public class IrVisitor extends DepthFirstAdapter
     {
         inAWithElseIfTrail(node);
         {
+        	h.backpatch(true, h.nextQuad());
             List<PStmt> copy = new ArrayList<PStmt>(node.getThen());
             for(PStmt e : copy)
             {
@@ -409,6 +459,7 @@ public class IrVisitor extends DepthFirstAdapter
             }
         }
         {
+        	h.backpatch(false, h.nextQuad());
             List<PStmt> copy = new ArrayList<PStmt>(node.getElseSt());
             for(PStmt e : copy)
             {
@@ -422,14 +473,20 @@ public class IrVisitor extends DepthFirstAdapter
     public void caseAAndExprExpr(AAndExprExpr node)
     {
         inAAndExprExpr(node);
+        
         if(node.getLeft() != null)
         {
             node.getLeft().apply(this);
         }
+        //h.genQuad("jump", "-", "-", "*");
+        h.backpatch(true, h.nextQuad());
+        int jump = h.nextQuad();
         if(node.getRight() != null)
         {
             node.getRight().apply(this);
         }
+        //h.backpatch(false, jump);
+        
         outAAndExprExpr(node);
     }
     
@@ -474,14 +531,21 @@ public class IrVisitor extends DepthFirstAdapter
     public void caseALessThanExpr(ALessThanExpr node)
     {
         inALessThanExpr(node);
+        String left = null, right = null;
         if(node.getLeft() != null)
         {
             node.getLeft().apply(this);
+            left = value;
         }
         if(node.getRight() != null)
         {
             node.getRight().apply(this);
+            right = value;
         }
+        h.trueList.add(h.nextQuad());
+        h.genQuad("<", left, right, "*");
+        h.falseList.add(h.nextQuad());
+        h.genQuad("jump", "-", "-", "*");
         outALessThanExpr(node);
     }
     
@@ -489,14 +553,21 @@ public class IrVisitor extends DepthFirstAdapter
     public void caseAGreaterThanExpr(AGreaterThanExpr node)
     {
         inAGreaterThanExpr(node);
+        String left = null, right = null;
         if(node.getLeft() != null)
         {
             node.getLeft().apply(this);
+            left = value;
         }
         if(node.getRight() != null)
         {
             node.getRight().apply(this);
+            right = value;
         }
+        h.trueList.add(h.nextQuad());
+        h.genQuad(">", left, right, "*");
+        h.falseList.add(h.nextQuad());
+        h.genQuad("jump", "-", "-", "*");
         outAGreaterThanExpr(node);
     }
     
@@ -504,14 +575,21 @@ public class IrVisitor extends DepthFirstAdapter
     public void caseAGreaterEqualThanExpr(AGreaterEqualThanExpr node)
     {
         inAGreaterEqualThanExpr(node);
+        String left = null, right = null;
         if(node.getLeft() != null)
         {
             node.getLeft().apply(this);
+            left = value;
         }
         if(node.getRight() != null)
         {
             node.getRight().apply(this);
+            right = value;
         }
+        h.trueList.add(h.nextQuad());
+        h.genQuad(">=", left, right, "*");
+        h.falseList.add(h.nextQuad());
+        h.genQuad("jump", "-", "-", "*");
         outAGreaterEqualThanExpr(node);
     }
     
@@ -519,14 +597,21 @@ public class IrVisitor extends DepthFirstAdapter
     public void caseALessEqualThanExpr(ALessEqualThanExpr node)
     {
         inALessEqualThanExpr(node);
+        String left = null, right = null;
         if(node.getLeft() != null)
         {
             node.getLeft().apply(this);
+            left = value;
         }
         if(node.getRight() != null)
         {
             node.getRight().apply(this);
+            right = value;
         }
+        h.trueList.add(h.nextQuad());
+        h.genQuad("<=", left, right, "*");
+        h.falseList.add(h.nextQuad());
+        h.genQuad("jump", "-", "-", "*");
         outALessEqualThanExpr(node);
     }
     
@@ -534,14 +619,21 @@ public class IrVisitor extends DepthFirstAdapter
     public void caseAEqualExpr(AEqualExpr node)
     {
         inAEqualExpr(node);
+        String left = null, right = null;
         if(node.getLeft() != null)
         {
             node.getLeft().apply(this);
+            left = value;
         }
         if(node.getRight() != null)
         {
             node.getRight().apply(this);
+            right = value;
         }
+        h.trueList.add(h.nextQuad());
+        h.genQuad("=", left, right, "*");
+        h.falseList.add(h.nextQuad());
+        h.genQuad("jump", "-", "-", "*");
         outAEqualExpr(node);
     }
     
@@ -549,14 +641,21 @@ public class IrVisitor extends DepthFirstAdapter
     public void caseANotEqualExpr(ANotEqualExpr node)
     {
         inANotEqualExpr(node);
+        String left = null, right = null;
         if(node.getLeft() != null)
         {
             node.getLeft().apply(this);
+            left = value;
         }
         if(node.getRight() != null)
         {
             node.getRight().apply(this);
+            right = value;
         }
+        h.trueList.add(h.nextQuad());
+        h.genQuad("#", left, right, "*");
+        h.falseList.add(h.nextQuad());
+        h.genQuad("jump", "-", "-", "*");
         outANotEqualExpr(node);
     }
     
@@ -801,46 +900,6 @@ public class IrVisitor extends DepthFirstAdapter
         
         h.genQuad(":=" , left,"-", right);
         outAAssignmentStmt(node);
-    }
-    
-    @Override
-    public void caseAIfstmtStmt(AIfstmtStmt node)
-    {
-        inAIfstmtStmt(node);
-        if(node.getCond() != null)
-        {
-            node.getCond().apply(this);
-        }
-        if(node.getThen() != null)
-        {
-            node.getThen().apply(this);
-        }
-        outAIfstmtStmt(node);
-    }
-    
-    @Override
-    public void caseAIfElseStmt(AIfElseStmt node)
-    {
-        inAIfElseStmt(node);
-        if(node.getCond() != null)
-        {
-            node.getCond().apply(this);
-        }
-        {
-            List<PStmt> copy = new ArrayList<PStmt>(node.getThen());
-            for(PStmt e : copy)
-            {
-                e.apply(this);
-            }
-        }
-        {
-            List<PStmt> copy = new ArrayList<PStmt>(node.getElseSt());
-            for(PStmt e : copy)
-            {
-                e.apply(this);
-            }
-        }
-        outAIfElseStmt(node);
     }
     
     @Override
