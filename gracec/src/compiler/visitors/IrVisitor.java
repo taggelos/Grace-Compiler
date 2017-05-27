@@ -15,10 +15,15 @@ public class IrVisitor extends DepthFirstAdapter
 	int regcount=1;
 	String value;
 	
+	public LinkedList<LinkedList<Integer>> trueList;
+	public LinkedList<LinkedList<Integer>> falseList;
+	
 	Helpers h = new Helpers();
 	
 	public IrVisitor(SymbolTable st) { 
 		this.st = st;
+		trueList = new LinkedList<LinkedList<Integer>>();
+		falseList = new LinkedList<LinkedList<Integer>>();
 	}
 	
 	public String getRegt(){
@@ -58,7 +63,13 @@ public class IrVisitor extends DepthFirstAdapter
         }
         System.out.println(out);
         h.printQuads();
-        st.printST();
+        //st.printST();
+        for(LinkedList<Integer> l : falseList) {
+        	System.err.println("List:");
+        	for(int i : l) {
+        		System.err.println(i+" ,");
+        	}
+        }
         outAProgram(node);
     }
     
@@ -376,6 +387,7 @@ public class IrVisitor extends DepthFirstAdapter
     public void caseAIfstmtStmt(AIfstmtStmt node)
     {
         inAIfstmtStmt(node);
+        
         if(node.getCond() != null)
         {
             node.getCond().apply(this);
@@ -384,6 +396,8 @@ public class IrVisitor extends DepthFirstAdapter
         {
             node.getThen().apply(this);
         }
+        trueList.removeLast();
+        falseList.removeLast();
         outAIfstmtStmt(node);
     }
     
@@ -396,7 +410,7 @@ public class IrVisitor extends DepthFirstAdapter
             node.getCond().apply(this);
         }
         {
-        	h.backpatch(true, h.nextQuad());
+        	h.backpatch(trueList.getLast(), h.nextQuad());
             List<PStmt> copy = new ArrayList<PStmt>(node.getThen());
             for(PStmt e : copy)
             {
@@ -404,7 +418,7 @@ public class IrVisitor extends DepthFirstAdapter
             }
         }
         {
-        	h.backpatch(false, h.nextQuad());
+        	//h.backpatch(falseList.getLast(), h.nextQuad());
             List<PStmt> copy = new ArrayList<PStmt>(node.getElseSt());
             for(PStmt e : copy)
             {
@@ -418,7 +432,9 @@ public class IrVisitor extends DepthFirstAdapter
     public void caseAIfHeader(AIfHeader node)
     {
         inAIfHeader(node);
-        h.backpatch(true, h.nextQuad());
+        trueList.addFirst(new LinkedList<>());
+        falseList.addFirst(new LinkedList<>());
+        h.backpatch(trueList.getLast(), h.nextQuad());
         if(node.getCond() != null)
         {
             node.getCond().apply(this);
@@ -434,7 +450,7 @@ public class IrVisitor extends DepthFirstAdapter
     public void caseANoElseIfTrail(ANoElseIfTrail node)
     {
         inANoElseIfTrail(node);
-        h.backpatch(true, h.nextQuad());
+        //h.backpatch(true, h.nextQuad());
         {
             List<PStmt> copy = new ArrayList<PStmt>(node.getThen());
             for(PStmt e : copy)
@@ -442,7 +458,7 @@ public class IrVisitor extends DepthFirstAdapter
                 e.apply(this);
             }
         }
-        h.backpatch(false, h.nextQuad());
+        //h.backpatch(falseList.getLast(), h.nextQuad());
         outANoElseIfTrail(node);
     }
     
@@ -451,7 +467,7 @@ public class IrVisitor extends DepthFirstAdapter
     {
         inAWithElseIfTrail(node);
         {
-        	h.backpatch(true, h.nextQuad());
+        	//h.backpatch(true, h.nextQuad());
             List<PStmt> copy = new ArrayList<PStmt>(node.getThen());
             for(PStmt e : copy)
             {
@@ -459,7 +475,8 @@ public class IrVisitor extends DepthFirstAdapter
             }
         }
         {
-        	h.backpatch(false, h.nextQuad());
+        	System.err.println(falseList.getLast());
+        	h.backpatch(falseList.getLast(), h.nextQuad());
             List<PStmt> copy = new ArrayList<PStmt>(node.getElseSt());
             for(PStmt e : copy)
             {
@@ -479,8 +496,8 @@ public class IrVisitor extends DepthFirstAdapter
             node.getLeft().apply(this);
         }
         //h.genQuad("jump", "-", "-", "*");
-        h.backpatch(true, h.nextQuad());
-        int jump = h.nextQuad();
+        //h.backpatch(trueList.getLast(), h.nextQuad());
+        //int jump = h.nextQuad();
         if(node.getRight() != null)
         {
             node.getRight().apply(this);
@@ -542,10 +559,12 @@ public class IrVisitor extends DepthFirstAdapter
             node.getRight().apply(this);
             right = value;
         }
-        h.trueList.add(h.nextQuad());
+        trueList.getLast().add(h.nextQuad());
         h.genQuad("<", left, right, "*");
-        h.falseList.add(h.nextQuad());
+        falseList.getLast().add(h.nextQuad());
         h.genQuad("jump", "-", "-", "*");
+        
+        h.backpatch(trueList.getLast(), h.nextQuad());
         outALessThanExpr(node);
     }
     
@@ -564,10 +583,12 @@ public class IrVisitor extends DepthFirstAdapter
             node.getRight().apply(this);
             right = value;
         }
-        h.trueList.add(h.nextQuad());
+        trueList.getLast().add(h.nextQuad());
         h.genQuad(">", left, right, "*");
-        h.falseList.add(h.nextQuad());
+        falseList.getLast().add(h.nextQuad());
         h.genQuad("jump", "-", "-", "*");
+        
+        h.backpatch(trueList.getLast(), h.nextQuad());
         outAGreaterThanExpr(node);
     }
     
@@ -586,10 +607,12 @@ public class IrVisitor extends DepthFirstAdapter
             node.getRight().apply(this);
             right = value;
         }
-        h.trueList.add(h.nextQuad());
+        trueList.getLast().add(h.nextQuad());
         h.genQuad(">=", left, right, "*");
-        h.falseList.add(h.nextQuad());
+        falseList.getLast().add(h.nextQuad());
         h.genQuad("jump", "-", "-", "*");
+       
+        h.backpatch(trueList.getLast(), h.nextQuad());
         outAGreaterEqualThanExpr(node);
     }
     
@@ -608,10 +631,12 @@ public class IrVisitor extends DepthFirstAdapter
             node.getRight().apply(this);
             right = value;
         }
-        h.trueList.add(h.nextQuad());
+        trueList.getLast().add(h.nextQuad());
         h.genQuad("<=", left, right, "*");
-        h.falseList.add(h.nextQuad());
+        falseList.getLast().add(h.nextQuad());
         h.genQuad("jump", "-", "-", "*");
+        
+        h.backpatch(trueList.getLast(), h.nextQuad());
         outALessEqualThanExpr(node);
     }
     
@@ -630,10 +655,13 @@ public class IrVisitor extends DepthFirstAdapter
             node.getRight().apply(this);
             right = value;
         }
-        h.trueList.add(h.nextQuad());
+        trueList.getLast().add(h.nextQuad());
         h.genQuad("=", left, right, "*");
-        h.falseList.add(h.nextQuad());
+        falseList.getLast().add(h.nextQuad());
+        //System.err.println(falseList.getLast());
         h.genQuad("jump", "-", "-", "*");
+        
+        h.backpatch(trueList.getLast(), h.nextQuad());
         outAEqualExpr(node);
     }
     
@@ -652,10 +680,13 @@ public class IrVisitor extends DepthFirstAdapter
             node.getRight().apply(this);
             right = value;
         }
-        h.trueList.add(h.nextQuad());
+        trueList.getLast().add(h.nextQuad());
         h.genQuad("#", left, right, "*");
-        h.falseList.add(h.nextQuad());
+        falseList.getLast().add(h.nextQuad());
+       
         h.genQuad("jump", "-", "-", "*");
+        h.backpatch(trueList.getLast(), h.nextQuad());
+        
         outANotEqualExpr(node);
     }
     

@@ -4,8 +4,6 @@ import java.util.*;
 
 public class Helpers {
 	public LinkedList<Quad> quads;
-	public LinkedList<Integer> trueList;
-	public LinkedList<Integer> falseList;
 	public Quad lastQuad;
 	public Quad firstQuad;
 	int curline;
@@ -13,8 +11,6 @@ public class Helpers {
 
     public Helpers() {
     	quads = new LinkedList<Quad>(); 
-    	trueList = new LinkedList<Integer>();
-    	falseList = new LinkedList<Integer>();
     	firstQuad =null;
     	lastQuad =null;
     	curline =1;
@@ -32,22 +28,12 @@ public class Helpers {
 		return curline;	
 	}
 	
-	public void backpatch(boolean b, int jump) {
-		System.out.println("TREU: "+ trueList);
-		System.out.println("FALSE: "+ falseList);
-		if(b) {
-			if(!trueList.isEmpty()) {
-				quads.get(trueList.getLast().intValue()-1).d = Integer.toString(jump);
-				trueList.removeLast();
+	public void backpatch(LinkedList<Integer> list, int jump) {
+		//if(b) {
+			while(!list.isEmpty()) {
+				quads.get(list.getLast().intValue()-1).d = Integer.toString(jump);
+				list.removeLast();
 			}
-		}
-		else {
-			if(!falseList.isEmpty()) {
-				quads.get(falseList.getLast().intValue()-1).d = Integer.toString(jump);
-				falseList.removeLast();
-			}
-		}
-			
 	}
     
 	public void printLast() {
