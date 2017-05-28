@@ -1,4 +1,4 @@
-fun main () : nothing 
+fun main (i: int) : int 
 fun swap (x, y : int[]) : int
    var  i : int; 
    var a : int[][];
@@ -15,5 +15,6 @@ fun swap (x, y : int[]) : int
          var t : int[];
       {
          swap(t,t);
+         return 1;
       }
 

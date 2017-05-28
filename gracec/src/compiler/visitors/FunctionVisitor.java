@@ -97,7 +97,6 @@ public class FunctionVisitor extends DepthFirstAdapter
 			if(m.getName().equals(call_name))
 				return m;
 		}
-		String t,r;
 		for(int i = 0; i<smethodnames.length; i++){
 			String[] spl=null;
 			if(call_name.equals(smethodnames[i])) {
@@ -145,10 +144,7 @@ public class FunctionVisitor extends DepthFirstAdapter
         if(node.getFunDef() != null)
         {
             node.getFunDef().apply(this);
-        }
-        for(String e : errors)
-        	System.err.println(e);
-
+        } 
         Set set = hm.entrySet();
         Iterator i = set.iterator();
         
@@ -158,7 +154,15 @@ public class FunctionVisitor extends DepthFirstAdapter
            //System.out.print(me.getKey() + ": ");
            //System.out.println(me.getValue());
         }
-        outAProgram(node);
+        outAProgram(node);        
+        if(!methods.getLast().methodParams.isEmpty()){
+        	errors.add("Function "+ methods.getLast().getName() + "shall not have arguments.");
+        }
+        if(!methods.getLast().get_return_type().equals("nothing")){
+        	errors.add("Function "+methods.getLast().getName() + "shall return \"nothing\".");
+        }
+        for(String e : errors)
+        	System.err.println(e);
     }
 
     @Override
