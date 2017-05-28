@@ -11,8 +11,8 @@ fun swap (x, y : int[]) : int
             x[0]<-x[i];
          else
             return x[i];
-      else
-         return 0;
+      $else
+      $   return 0;
    }
 
          var t : int[];
