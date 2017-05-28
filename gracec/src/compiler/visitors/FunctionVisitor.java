@@ -8,7 +8,7 @@ import compiler.symboltable.*;
 
 public class FunctionVisitor extends DepthFirstAdapter
 {
-	public LinkedList<Method_t> methods;        // Lista twn klasewn
+	public static LinkedList<Method_t> methods;        // Lista twn klasewn
     public LinkedList<String> errors;
     public LinkedList<Method_t> fun_decs;
     public LinkedList<String> bools;
@@ -54,18 +54,18 @@ public class FunctionVisitor extends DepthFirstAdapter
     static String[] smethodparams = {
   		  "int", 
   		  "char", 
-  		  "char[]",  
+  		  "ref char[]",  
   		  "", 
   		  "", 
-  		  "int, char[]", 
+  		  "int,ref char[]", 
   		  "int",
   		  "char",
   		  "int",
-  		  "char[]",
-  		  "char[], char[]",
-  		  "char[], char[]",
-  		  "char[], char[]",
-  		  "char[]"
+  		  "ref char[]",
+  		  "ref char[],ref char[]",
+  		  "ref char[],ref char[]",
+  		  "ref char[],ref char[]",
+  		  "ref char[]"
   		};
     
 
@@ -97,19 +97,30 @@ public class FunctionVisitor extends DepthFirstAdapter
 			if(m.getName().equals(call_name))
 				return m;
 		}
-		
+		String t,r;
 		for(int i = 0; i<smethodnames.length; i++){
 			String[] spl=null;
 			if(call_name.equals(smethodnames[i])) {
 				Method_t smeth = new Method_t(smethodreturns[i], smethodnames[i]);
 				if(!smethodparams[i].isEmpty()) {
-					spl = smethodparams[i].split(", ");
-					for(int j=0; j< spl.length; j++)
-						smeth.addParam(new Variable_t(spl[j], "arg"+j));
+					spl = smethodparams[i].split(",");
+					Variable_t t1 =null;
+					for(int j=0; j< spl.length; j++){					
+						if(spl[j].split(" ")[0].equals("ref")){
+							t1 = new Variable_t(spl[j].split(" ")[1], "arg"+j);
+							t1.setRef();							
+						}
+						else{
+							t1 = new Variable_t(spl[j].split(" ")[0], "arg"+j);
+						}
+						smeth.addParam(t1);
+					}
+					
 				}
 				
 				//System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 				smeth.printMethod();
+				methods.add(smeth);
 				//System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 				return smeth;
 			}
