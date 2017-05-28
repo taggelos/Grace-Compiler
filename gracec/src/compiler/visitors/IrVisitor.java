@@ -555,6 +555,7 @@ public class IrVisitor extends DepthFirstAdapter
         {
             node.getLeft().apply(this);
         }
+        h.backpatch(falseList.getLast(), h.nextQuad());
         if(node.getRight() != null)
         {
             node.getRight().apply(this);
@@ -570,8 +571,13 @@ public class IrVisitor extends DepthFirstAdapter
         if(node.getExpr() != null)
         {
             node.getExpr().apply(this);
-        }
-        //h.backpatch(falseList.getLast(), h.nextQuad());
+            Integer temp=null;
+            temp = falseList.getLast().getLast();
+            falseList.getLast().removeLast();
+            falseList.getLast().add(trueList.getLast().getLast());
+            trueList.getLast().removeLast();
+            trueList.getLast().add(temp);
+        }        
         outANotExprExpr(node);
     }
     
