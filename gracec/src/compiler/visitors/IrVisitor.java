@@ -503,9 +503,8 @@ public class IrVisitor extends DepthFirstAdapter
     public void caseAWhilestmtStmt(AWhilestmtStmt node)
     {
         inAWhilestmtStmt(node);
-        trueList.addFirst(new LinkedList<>());
-        falseList.addFirst(new LinkedList<>());
-        h.backpatch(trueList.getLast(), h.nextQuad());
+        trueList.addLast(new LinkedList<>());
+        falseList.addLast(new LinkedList<>());
         String jump = null;
         if(node.getCond() != null)
         {
@@ -513,6 +512,8 @@ public class IrVisitor extends DepthFirstAdapter
             node.getCond().apply(this);
         }
         {
+
+            h.backpatch(trueList.getLast(), h.nextQuad());
             List<PStmt> copy = new ArrayList<PStmt>(node.getBody());
             for(PStmt e : copy)
             {
@@ -522,6 +523,9 @@ public class IrVisitor extends DepthFirstAdapter
         	h.genQuad("jump1", "-", "-", jump);
         	h.backpatch(falseList.getLast(), h.nextQuad());
         }
+        System.err.println(trueList.getLast() + "<<<");
+        trueList.removeLast();
+        falseList.removeLast();
         outAWhilestmtStmt(node);
     }
     
