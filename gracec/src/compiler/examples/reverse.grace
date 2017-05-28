@@ -6,11 +6,14 @@ fun main () : nothing
   {
     l <- strlen(s);
     i <- 0;
-    while i < l do {
-      r[i] <- s[l-i-1];
-      i <- i+1;
+    if (1<0) then {
+      i<-1;
+      i<-1;
+      i<-1;}
+    else {
+      i<-5;
     }
-    r[i] <- '\0';
+
   }
 
 {

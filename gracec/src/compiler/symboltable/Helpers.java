@@ -29,11 +29,10 @@ public class Helpers {
 	}
 	
 	public void backpatch(LinkedList<Integer> list, int jump) {
-		//if(b) {
-			while(!list.isEmpty()) {
-				quads.get(list.getLast().intValue()-1).d = Integer.toString(jump);
-				list.removeLast();
-			}
+		while(!list.isEmpty()) {
+			quads.get(list.getLast().intValue()-1).d = Integer.toString(jump);
+			list.removeLast();
+		}
 	}
     
 	public void printLast() {
@@ -42,7 +41,7 @@ public class Helpers {
 	
     public void printQuads() {
     	for (Quad q: quads){
-    		System.out.println("[ " + q.printQuad() +" ]" );
+    		System.out.println(q.printQuad());
     	}
     }
 }

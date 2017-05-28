@@ -319,11 +319,12 @@ public class IrVisitor extends DepthFirstAdapter
             for(PExpr e : copy)
             {
                 e.apply(this);
+                if(st.contains(name)!=null){ //skaei sto reverse.grace xwris afto
                 if(st.contains(name).getParams().get(i++).isRef())
                 	type = "R";
                 else 
                 	type = "V";
-                h.genQuad("par", value, type, "-");
+                h.genQuad("par", value, type, "-");}
             }
         }
         h.genQuad("call", "-", "-", node.getName().toString());
@@ -452,13 +453,13 @@ public class IrVisitor extends DepthFirstAdapter
         inANoElseIfTrail(node);
         //h.backpatch(true, h.nextQuad());
         {
+            h.backpatch(falseList.getLast(), h.nextQuad());
             List<PStmt> copy = new ArrayList<PStmt>(node.getThen());
             for(PStmt e : copy)
             {
                 e.apply(this);
             }
         }
-        //h.backpatch(falseList.getLast(), h.nextQuad());
         outANoElseIfTrail(node);
     }
     
@@ -487,6 +488,28 @@ public class IrVisitor extends DepthFirstAdapter
     }
     
     @Override
+    public void caseAWhilestmtStmt(AWhilestmtStmt node)
+    {
+        inAWhilestmtStmt(node);
+        trueList.addFirst(new LinkedList<>());
+        falseList.addFirst(new LinkedList<>());
+        h.backpatch(trueList.getLast(), h.nextQuad());
+        if(node.getCond() != null)
+        {
+            node.getCond().apply(this);
+        }
+        {
+            List<PStmt> copy = new ArrayList<PStmt>(node.getBody());
+            for(PStmt e : copy)
+            {
+                e.apply(this);
+            }
+        	h.backpatch(falseList.getLast(), h.nextQuad());
+        }
+        outAWhilestmtStmt(node);
+    }
+    
+    @Override
     public void caseAAndExprExpr(AAndExprExpr node)
     {
         inAAndExprExpr(node);
@@ -503,7 +526,7 @@ public class IrVisitor extends DepthFirstAdapter
             node.getRight().apply(this);
         }
         //h.backpatch(false, jump);
-        
+        ///h.backpatch(falseList.getLast(), h.nextQuad());
         outAAndExprExpr(node);
     }
     
@@ -519,6 +542,7 @@ public class IrVisitor extends DepthFirstAdapter
         {
             node.getRight().apply(this);
         }
+        h.backpatch(falseList.getLast(), h.nextQuad());
         outAOrExprExpr(node);
     }
     
@@ -530,6 +554,7 @@ public class IrVisitor extends DepthFirstAdapter
         {
             node.getExpr().apply(this);
         }
+        //h.backpatch(falseList.getLast(), h.nextQuad());
         outANotExprExpr(node);
     }
     
@@ -561,6 +586,7 @@ public class IrVisitor extends DepthFirstAdapter
         }
         trueList.getLast().add(h.nextQuad());
         h.genQuad("<", left, right, "*");
+        
         falseList.getLast().add(h.nextQuad());
         h.genQuad("jump", "-", "-", "*");
         
@@ -926,30 +952,10 @@ public class IrVisitor extends DepthFirstAdapter
 	        h.genQuad(":=" , regs.get(node.getRight().toString()),"-",node.getLeft().toString());
 	        //h.printLast();
         	//out.append(getline()+ ":=, " +regs.get(node.getRight().toString())+", - , " + node.getLeft()+"\n" );
-        */
-        
-        
+        */        
         h.genQuad(":=" , left,"-", right);
         outAAssignmentStmt(node);
-    }
-    
-    @Override
-    public void caseAWhilestmtStmt(AWhilestmtStmt node)
-    {
-        inAWhilestmtStmt(node);
-        if(node.getCond() != null)
-        {
-            node.getCond().apply(this);
-        }
-        {
-            List<PStmt> copy = new ArrayList<PStmt>(node.getBody());
-            for(PStmt e : copy)
-            {
-                e.apply(this);
-            }
-        }
-        outAWhilestmtStmt(node);
-    }
+    }    
     
     @Override
     public void caseAFunCalStmt(AFunCalStmt node)
@@ -959,9 +965,7 @@ public class IrVisitor extends DepthFirstAdapter
         {
             node.getFunCal().apply(this);
             
-        }
-        
-        
+        }        
         outAFunCalStmt(node);
     }
     
@@ -970,6 +974,7 @@ public class IrVisitor extends DepthFirstAdapter
     {
         inAReturnstmtStmt(node);
         String ret;
+        //boolean flag=false;
         if(node.getReturnexpr() != null)
         {
             node.getReturnexpr().apply(this);
@@ -983,11 +988,14 @@ public class IrVisitor extends DepthFirstAdapter
             else if(!(node.getReturnexpr() instanceof AIntExpr)) {
             	ret = getlastreg();
             }
-            
+
             h.genQuad(":=" ,ret,"-","$$");
+
+            //flag=true;
         }
         //https://piazza.com/class/j01fhuzdya46vr?cid=100
-        
+        //if (flag) h.genQuad("ret" ,"-","-","-");
+        //else 
         h.genQuad("ret" ,"-","-","-");
         //h.printLast();
     	//out.append(getline()+ ":=, " +regs.get(node.getRight().toString())+", - , " + node.getLeft()+"\n" );
