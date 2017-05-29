@@ -29,7 +29,16 @@ public class Helpers {
 	}
 	
 	public void backpatch(LinkedList<Integer> list, int jump) {
+		//while(!list.isEmpty()) {
+		if(!list.isEmpty()) {
+			quads.get(list.getLast().intValue()-1).d = Integer.toString(jump);
+			list.removeLast();
+		}
+	}
+	
+	public void backpatchall(LinkedList<Integer> list, int jump) {
 		while(!list.isEmpty()) {
+		//if(!list.isEmpty()) {
 			quads.get(list.getLast().intValue()-1).d = Integer.toString(jump);
 			list.removeLast();
 		}

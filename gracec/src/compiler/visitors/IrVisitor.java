@@ -411,7 +411,7 @@ public class IrVisitor extends DepthFirstAdapter
         }
         {
         	System.err.println("--->"+trueList.getLast());
-        	h.backpatch(trueList.getLast(), h.nextQuad());
+        	h.backpatchall(trueList.getLast(), h.nextQuad());
             List<PStmt> copy = new ArrayList<PStmt>(node.getThen());
             for(PStmt e : copy)
             {
@@ -421,13 +421,13 @@ public class IrVisitor extends DepthFirstAdapter
         {
         	trueList.getLast().add(h.nextQuad());
         	h.genQuad("jump2", "-", "-", "*");
-        	h.backpatch(falseList.getLast(), h.nextQuad());
+        	h.backpatchall(falseList.getLast(), h.nextQuad());
             List<PStmt> copy = new ArrayList<PStmt>(node.getElseSt());
             for(PStmt e : copy)
             {
                 e.apply(this);
             }
-            h.backpatch(trueList.getLast(), h.nextQuad());
+            h.backpatchall(trueList.getLast(), h.nextQuad());
         }
         System.err.println(trueList.getLast());
         trueList.removeLast();
@@ -460,13 +460,13 @@ public class IrVisitor extends DepthFirstAdapter
         inANoElseIfTrail(node);
         //h.backpatch(true, h.nextQuad());
         {
-        	h.backpatch(trueList.getLast(), h.nextQuad());
+        	h.backpatchall(trueList.getLast(), h.nextQuad());
             List<PStmt> copy = new ArrayList<PStmt>(node.getThen());
             for(PStmt e : copy)
             {
                 e.apply(this);
             }
-            h.backpatch(falseList.getLast(), h.nextQuad());
+            h.backpatchall(falseList.getLast(), h.nextQuad());
         }
         outANoElseIfTrail(node);
     }
@@ -477,7 +477,7 @@ public class IrVisitor extends DepthFirstAdapter
         inAWithElseIfTrail(node);
         {
         	System.err.println("--->"+trueList.getLast());
-        	h.backpatch(trueList.getLast(), h.nextQuad());
+        	h.backpatchall(trueList.getLast(), h.nextQuad());
             List<PStmt> copy = new ArrayList<PStmt>(node.getThen());
             for(PStmt e : copy)
             {
@@ -488,13 +488,13 @@ public class IrVisitor extends DepthFirstAdapter
         	
         	trueList.getLast().add(h.nextQuad());
         	h.genQuad("jump1", "-", "-", "*");
-        	h.backpatch(falseList.getLast(), h.nextQuad());
+        	h.backpatchall(falseList.getLast(), h.nextQuad());
             List<PStmt> copy = new ArrayList<PStmt>(node.getElseSt());
             for(PStmt e : copy)
             {
                 e.apply(this);
             }
-            h.backpatch(trueList.getLast(), h.nextQuad());
+            h.backpatchall(trueList.getLast(), h.nextQuad());
         }
         outAWithElseIfTrail(node);
     }
@@ -513,7 +513,7 @@ public class IrVisitor extends DepthFirstAdapter
         }
         {
 
-            h.backpatch(trueList.getLast(), h.nextQuad());
+            h.backpatchall(trueList.getLast(), h.nextQuad());
             List<PStmt> copy = new ArrayList<PStmt>(node.getBody());
             for(PStmt e : copy)
             {
@@ -521,7 +521,7 @@ public class IrVisitor extends DepthFirstAdapter
             }
         	
         	h.genQuad("jump1", "-", "-", jump);
-        	h.backpatch(falseList.getLast(), h.nextQuad());
+        	h.backpatchall(falseList.getLast(), h.nextQuad());
         }
         System.err.println(trueList.getLast() + "<<<");
         trueList.removeLast();
