@@ -2635,7 +2635,15 @@ public class Parser
         @SuppressWarnings("unused") ArrayList<Object> nodeArrayList2 = pop();
         @SuppressWarnings("unused") ArrayList<Object> nodeArrayList1 = pop();
         PExpr pexprNode1;
-        pexprNode1 = (PExpr)nodeArrayList2.get(0);
+        {
+            // Block
+        PPlusOrMinus pplusorminusNode2;
+        PExpr pexprNode3;
+        pplusorminusNode2 = (PPlusOrMinus)nodeArrayList1.get(0);
+        pexprNode3 = (PExpr)nodeArrayList2.get(0);
+
+        pexprNode1 = new APlusOrMinusExpr(pplusorminusNode2, pexprNode3);
+        }
 	nodeList.add(pexprNode1);
         return nodeList;
     }
@@ -2744,6 +2752,15 @@ public class Parser
         @SuppressWarnings("hiding") ArrayList<Object> nodeList = new ArrayList<Object>();
 
         @SuppressWarnings("unused") ArrayList<Object> nodeArrayList1 = pop();
+        PPlusOrMinus pplusorminusNode1;
+        {
+            // Block
+        TPlus tplusNode2;
+        tplusNode2 = (TPlus)nodeArrayList1.get(0);
+
+        pplusorminusNode1 = new APlusPlusOrMinus(tplusNode2);
+        }
+	nodeList.add(pplusorminusNode1);
         return nodeList;
     }
 
@@ -2755,6 +2772,15 @@ public class Parser
         @SuppressWarnings("hiding") ArrayList<Object> nodeList = new ArrayList<Object>();
 
         @SuppressWarnings("unused") ArrayList<Object> nodeArrayList1 = pop();
+        PPlusOrMinus pplusorminusNode1;
+        {
+            // Block
+        TMinus tminusNode2;
+        tminusNode2 = (TMinus)nodeArrayList1.get(0);
+
+        pplusorminusNode1 = new AMinusPlusOrMinus(tminusNode2);
+        }
+	nodeList.add(pplusorminusNode1);
         return nodeList;
     }
 

@@ -213,6 +213,18 @@ public class AnalysisAdapter implements Analysis
     }
 
     @Override
+    public void caseAPlusPlusOrMinus(APlusPlusOrMinus node)
+    {
+        defaultCase(node);
+    }
+
+    @Override
+    public void caseAMinusPlusOrMinus(AMinusPlusOrMinus node)
+    {
+        defaultCase(node);
+    }
+
+    @Override
     public void caseAAndExprExpr(AAndExprExpr node)
     {
         defaultCase(node);

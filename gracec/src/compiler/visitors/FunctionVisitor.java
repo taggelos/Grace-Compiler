@@ -957,6 +957,8 @@ public class FunctionVisitor extends DepthFirstAdapter
         if(node.getExpr1() != null) {
             node.getExpr1().apply(this);
             val = node.getExpr1().toString();
+            val = val.replaceAll("- ", "");
+            val = val.replaceAll("\\+ ", "");
             //errors.add(val);
             if(!hm.containsKey(val)) {
             	if(node.getExpr1() instanceof ALValExpr) {
@@ -997,6 +999,8 @@ public class FunctionVisitor extends DepthFirstAdapter
         if(node.getExpr2() != null) {
         	node.getExpr2().apply(this);
             val = node.getExpr2().toString();
+            val = val.replaceAll("- ", "");
+            val = val.replaceAll("\\+ ", "");
             //errors.add(val);
             if(!hm.containsKey(val)) {
             	if(node.getExpr2() instanceof ALValExpr) {
@@ -1058,6 +1062,8 @@ public class FunctionVisitor extends DepthFirstAdapter
         if(node.getExpr1() != null) {
             node.getExpr1().apply(this);
             val = node.getExpr1().toString();
+            val = val.replaceAll("- ", "");
+            val = val.replaceAll("\\+ ", "");
             //errors.add(val);
             if(!hm.containsKey(val)) {
             	if(node.getExpr1() instanceof ALValExpr) {
@@ -1098,6 +1104,8 @@ public class FunctionVisitor extends DepthFirstAdapter
         if(node.getExpr2() != null) {
         	node.getExpr2().apply(this);
             val = node.getExpr2().toString();
+            val = val.replaceAll("- ", "");
+            val = val.replaceAll("\\+ ", "");
             //errors.add(val);
             if(!hm.containsKey(val)) {
             	if(node.getExpr2() instanceof ALValExpr) {
@@ -1136,7 +1144,7 @@ public class FunctionVisitor extends DepthFirstAdapter
             else
             	type2 = hm.get(val);
         }
-        
+        System.err.println(hm);
         if(type1.equals("int") && type2.equals("int")) {
 	        //System.out.println(node.getExpr1() + " -- " + node.getExpr2());
 	        //errors.add(node.toString() +" withtype " + type2);
@@ -1159,6 +1167,8 @@ public class FunctionVisitor extends DepthFirstAdapter
         if(node.getExpr1() != null) {
             node.getExpr1().apply(this);
             val = node.getExpr1().toString();
+            val = val.replaceAll("- ", "");
+            val = val.replaceAll("\\+ ", "");
             //errors.add(val);
             if(!hm.containsKey(val)) {
             	if(node.getExpr1() instanceof ALValExpr) {
@@ -1199,6 +1209,8 @@ public class FunctionVisitor extends DepthFirstAdapter
         if(node.getExpr2() != null) {
         	node.getExpr2().apply(this);
             val = node.getExpr2().toString();
+            val = val.replaceAll("- ", "");
+            val = val.replaceAll("\\+ ", "");
             //errors.add(val);
             if(!hm.containsKey(val)) {
             	if(node.getExpr2() instanceof ALValExpr) {
@@ -1260,6 +1272,8 @@ public class FunctionVisitor extends DepthFirstAdapter
         if(node.getExpr1() != null) {
             node.getExpr1().apply(this);
             val = node.getExpr1().toString();
+            val = val.replaceAll("- ", "");
+            val = val.replaceAll("\\+ ", "");
             //errors.add(val);
             if(!hm.containsKey(val)) {
             	if(node.getExpr1() instanceof ALValExpr) {
@@ -1300,6 +1314,8 @@ public class FunctionVisitor extends DepthFirstAdapter
         if(node.getExpr2() != null) {
         	node.getExpr2().apply(this);
             val = node.getExpr2().toString();
+            val = val.replaceAll("- ", "");
+            val = val.replaceAll("\\+ ", "");
             //errors.add(val);
             if(!hm.containsKey(val)) {
             	if(node.getExpr2() instanceof ALValExpr) {
@@ -1361,6 +1377,8 @@ public class FunctionVisitor extends DepthFirstAdapter
         if(node.getExpr1() != null) {
             node.getExpr1().apply(this);
             val = node.getExpr1().toString();
+            val = val.replaceAll("- ", "");
+            val = val.replaceAll("\\+ ", "");
             //errors.add(val);
             if(!hm.containsKey(val)) {
             	if(node.getExpr1() instanceof ALValExpr) {
@@ -1401,6 +1419,8 @@ public class FunctionVisitor extends DepthFirstAdapter
         if(node.getExpr2() != null) {
         	node.getExpr2().apply(this);
             val = node.getExpr2().toString();
+            val = val.replaceAll("- ", "");
+            val = val.replaceAll("\\+ ", "");
             //errors.add(val);
             if(!hm.containsKey(val)) {
             	if(node.getExpr2() instanceof ALValExpr) {

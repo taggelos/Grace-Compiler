@@ -10,7 +10,7 @@ public class IrVisitor extends DepthFirstAdapter
 {   
 	SymbolTable st;
 	public StringBuffer out = new StringBuffer();
-	HashMap<String, String> regs = new HashMap<String, String>();
+	//HashMap<String, String> regs = new HashMap<String, String>();
 	int curline =1;
 	int regcount=1;
 	String value;
@@ -40,7 +40,6 @@ public class IrVisitor extends DepthFirstAdapter
 	 
 	 public void makeArray(String expr, String name, String content){
 		 String reg = getRegt();
-		 regs.put(expr, reg);
 		 h.genQuad("array", name, content, reg);
 	 }
 	 
@@ -762,7 +761,6 @@ public class IrVisitor extends DepthFirstAdapter
         }  
         
         String reg= getRegt();
-        regs.put(left+"+ "+ right, reg);
         h.genQuad("+" , left, right, reg);
         //h.printLast();
         //out.append(getline()+ "+, " +node.getExpr1()+", " + node.getExpr2()+", "+reg+"\n" );
@@ -785,10 +783,11 @@ public class IrVisitor extends DepthFirstAdapter
         {
             node.getExpr2().apply(this);
             right = value;
+            if(node.getExpr2().toString().contains("-"))
+            	right = getlastreg();
         }  
-        
+        System.err.println(right);
         String reg= getRegt();
-        regs.put(left+"- "+ right, reg);
         h.genQuad("-" , left, right, reg);
         //h.printLast();
         //out.append(getline()+ "+, " +node.getExpr1()+", " + node.getExpr2()+", "+reg+"\n" );
@@ -814,7 +813,6 @@ public class IrVisitor extends DepthFirstAdapter
         }  
         
         String reg= getRegt();
-        regs.put(left+"* "+ right, reg);
         h.genQuad("*" , left, right, reg);
         //h.printLast();
         //out.append(getline()+ "+, " +node.getExpr1()+", " + node.getExpr2()+", "+reg+"\n" );
@@ -840,7 +838,6 @@ public class IrVisitor extends DepthFirstAdapter
         }  
         
         String reg= getRegt();
-        regs.put(left+"mod "+ right, reg);
         h.genQuad("mod" , left, right, reg);
         //h.printLast();
         //out.append(getline()+ "+, " +node.getExpr1()+", " + node.getExpr2()+", "+reg+"\n" );
@@ -866,7 +863,6 @@ public class IrVisitor extends DepthFirstAdapter
         }  
         
         String reg= getRegt();
-        regs.put(left+"/ "+ right, reg);
         h.genQuad("/" , left, right, reg);
         //h.printLast();
         //out.append(getline()+ "+, " +node.getExpr1()+", " + node.getExpr2()+", "+reg+"\n" );
@@ -878,11 +874,34 @@ public class IrVisitor extends DepthFirstAdapter
     public void caseAPlusOrMinusExpr(APlusOrMinusExpr node)
     {
         inAPlusOrMinusExpr(node);
+        if(node.getPlusOrMinus() != null)
+        {
+            node.getPlusOrMinus().apply(this);
+        }
         if(node.getExpr() != null)
         {
             node.getExpr().apply(this);
         }
+        /* System.err.println(node);
+        if(node.getPlusOrMinus().equals("-")) {
+        	h.genQuad("-", "0", value, getRegt());
+        	value = getlastreg();
+        } */
         outAPlusOrMinusExpr(node);
+    }
+    
+    @Override
+    public void caseAMinusPlusOrMinus(AMinusPlusOrMinus node)
+    {
+        inAMinusPlusOrMinus(node);
+        if(node.getMinus() != null)
+        {
+            node.getMinus().apply(this);
+        }
+        System.err.println(node);
+        h.genQuad("-", "0", value, getRegt());
+    	value = getlastreg();
+        outAMinusPlusOrMinus(node);
     }
     
     @Override
@@ -959,6 +978,7 @@ public class IrVisitor extends DepthFirstAdapter
         if(node.getLeft() != null)
         {
             node.getLeft().apply(this);
+            left = value;
             if(node.getLeft() instanceof AIdBracketsLVal) {
             	left = "["+getlastreg()+"]";
             }
@@ -966,17 +986,17 @@ public class IrVisitor extends DepthFirstAdapter
         if(node.getRight() != null)
         {
             node.getRight().apply(this);
+            right = value;
             if(node.getRight() instanceof ALValExpr) {
         		ALValExpr lval = (ALValExpr) node.getRight();
         		if(lval.getLVal() instanceof AIdBracketsLVal) {
         			right = "["+getlastreg()+"]";
         		}
             }
-            /* else if(!(node.getRight() instanceof AIntExpr)) {
-            	right = getlastreg();
-            } */
+            else if(node.getRight() instanceof AFunCalExpr) {
+            	right = "$$";
+            }
         }
-        System.err.println(regs);
         /* if(regs.containsKey(node.getRight().toString()))
 	        h.genQuad(":=" , regs.get(node.getRight().toString()),"-",node.getLeft().toString());
 	        //h.printLast();

@@ -35,6 +35,8 @@ public interface Analysis extends Switch
     void caseAIfHeader(AIfHeader node);
     void caseANoElseIfTrail(ANoElseIfTrail node);
     void caseAWithElseIfTrail(AWithElseIfTrail node);
+    void caseAPlusPlusOrMinus(APlusPlusOrMinus node);
+    void caseAMinusPlusOrMinus(AMinusPlusOrMinus node);
     void caseAAndExprExpr(AAndExprExpr node);
     void caseAOrExprExpr(AOrExprExpr node);
     void caseANotExprExpr(ANotExprExpr node);

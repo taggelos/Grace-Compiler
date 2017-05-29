@@ -250,7 +250,7 @@ Productions
         {div} factor div term {-> New expr.div(factor.expr, term.expr)};
 
     term {-> expr} =
-        {plus_or_minus} plus_or_minus term {-> term.expr} |
+        {plus_or_minus} plus_or_minus term {-> New expr.plus_or_minus(plus_or_minus, term.expr)} |
         {int} integers {-> New expr.int(integers)} |
         {char} char_const {-> New expr.char(char_const)} |
         {l_val} l_val {-> New expr.l_val(l_val)} |
@@ -313,6 +313,10 @@ Abstract Syntax Tree
         {no_else} [then]:stmt* | 
         {with_else} [then]:stmt* [else_st]:stmt*;
 
+    plus_or_minus =
+        {plus} plus | 
+        {minus} minus;
+
     expr = 
         {and_expr} [left]:expr [right]:expr |
         {or_expr} [left]:expr [right]:expr |
@@ -329,7 +333,7 @@ Abstract Syntax Tree
         {mult} [expr1]:expr [expr2]:expr |
         {mod} [expr1]:expr [expr2]:expr |
         {div} [expr1]:expr [expr2]:expr |
-        {plus_or_minus} [expr]:expr |
+        {plus_or_minus} plus_or_minus [expr]:expr |
         {int} integers |
         {char} char_const | 
         {l_val} l_val |

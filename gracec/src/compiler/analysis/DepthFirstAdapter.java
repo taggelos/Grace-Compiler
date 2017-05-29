@@ -609,6 +609,48 @@ public class DepthFirstAdapter extends AnalysisAdapter
         outAWithElseIfTrail(node);
     }
 
+    public void inAPlusPlusOrMinus(APlusPlusOrMinus node)
+    {
+        defaultIn(node);
+    }
+
+    public void outAPlusPlusOrMinus(APlusPlusOrMinus node)
+    {
+        defaultOut(node);
+    }
+
+    @Override
+    public void caseAPlusPlusOrMinus(APlusPlusOrMinus node)
+    {
+        inAPlusPlusOrMinus(node);
+        if(node.getPlus() != null)
+        {
+            node.getPlus().apply(this);
+        }
+        outAPlusPlusOrMinus(node);
+    }
+
+    public void inAMinusPlusOrMinus(AMinusPlusOrMinus node)
+    {
+        defaultIn(node);
+    }
+
+    public void outAMinusPlusOrMinus(AMinusPlusOrMinus node)
+    {
+        defaultOut(node);
+    }
+
+    @Override
+    public void caseAMinusPlusOrMinus(AMinusPlusOrMinus node)
+    {
+        inAMinusPlusOrMinus(node);
+        if(node.getMinus() != null)
+        {
+            node.getMinus().apply(this);
+        }
+        outAMinusPlusOrMinus(node);
+    }
+
     public void inAAndExprExpr(AAndExprExpr node)
     {
         defaultIn(node);
@@ -990,6 +1032,10 @@ public class DepthFirstAdapter extends AnalysisAdapter
     public void caseAPlusOrMinusExpr(APlusOrMinusExpr node)
     {
         inAPlusOrMinusExpr(node);
+        if(node.getPlusOrMinus() != null)
+        {
+            node.getPlusOrMinus().apply(this);
+        }
         if(node.getExpr() != null)
         {
             node.getExpr().apply(this);

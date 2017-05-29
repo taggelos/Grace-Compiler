@@ -7,6 +7,7 @@ import compiler.analysis.*;
 @SuppressWarnings("nls")
 public final class APlusOrMinusExpr extends PExpr
 {
+    private PPlusOrMinus _plusOrMinus_;
     private PExpr _expr_;
 
     public APlusOrMinusExpr()
@@ -15,9 +16,12 @@ public final class APlusOrMinusExpr extends PExpr
     }
 
     public APlusOrMinusExpr(
+        @SuppressWarnings("hiding") PPlusOrMinus _plusOrMinus_,
         @SuppressWarnings("hiding") PExpr _expr_)
     {
         // Constructor
+        setPlusOrMinus(_plusOrMinus_);
+
         setExpr(_expr_);
 
     }
@@ -26,6 +30,7 @@ public final class APlusOrMinusExpr extends PExpr
     public Object clone()
     {
         return new APlusOrMinusExpr(
+            cloneNode(this._plusOrMinus_),
             cloneNode(this._expr_));
     }
 
@@ -33,6 +38,31 @@ public final class APlusOrMinusExpr extends PExpr
     public void apply(Switch sw)
     {
         ((Analysis) sw).caseAPlusOrMinusExpr(this);
+    }
+
+    public PPlusOrMinus getPlusOrMinus()
+    {
+        return this._plusOrMinus_;
+    }
+
+    public void setPlusOrMinus(PPlusOrMinus node)
+    {
+        if(this._plusOrMinus_ != null)
+        {
+            this._plusOrMinus_.parent(null);
+        }
+
+        if(node != null)
+        {
+            if(node.parent() != null)
+            {
+                node.parent().removeChild(node);
+            }
+
+            node.parent(this);
+        }
+
+        this._plusOrMinus_ = node;
     }
 
     public PExpr getExpr()
@@ -64,6 +94,7 @@ public final class APlusOrMinusExpr extends PExpr
     public String toString()
     {
         return ""
+            + toString(this._plusOrMinus_)
             + toString(this._expr_);
     }
 
@@ -71,6 +102,12 @@ public final class APlusOrMinusExpr extends PExpr
     void removeChild(@SuppressWarnings("unused") Node child)
     {
         // Remove child
+        if(this._plusOrMinus_ == child)
+        {
+            this._plusOrMinus_ = null;
+            return;
+        }
+
         if(this._expr_ == child)
         {
             this._expr_ = null;
@@ -84,6 +121,12 @@ public final class APlusOrMinusExpr extends PExpr
     void replaceChild(@SuppressWarnings("unused") Node oldChild, @SuppressWarnings("unused") Node newChild)
     {
         // Replace child
+        if(this._plusOrMinus_ == oldChild)
+        {
+            setPlusOrMinus((PPlusOrMinus) newChild);
+            return;
+        }
+
         if(this._expr_ == oldChild)
         {
             setExpr((PExpr) newChild);
