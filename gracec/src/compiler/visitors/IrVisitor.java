@@ -882,11 +882,12 @@ public class IrVisitor extends DepthFirstAdapter
         {
             node.getExpr().apply(this);
         }
-        /* System.err.println(node);
-        if(node.getPlusOrMinus().equals("-")) {
+        System.err.println(node);
+        if(node.getPlusOrMinus().toString().contains("-")) {
         	h.genQuad("-", "0", value, getRegt());
         	value = getlastreg();
-        } */
+        }
+        //System.err.println(node+"<-----"+value);
         outAPlusOrMinusExpr(node);
     }
     
@@ -898,9 +899,8 @@ public class IrVisitor extends DepthFirstAdapter
         {
             node.getMinus().apply(this);
         }
-        System.err.println(node);
-        h.genQuad("-", "0", value, getRegt());
-    	value = getlastreg();
+        //System.err.println(node+"<-----"+value);
+        
         outAMinusPlusOrMinus(node);
     }
     
