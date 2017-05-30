@@ -524,17 +524,21 @@ public class FunctionVisitor extends DepthFirstAdapter
             	return;
             }
             int count = 0;
+            String val;
             for(PExpr e : copy) {
             	//System.out.println("-------------------------------------------");
                 e.apply(this);
+                val = e.toString();
+                val = val.replaceAll("- ", "");
+                val = val.replaceAll("\\+ ", "");
             	//System.out.println("EXPR--: "+ e.toString());
             	if(!hm.isEmpty()) {
-            		if(!hm.containsKey(e.toString()))
-            			errors.add("Invalid parameter of method " + name+"."+e.toString());
+            		if(!hm.containsKey(val))
+            			errors.add("Invalid parameter of method " + name+"."+val);
             		//else if(hm.get(e.toString()) == null)
             		//		errors.add("Invalid parameter type.");
-            		else if(hm.get(e.toString()) == null || !hm.get(e.toString()).equals(m.methodParams.get(count).getType()))
-            			errors.add("Invalid parameter type " + hm.get(e.toString()) + ". Expecting " + m.methodParams.get(count).getType()+".");
+            		else if(hm.get(val) == null || !hm.get(val).equals(m.methodParams.get(count).getType()))
+            			errors.add("Invalid parameter type " + hm.get(val) + ". Expecting " + m.methodParams.get(count).getType()+".");
             	}
             	count++;
             }
