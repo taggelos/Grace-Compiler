@@ -379,7 +379,7 @@ public class IrVisitor extends DepthFirstAdapter
             node.getRBr().apply(this);
         }
         makeArray(node.toString(), lval, index);
-        value=getlastreg();
+        value="["+getlastreg()+"]";
         outAIdBracketsLVal(node);
     }
     
@@ -979,9 +979,9 @@ public class IrVisitor extends DepthFirstAdapter
         {
             node.getLeft().apply(this);
             left = value;
-            if(node.getLeft() instanceof AIdBracketsLVal) {
-            	left = "["+getlastreg()+"]";
-            }
+            //if(node.getLeft() instanceof AIdBracketsLVal) {
+            //	left = "["+getlastreg()+"]";
+            //}
         }
         if(node.getRight() != null)
         {
@@ -989,9 +989,9 @@ public class IrVisitor extends DepthFirstAdapter
             right = value;
             if(node.getRight() instanceof ALValExpr) {
         		ALValExpr lval = (ALValExpr) node.getRight();
-        		if(lval.getLVal() instanceof AIdBracketsLVal) {
-        			right = "["+getlastreg()+"]";
-        		}
+        		//if(lval.getLVal() instanceof AIdBracketsLVal) {
+        		//	right = "["+getlastreg()+"]";
+        		//}
             }
             else if(node.getRight() instanceof AFunCalExpr) {
             	right = "$$";

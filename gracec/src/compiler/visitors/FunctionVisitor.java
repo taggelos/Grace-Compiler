@@ -597,10 +597,15 @@ public class FunctionVisitor extends DepthFirstAdapter
             }
         }
         int i = 0, j=0;
-        String name = node.getLVal().toString()+"[ "+node.getExpr().toString()+"] ";
+        String index = node.getExpr().toString();
+        String name = node.getLVal().toString()+"[ "+index+"] ";
         for(int z=0; z<name.length(); z++) {
         	if(name.charAt(z) == '[')
         		i++;
+        }
+        for(int z=0; z<index.length(); z++) {
+        	if(index.charAt(z) == '[')
+        		i--;
         }
         
         Variable_t t = getType(node.toString().split(" ")[0]+" ", current); 
@@ -1664,7 +1669,11 @@ public class FunctionVisitor extends DepthFirstAdapter
         {
         	ret = true;
         	String type;
+        	String val;
             node.getReturnexpr().apply(this);
+            val = node.toString();
+            val = val.replaceAll("- ", "");
+            val = val.replaceAll("\\+ ", "");
             //System.out.println("RETURN "+node.toString());
             Variable_t t = getType(node.toString(), current); 
             t.printVar();
@@ -1674,20 +1683,20 @@ public class FunctionVisitor extends DepthFirstAdapter
     	    		errors.add("Return statement is null! Required "+current.get_return_type()+ " in method " + current.getName());
     				return;	
     			} */
-            	if(hm.containsKey(node.toString())) {
-            		type = hm.get(node.toString());
+            	if(hm.containsKey(val)) {
+            		type = hm.get(val);
             		//System.out.println(type+"<----");
             		if(!type.equals(current.get_return_type())) {
-            			errors.add("Return statement " + node.toString() +" is type of \""+type+"\"! Required \""+current.get_return_type()+ "\" in method " + current.getName());
+            			errors.add("Return statement " + val +" is type of \""+type+"\"! Required \""+current.get_return_type()+ "\" in method " + current.getName());
             			return;
             		}
             	}
             	else {
-    	    		errors.add("Unknown return expression."+node.toString());
+    	    		errors.add("Unknown return expression."+val);
             	}
     		}   
             else if(!t.getType().equals(current.get_return_type())){
-            	errors.add("Return statement " + node.toString() +" is type of \""+t.getType()+"\"! Required \""+current.get_return_type()+ "\" in method " + current.getName());
+            	errors.add("Return statement " + val +" is type of \""+t.getType()+"\"! Required \""+current.get_return_type()+ "\" in method " + current.getName());
     			return;
             }
         }
