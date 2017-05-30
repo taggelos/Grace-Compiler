@@ -327,7 +327,7 @@ public class IrVisitor extends DepthFirstAdapter
             }
         }
         h.genQuad("call", "-", "-", node.getName().toString());
-        value = getlastreg();
+        value = "$$";
         outAFunCal(node);
     }
     
