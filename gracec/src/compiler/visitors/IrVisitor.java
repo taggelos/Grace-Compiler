@@ -10,7 +10,6 @@ public class IrVisitor extends DepthFirstAdapter
 {   
 	SymbolTable st;
 	public StringBuffer out = new StringBuffer();
-	//HashMap<String, String> regs = new HashMap<String, String>();
 	int curline =1;
 	int regcount=1;
 	String value;
@@ -62,7 +61,6 @@ public class IrVisitor extends DepthFirstAdapter
         }
         System.out.println(out);
         h.printQuads();
-        //st.printST();
         for(LinkedList<Integer> l : falseList) {
         	System.err.println("List:");
         	for(int i : l) {
@@ -80,8 +78,6 @@ public class IrVisitor extends DepthFirstAdapter
         {
             node.getHeader().apply(this);
             h.genQuad("unit" , ((AHeader)node.getHeader()).getName().toString(),"-","-");
-            ////h.printLast();
-            //out.append(getline() + "unit, " + ((AHeader)node.getHeader()).getName() + ", - , - \n");
         }
         {
             List<PLocalDef> copy = new ArrayList<PLocalDef>(node.getLocal());
@@ -99,8 +95,6 @@ public class IrVisitor extends DepthFirstAdapter
         }
         outAFunDef(node);
         h.genQuad("endu" , ((AHeader)node.getHeader()).getName().toString(),"-","-");
-        //h.printLast();
-        //out.append(getline() + "endu, " + ((AHeader)node.getHeader()).getName() +"- , - \n");
     }
     
     @Override
@@ -318,12 +312,13 @@ public class IrVisitor extends DepthFirstAdapter
             for(PExpr e : copy)
             {
                 e.apply(this);
-                if(st.contains(name)!=null){ //skaei sto reverse.grace xwris afto
-                if(st.contains(name).getParams().get(i++).isRef())
-                	type = "R";
-                else 
-                	type = "V";
-                h.genQuad("par", value, type, "-");}
+                if(st.contains(name)!=null){ 
+	                if(st.contains(name).getParams().get(i++).isRef())
+	                	type = "R";
+	                else 
+	                	type = "V";
+	                h.genQuad("par", value, type, "-");
+                }
             }
         }
         h.genQuad("call", "-", "-", node.getName().toString());
@@ -446,10 +441,6 @@ public class IrVisitor extends DepthFirstAdapter
         {
             node.getCond().apply(this);
         }
-        //h.falseList.add(h.nextQuad());
-        //System.out.println("ADDINT TO FALSE: "+ h.nextQuad());
-        //h.genQuad("jump", "-", "-", "*");
-        //h.backpatch(true, h.nextQuad());
 
         outAIfHeader(node);
     }
@@ -458,7 +449,6 @@ public class IrVisitor extends DepthFirstAdapter
     public void caseANoElseIfTrail(ANoElseIfTrail node)
     {
         inANoElseIfTrail(node);
-        //h.backpatch(true, h.nextQuad());
         {
         	h.backpatchall(trueList.getLast(), h.nextQuad());
             List<PStmt> copy = new ArrayList<PStmt>(node.getThen());
@@ -533,21 +523,18 @@ public class IrVisitor extends DepthFirstAdapter
     public void caseAAndExprExpr(AAndExprExpr node)
     {
         inAAndExprExpr(node);
-        
+        int counter = trueList.getLast().size();
         if(node.getLeft() != null)
         {
             node.getLeft().apply(this);
         }
-        //h.genQuad("jump", "-", "-", "*");
-        //h.backpatch(trueList.getLast(), h.nextQuad());
-        //int jump = h.nextQuad();
-        h.backpatch(trueList.getLast(), h.nextQuad());
+        int counter2 = trueList.getLast().size();
+        for(int i=0; i<(counter2-counter); i++)
+        	h.backpatch(trueList.getLast(), h.nextQuad());
         if(node.getRight() != null)
         {
             node.getRight().apply(this);
         }
-        //h.backpatch(false, jump);
-        //h.backpatch(trueList.getLast(), h.nextQuad());
         outAAndExprExpr(node);
     }
     
@@ -555,16 +542,18 @@ public class IrVisitor extends DepthFirstAdapter
     public void caseAOrExprExpr(AOrExprExpr node)
     {
         inAOrExprExpr(node);
+        int counter = falseList.getLast().size();
         if(node.getLeft() != null)
         {
             node.getLeft().apply(this);
         }
-        h.backpatch(falseList.getLast(), h.nextQuad());
+        int counter2 = falseList.getLast().size();
+        for(int i=0; i<(counter2-counter); i++)
+        	h.backpatch(falseList.getLast(), h.nextQuad());
         if(node.getRight() != null)
         {
             node.getRight().apply(this);
         }
-        //h.backpatch(falseList.getLast(), h.nextQuad());
         outAOrExprExpr(node);
     }
     
@@ -617,7 +606,6 @@ public class IrVisitor extends DepthFirstAdapter
         falseList.getLast().add(h.nextQuad());
         h.genQuad("jump", "-", "-", "*");
         
-        //h.backpatch(trueList.getLast(), h.nextQuad());
         outALessThanExpr(node);
     }
     
@@ -641,7 +629,6 @@ public class IrVisitor extends DepthFirstAdapter
         falseList.getLast().add(h.nextQuad());
         h.genQuad("jump", "-", "-", "*");
         
-        //h.backpatch(trueList.getLast(), h.nextQuad());
         outAGreaterThanExpr(node);
     }
     
@@ -665,7 +652,6 @@ public class IrVisitor extends DepthFirstAdapter
         falseList.getLast().add(h.nextQuad());
         h.genQuad("jump", "-", "-", "*");
        
-        //h.backpatch(trueList.getLast(), h.nextQuad());
         outAGreaterEqualThanExpr(node);
     }
     
@@ -689,7 +675,6 @@ public class IrVisitor extends DepthFirstAdapter
         falseList.getLast().add(h.nextQuad());
         h.genQuad("jump", "-", "-", "*");
         
-        //h.backpatch(trueList.getLast(), h.nextQuad());
         outALessEqualThanExpr(node);
     }
     
@@ -711,10 +696,8 @@ public class IrVisitor extends DepthFirstAdapter
         trueList.getLast().add(h.nextQuad());
         h.genQuad("=", left, right, "*");
         falseList.getLast().add(h.nextQuad());
-        //System.err.println(falseList.getLast());
         h.genQuad("jump", "-", "-", "*");
         
-        //h.backpatch(trueList.getLast(), h.nextQuad());
         outAEqualExpr(node);
     }
     
@@ -738,7 +721,6 @@ public class IrVisitor extends DepthFirstAdapter
         falseList.getLast().add(h.nextQuad());
        
         h.genQuad("jump", "-", "-", "*");
-        //h.backpatch(trueList.getLast(), h.nextQuad());
         
         outANotEqualExpr(node);
     }
@@ -762,8 +744,6 @@ public class IrVisitor extends DepthFirstAdapter
         
         String reg= getRegt();
         h.genQuad("+" , left, right, reg);
-        //h.printLast();
-        //out.append(getline()+ "+, " +node.getExpr1()+", " + node.getExpr2()+", "+reg+"\n" );
         value = getlastreg();
         outAAddExpr(node);
     }
@@ -789,8 +769,6 @@ public class IrVisitor extends DepthFirstAdapter
         System.err.println(right);
         String reg= getRegt();
         h.genQuad("-" , left, right, reg);
-        //h.printLast();
-        //out.append(getline()+ "+, " +node.getExpr1()+", " + node.getExpr2()+", "+reg+"\n" );
         value = getlastreg();
         outASubExpr(node);
     }
@@ -814,8 +792,6 @@ public class IrVisitor extends DepthFirstAdapter
         
         String reg= getRegt();
         h.genQuad("*" , left, right, reg);
-        //h.printLast();
-        //out.append(getline()+ "+, " +node.getExpr1()+", " + node.getExpr2()+", "+reg+"\n" );
         value = getlastreg();
         outAMultExpr(node);
     }
@@ -839,8 +815,6 @@ public class IrVisitor extends DepthFirstAdapter
         
         String reg= getRegt();
         h.genQuad("mod" , left, right, reg);
-        //h.printLast();
-        //out.append(getline()+ "+, " +node.getExpr1()+", " + node.getExpr2()+", "+reg+"\n" );
         value = getlastreg();
         outAModExpr(node);
     }
@@ -864,8 +838,6 @@ public class IrVisitor extends DepthFirstAdapter
         
         String reg= getRegt();
         h.genQuad("/" , left, right, reg);
-        //h.printLast();
-        //out.append(getline()+ "+, " +node.getExpr1()+", " + node.getExpr2()+", "+reg+"\n" );
         value = getlastreg();
         outADivExpr(node);
     }
@@ -887,7 +859,6 @@ public class IrVisitor extends DepthFirstAdapter
         	h.genQuad("-", "0", value, getRegt());
         	value = getlastreg();
         }
-        //System.err.println(node+"<-----"+value);
         outAPlusOrMinusExpr(node);
     }
     
@@ -899,7 +870,6 @@ public class IrVisitor extends DepthFirstAdapter
         {
             node.getMinus().apply(this);
         }
-        //System.err.println(node+"<-----"+value);
         
         outAMinusPlusOrMinus(node);
     }
@@ -979,9 +949,6 @@ public class IrVisitor extends DepthFirstAdapter
         {
             node.getLeft().apply(this);
             left = value;
-            //if(node.getLeft() instanceof AIdBracketsLVal) {
-            //	left = "["+getlastreg()+"]";
-            //}
         }
         if(node.getRight() != null)
         {
@@ -989,19 +956,11 @@ public class IrVisitor extends DepthFirstAdapter
             right = value;
             if(node.getRight() instanceof ALValExpr) {
         		ALValExpr lval = (ALValExpr) node.getRight();
-        		//if(lval.getLVal() instanceof AIdBracketsLVal) {
-        		//	right = "["+getlastreg()+"]";
-        		//}
             }
             else if(node.getRight() instanceof AFunCalExpr) {
             	right = "$$";
             }
-        }
-        /* if(regs.containsKey(node.getRight().toString()))
-	        h.genQuad(":=" , regs.get(node.getRight().toString()),"-",node.getLeft().toString());
-	        //h.printLast();
-        	//out.append(getline()+ ":=, " +regs.get(node.getRight().toString())+", - , " + node.getLeft()+"\n" );
-        */        
+        }       
         h.genQuad(":=" , left,"-", right);
         outAAssignmentStmt(node);
     }    
@@ -1023,7 +982,6 @@ public class IrVisitor extends DepthFirstAdapter
     {
         inAReturnstmtStmt(node);
         String ret;
-        //boolean flag=false;
         if(node.getReturnexpr() != null)
         {
             node.getReturnexpr().apply(this);
@@ -1039,16 +997,9 @@ public class IrVisitor extends DepthFirstAdapter
             }
 
             h.genQuad(":=" ,ret,"-","$$");
-
-            //flag=true;
         }
-        //https://piazza.com/class/j01fhuzdya46vr?cid=100
-        //if (flag) h.genQuad("ret" ,"-","-","-");
-        //else 
         h.genQuad("ret" ,"-","-","-");
-        //h.printLast();
-    	//out.append(getline()+ ":=, " +regs.get(node.getRight().toString())+", - , " + node.getLeft()+"\n" );
-        //out.append(getline() + "ret, " + "- , - , - \n");
+        
         outAReturnstmtStmt(node);
     }
     

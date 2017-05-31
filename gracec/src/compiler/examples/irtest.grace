@@ -9,8 +9,8 @@ fun swap (x, y : int[]) : int
       $x[i]<-i+1+--2+x[i];
       i <- 1- -1;
       i <- strlen(s)-1;
-      $if (0>1 or 0>2) and 0>3 then
-      if (3>4 and 0>1) or 1>0 then
+      if (0>1 or 0>2) and 0>3 then
+      $if 3>4 and (0>1 or 1>0) then
          return -1;
       $else   
       $return 2;
