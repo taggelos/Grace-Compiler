@@ -389,7 +389,10 @@ public class IrVisitor extends DepthFirstAdapter
         	System.err.println(s+"<<<<<<<<");
         	h.genQuad("*", index, s, getRegt());
         	
+        	h.genQuad("+", arrayindex, getlastreg(), getRegt());
+        	
         }
+        
         else {
         	h.genQuad("+", index, arrayindex, getRegt());
         }
