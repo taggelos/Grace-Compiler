@@ -537,7 +537,7 @@ public class FunctionVisitor extends DepthFirstAdapter
             			errors.add("Invalid parameter of method " + name+"."+val);
             		//else if(hm.get(e.toString()) == null)
             		//		errors.add("Invalid parameter type.");
-            		else if(hm.get(val) == null || !hm.get(val).equals(m.methodParams.get(count).getType()))
+            		else if(hm.get(val) == null || !hm.get(val).equals(m.methodParams.get(count).getType().replaceAll("[0123456789 ]", "")))
             			errors.add("Invalid parameter type " + hm.get(val) + ". Expecting " + m.methodParams.get(count).getType()+".");
             	}
             	count++;
@@ -608,8 +608,13 @@ public class FunctionVisitor extends DepthFirstAdapter
         		i--;
         }
         
-        Variable_t t = getType(node.toString().split(" ")[0]+" ", current); 
+        Variable_t t = getType(node.toString().split(" ")[0]+" ", current);
         
+    	if(t.getType() == null) {
+			//errors.add("Variable " + node.toString().split(" ")[0] + "not declared in method " + current.getName()+".");
+			return;
+		}
+    	//System.err.println(current.getName());
         String type= t.getType();
         type = type.replaceAll("[0123456789 ]", "");
         

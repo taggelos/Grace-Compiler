@@ -13,6 +13,9 @@ public class IrVisitor extends DepthFirstAdapter
 	int curline =1;
 	int regcount=1;
 	String value;
+	String current;
+	int count=0;
+	String arrayname, arrayindex="0";
 	
 	public LinkedList<LinkedList<Integer>> trueList;
 	public LinkedList<LinkedList<Integer>> falseList;
@@ -37,7 +40,7 @@ public class IrVisitor extends DepthFirstAdapter
 	    	return Integer.toString(curline++)+": ";
 	    }
 	 
-	 public void makeArray(String expr, String name, String content){
+	 public void makeArray(String name, String content){
 		 String reg = getRegt();
 		 h.genQuad("array", name, content, reg);
 	 }
@@ -87,6 +90,7 @@ public class IrVisitor extends DepthFirstAdapter
             }
         }
         {
+        	current = ((AHeader)node.getHeader()).getName().toString();
             List<PStmt> copy = new ArrayList<PStmt>(node.getBlock());
             for(PStmt e : copy)
             {
@@ -354,11 +358,11 @@ public class IrVisitor extends DepthFirstAdapter
     public void caseAIdBracketsLVal(AIdBracketsLVal node)
     {
         inAIdBracketsLVal(node);
-        String lval = null, index = null;
+        String index = null;
         if(node.getLVal() != null)
         {
             node.getLVal().apply(this);
-            lval = value;
+            arrayname = node.getLVal().toString().split(" ")[0];
         }
         if(node.getLBr() != null)
         {
@@ -373,8 +377,27 @@ public class IrVisitor extends DepthFirstAdapter
         {
             node.getRBr().apply(this);
         }
-        makeArray(node.toString(), lval, index);
-        value="["+getlastreg()+"]";
+        //System.err.println("INDEX: "+index+" NODE: "+node);
+        System.err.println("NODE: "+node);
+        System.err.println("Index: "+index);
+        
+        String type = st.contains(current).methContains(arrayname+" ");
+        String[] split = type.split("\\[");
+        String s;
+        if(count+2 < split.length) {
+        	s = split[++count +1].replaceAll("[^1234567890]", "");
+        	System.err.println(s+"<<<<<<<<");
+        	h.genQuad("*", index, s, getRegt());
+        	
+        }
+        else {
+        	h.genQuad("+", index, arrayindex, getRegt());
+        }
+        arrayindex = getlastreg();
+        System.out.println("TYPE: "+type);
+        
+        //makeArray(node.toString(), lval, index);
+        //value=getlastreg();
         outAIdBracketsLVal(node);
     }
     
@@ -405,7 +428,7 @@ public class IrVisitor extends DepthFirstAdapter
             node.getCond().apply(this);
         }
         {
-        	System.err.println("--->"+trueList.getLast());
+        	//System.err.println("--->"+trueList.getLast());
         	h.backpatchall(trueList.getLast(), h.nextQuad());
             List<PStmt> copy = new ArrayList<PStmt>(node.getThen());
             for(PStmt e : copy)
@@ -424,7 +447,7 @@ public class IrVisitor extends DepthFirstAdapter
             }
             h.backpatchall(trueList.getLast(), h.nextQuad());
         }
-        System.err.println(trueList.getLast());
+        //System.err.println(trueList.getLast());
         trueList.removeLast();
         falseList.removeLast();
         outAIfElseStmt(node);
@@ -466,7 +489,7 @@ public class IrVisitor extends DepthFirstAdapter
     {
         inAWithElseIfTrail(node);
         {
-        	System.err.println("--->"+trueList.getLast());
+        	//System.err.println("--->"+trueList.getLast());
         	h.backpatchall(trueList.getLast(), h.nextQuad());
             List<PStmt> copy = new ArrayList<PStmt>(node.getThen());
             for(PStmt e : copy)
@@ -513,7 +536,7 @@ public class IrVisitor extends DepthFirstAdapter
         	h.genQuad("jump1", "-", "-", jump);
         	h.backpatchall(falseList.getLast(), h.nextQuad());
         }
-        System.err.println(trueList.getLast() + "<<<");
+        //System.err.println(trueList.getLast() + "<<<");
         trueList.removeLast();
         falseList.removeLast();
         outAWhilestmtStmt(node);
@@ -766,7 +789,7 @@ public class IrVisitor extends DepthFirstAdapter
             if(node.getExpr2().toString().contains("-"))
             	right = getlastreg();
         }  
-        System.err.println(right);
+        //System.err.println(right);
         String reg= getRegt();
         h.genQuad("-" , left, right, reg);
         value = getlastreg();
@@ -854,7 +877,7 @@ public class IrVisitor extends DepthFirstAdapter
         {
             node.getExpr().apply(this);
         }
-        System.err.println(node);
+        //System.err.println(node);
         if(node.getPlusOrMinus().toString().contains("-")) {
         	h.genQuad("-", "0", value, getRegt());
         	value = getlastreg();
@@ -902,11 +925,21 @@ public class IrVisitor extends DepthFirstAdapter
     @Override
     public void caseALValExpr(ALValExpr node)
     {
+    	int i;
+    	System.err.println("MPIKA STO LVAL!"+node);
         inALValExpr(node);
         if(node.getLVal() != null)
         {
             node.getLVal().apply(this);
         }
+        if(node.getLVal() instanceof AIdBracketsLVal) {
+        	System.err.println(node);
+        	makeArray(arrayname, arrayindex);
+        	value = "["+getlastreg()+"]";
+        }
+        count = 0;
+        arrayindex = "0";
+        //value = getlastreg();
         outALValExpr(node);
     }
     
@@ -948,6 +981,13 @@ public class IrVisitor extends DepthFirstAdapter
         if(node.getLeft() != null)
         {
             node.getLeft().apply(this);
+            if(node.getLeft() instanceof AIdBracketsLVal) {
+            	System.err.println("EDWWWWWWWW:"+node.getLeft());
+            	makeArray(arrayname, arrayindex);
+            	value = "["+getlastreg()+"]";
+            }
+            count = 0;
+            arrayindex = "0";
             left = value;
         }
         if(node.getRight() != null)
