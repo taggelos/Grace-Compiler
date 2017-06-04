@@ -10,11 +10,11 @@ import java.io.InputStreamReader;
 import java.io.PushbackReader;
 
 import compiler.lexer.Lexer;
-import compiler.node.EOF;
 import compiler.node.Start;
-import compiler.node.Token;
 import compiler.parser.*;
-import compiler.visitors.SyntaxCheck;
+import compiler.symboltable.Quad;
+import compiler.symboltable.SymbolTable;
+import compiler.visitors.*;
 
 public class Main {
 
@@ -31,26 +31,12 @@ public class Main {
         for(int i = 0; i < args.length; i++) {
             try {
                 fis = new FileInputStream(args[i]);
-                file = new File(args[i].replace(".", "_")+"output.txt");
+                file = new File(args[i].replace(".", "_")+"_ir.txt");
     			fop = new FileOutputStream(file);
     			if (!file.exists()) {
     				file.createNewFile();
     			}
-                /*PushbackReader reader = new PushbackReader(new InputStreamReader(fis));   
-                Lexer lexer = new Lexer(reader);
-
-                while(true) {
-                    try {
-                        Token t = lexer.next();
-
-                        if (t instanceof EOF)
-                        break;
-                        System.out.println(t.toString());
-                    } 
-                    catch (Exception e) {
-                        System.err.println(e.getMessage());
-                    }
-                } */
+                
                 Parser p = new Parser(
                         new Lexer(
                             new PushbackReader(
@@ -62,8 +48,19 @@ public class Main {
                     Start tree = p.parse();
                     System.out.println(tree.toString());
                     
-                    SyntaxCheck sc = new SyntaxCheck();
-                    tree.apply(sc);
+                    FunctionVisitor fv = new FunctionVisitor();
+                    tree.apply(fv);
+                    
+                    SymbolTable symboltable = new SymbolTable(fv.methods);
+                    //symboltable.printST();
+                    
+                    if(fv.errors.isEmpty()){
+                    	IrVisitor iv = new IrVisitor(symboltable);
+                    	tree.apply(iv);
+                    	for(Quad q : iv.h.quads) {
+                    		fop.write((q.printQuad()+'\n').getBytes());
+                    	}
+                    }
                     
         			fop.flush();
         			fop.close();

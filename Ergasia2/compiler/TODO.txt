@@ -1,8 +1,0 @@
-expr na ektypwnoun ta lvals
-ektypwsh expr swsta sta if kai sta while 
-kai expr se brackets 
-kai expr se return stmts.
-
-assignment done <-
-
-an to cond se while stmt tote "do"?

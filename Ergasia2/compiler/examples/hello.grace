@@ -1,12 +1,4 @@
-fun main() : nothing
+fun hello () : nothing
 {
-    puts("Hello!");
-    $$ Should break here
+  puts("Hello world!\n");
 }
-
-$$
-fun main() : nothing
-{
-    $$ Haha $$ $$ puts("Hello!");
-}
-$$
