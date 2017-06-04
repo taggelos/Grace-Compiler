@@ -7,10 +7,8 @@ fun main () : nothing
     l <- strlen(s);
     i <- 0;
     while i < l do {
-    while(1=1) do {
       r[i] <- s[l-i-1];
       i <- i+1;
-      }
     }
     r[i] <- '\0';
   }

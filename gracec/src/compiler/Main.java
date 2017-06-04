@@ -12,6 +12,7 @@ import java.io.PushbackReader;
 import compiler.lexer.Lexer;
 import compiler.node.Start;
 import compiler.parser.*;
+import compiler.symboltable.Quad;
 import compiler.symboltable.SymbolTable;
 import compiler.visitors.*;
 
@@ -35,21 +36,7 @@ public class Main {
     			if (!file.exists()) {
     				file.createNewFile();
     			}
-                /*PushbackReader reader = new PushbackReader(new InputStreamReader(fis));   
-                Lexer lexer = new Lexer(reader);
-
-                while(true) {
-                    try {
-                        Token t = lexer.next();
-
-                        if (t instanceof EOF)
-                        break;
-                        System.out.println(t.toString());
-                    } 
-                    catch (Exception e) {
-                        System.err.println(e.getMessage());
-                    }
-                } */
+                
                 Parser p = new Parser(
                         new Lexer(
                             new PushbackReader(
@@ -70,8 +57,9 @@ public class Main {
                     if(fv.errors.isEmpty()){
                     	IrVisitor iv = new IrVisitor(symboltable);
                     	tree.apply(iv);
-                    	byte[] contentInBytes = iv.out.toString().getBytes();
-            			fop.write(contentInBytes);
+                    	for(Quad q : iv.h.quads) {
+                    		fop.write((q.printQuad()+'\n').getBytes());
+                    	}
                     }
                     
         			fop.flush();
