@@ -361,7 +361,7 @@ public class IrVisitor extends DepthFirstAdapter
         if(node.getLVal() != null)
         {
             node.getLVal().apply(this);
-            arrayname = node.getLVal().toString().split(" ")[0];
+            
         }
         if(node.getLBr() != null)
         {
@@ -376,18 +376,27 @@ public class IrVisitor extends DepthFirstAdapter
         {
             node.getRBr().apply(this);
         }
+        arrayname = node.getLVal().toString().split(" ")[0];
         
         String type = getType(arrayname+" ", current);
         String[] split = type.split("\\[");
         String s;
-        if(count+2 < split.length) {
-        	s = split[++count +1].replaceAll("[^1234567890]", "");
-        	h.genQuad("*", index, s, getRegt());
-        	
-        	h.genQuad("+", arrayindex, getlastreg(), getRegt());
-        	
+        String prev = index;
+        int c=count+2;
+        if(c < split.length) {
+	        for(int k=c; k < split.length; k++) {
+	        	s = split[k].replaceAll("[^1234567890]", "");
+	        	if(count==0 && k==2)
+	        		h.genQuad("*", index, s, getRegt());
+	        	else
+	        		h.genQuad("*", prev, s, getRegt());
+	        	
+	        	prev = getlastreg();
+	        }
+	        count++;
+	        h.genQuad("+", arrayindex, getlastreg(), getRegt());
+	        arrayindex = getlastreg();
         }
-        
         else {
         	h.genQuad("+", index, arrayindex, getRegt());
         }
@@ -490,7 +499,7 @@ public class IrVisitor extends DepthFirstAdapter
         }
         {
         	trueList.getLast().add(h.nextQuad());
-        	h.genQuad("jump1", "-", "-", "*");
+        	h.genQuad("jump", "-", "-", "*");
         	h.backpatchall(falseList.getLast(), h.nextQuad());
             List<PStmt> copy = new ArrayList<PStmt>(node.getElseSt());
             for(PStmt e : copy)
@@ -523,7 +532,7 @@ public class IrVisitor extends DepthFirstAdapter
                 e.apply(this);
             }
         	
-        	h.genQuad("jump1", "-", "-", jump);
+        	h.genQuad("jump", "-", "-", jump);
         	h.backpatchall(falseList.getLast(), h.nextQuad());
         }
         trueList.removeLast();
@@ -912,6 +921,9 @@ public class IrVisitor extends DepthFirstAdapter
     public void caseALValExpr(ALValExpr node)
     {
         inALValExpr(node);
+        String prev = arrayindex;
+        arrayindex = "0";
+        //count = 0;
         if(node.getLVal() != null)
         {
             node.getLVal().apply(this);
@@ -920,8 +932,8 @@ public class IrVisitor extends DepthFirstAdapter
         	makeArray(arrayname, arrayindex);
         	value = "["+getlastreg()+"]";
         }
-        count = 0;
-        arrayindex = "0";
+        arrayindex = prev;
+        
         outALValExpr(node);
     }
     
