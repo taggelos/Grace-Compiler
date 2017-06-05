@@ -15,6 +15,7 @@ public class FunctionVisitor extends DepthFirstAdapter
     Method_t from = null;
     Method_t current = null;
     boolean ret;
+    int brcount = 0;
     
     HashMap<String, String> hm = new HashMap<String, String>();
 
@@ -581,8 +582,9 @@ public class FunctionVisitor extends DepthFirstAdapter
         		i++;
         }
         for(int z=0; z<index.length(); z++) {
-        	if(index.charAt(z) == '[')
-        		i--;
+        	if(index.charAt(z) == '[') {
+        		brcount++;
+        	}
         }
         
         Variable_t t = getType(node.toString().split(" ")[0]+" ", current);
@@ -597,14 +599,13 @@ public class FunctionVisitor extends DepthFirstAdapter
         	if(type.charAt(z) == '[')
         		j++;
         }
-        if(i>j)
+        if((i-brcount)>j)
         	errors.add("Invalid array type. "+type +" expected.");
         
-        for(j=0; j<i; j++) {
+        for(j=0; j<(i-brcount); j++) {
         	type = type.replaceFirst("\\[", "");
         	type = type.replaceFirst("]", "");
         }
-
         hm.put(name, type);
         outAIdBracketsLVal(node);
     }
@@ -1439,6 +1440,7 @@ public class FunctionVisitor extends DepthFirstAdapter
         {
             node.getLVal().apply(this);
         }
+        brcount=0;
         outALValExpr(node);
     }
 
