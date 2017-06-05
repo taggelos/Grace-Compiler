@@ -31,8 +31,8 @@
 31: :=, changed , -, 1 
 32: +, i , 1 , $12
 33: :=, i , -, $12
-34: jump1, -, -, 13
-35: jump1, -, -, 9
+34: jump, -, -, 13
+35: jump, -, -, 9
 36: endu, bsort , -, -
 37: unit, putArray , -, -
 38: par, msg , R, -
@@ -50,7 +50,7 @@
 50: call, -, -, puti 
 51: +, i , 1 , $15
 52: :=, i , -, $15
-53: jump1, -, -, 41
+53: jump, -, -, 41
 54: par, "\n" , R, -
 55: call, -, -, puts 
 56: endu, putArray , -, -
@@ -68,7 +68,7 @@
 68: :=, [$21], -, seed 
 69: +, i , 1 , $22
 70: :=, i , -, $22
-71: jump1, -, -, 59
+71: jump, -, -, 59
 72: par, "Initial array: " , R, -
 73: par, 16 , V, -
 74: par, x , R, -

@@ -1,0 +1,107 @@
+1: unit, main , -, -
+2: unit, prime , -, -
+3: <, n , 0 , 5
+4: jump, -, -, 12
+5: -, 0, 1 , $1
+6: par, $1, V, -
+7: par, RET, $2, -
+8: call, -, -, prime 
+9: :=, $2, -, $$
+10: ret, -, -, -
+11: jump, -, -, 42
+12: <, n , 2 , 14
+13: jump, -, -, 17
+14: :=, 0 , -, $$
+15: ret, -, -, -
+16: jump, -, -, 42
+17: =, n , 2 , 19
+18: jump, -, -, 22
+19: :=, 1 , -, $$
+20: ret, -, -, -
+21: jump, -, -, 42
+22: mod, n , 2 , $3
+23: =, $3, 0 , 25
+24: jump, -, -, 28
+25: :=, 0 , -, $$
+26: ret, -, -, -
+27: jump, -, -, 42
+28: :=, i , -, 3 
+29: /, n , 2 , $4
+30: <=, i , $4, 32
+31: jump, -, -, 40
+32: mod, n , i , $5
+33: =, $5, 0 , 35
+34: jump, -, -, 37
+35: :=, 0 , -, $$
+36: ret, -, -, -
+37: +, i , 2 , $6
+38: :=, i , -, $6
+39: jump, -, -, 29
+40: :=, 1 , -, $$
+41: ret, -, -, -
+42: endu, prime , -, -
+43: par, "Limit: " , R, -
+44: call, -, -, puts 
+45: par, RET, $7, -
+46: call, -, -, geti 
+47: :=, limit , -, $7
+48: par, "Primes:\n" , R, -
+49: call, -, -, puts 
+50: :=, counter , -, 0 
+51: >=, limit , 2 , 53
+52: jump, -, -, 59
+53: +, counter , 1 , $8
+54: :=, counter , -, $8
+55: par, RET, $9, -
+56: call, -, -, geti 
+57: par, "\n" , R, -
+58: call, -, -, puts 
+59: >=, limit , 3 , 61
+60: jump, -, -, 67
+61: +, counter , 1 , $10
+62: :=, counter , -, $10
+63: par, RET, $11, -
+64: call, -, -, geti 
+65: par, "\n" , R, -
+66: call, -, -, puts 
+67: :=, number , -, 6 
+68: <=, number , limit , 70
+69: jump, -, -, 101
+70: -, number , 1 , $12
+71: par, $12, V, -
+72: par, RET, $13, -
+73: call, -, -, prime 
+74: =, $13, 1 , 76
+75: jump, -, -, 83
+76: +, counter , 1 , $14
+77: :=, counter , -, $14
+78: -, number , 1 , $15
+79: par, $15, V, -
+80: call, -, -, puti 
+81: par, "\n" , R, -
+82: call, -, -, puts 
+83: #, number , limit , 85
+84: jump, -, -, 98
+85: +, number , 1 , $16
+86: par, $16, V, -
+87: par, RET, $17, -
+88: call, -, -, prime 
+89: =, $17, 1 , 91
+90: jump, -, -, 98
+91: +, counter , 1 , $18
+92: :=, counter , -, $18
+93: +, number , 1 , $19
+94: par, $19, V, -
+95: call, -, -, puti 
+96: par, "\n" , R, -
+97: call, -, -, puts 
+98: +, number , 6 , $20
+99: :=, number , -, $20
+100: jump, -, -, 68
+101: par, "\nTotal: " , R, -
+102: call, -, -, puts 
+103: par, counter , V, -
+104: call, -, -, puti 
+105: par, "\n" , R, -
+106: call, -, -, puts 
+107: endu, main , -, -

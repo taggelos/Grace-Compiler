@@ -1,0 +1,43 @@
+1: unit, solve , -, -
+2: unit, hanoi , -, -
+3: unit, move , -, -
+4: par, "Moving from " , R, -
+5: call, -, -, puts 
+6: par, source , R, -
+7: call, -, -, puts 
+8: par, " to " , R, -
+9: call, -, -, puts 
+10: par, target , R, -
+11: call, -, -, puts 
+12: par, ".\n" , R, -
+13: call, -, -, puts 
+14: endu, move , -, -
+15: >=, rings , 1 , 17
+16: jump, -, -, 32
+17: -, rings , 1 , $1
+18: par, $1, V, -
+19: par, source , R, -
+20: par, auxiliary , R, -
+21: par, target , R, -
+22: call, -, -, hanoi 
+23: par, source , R, -
+24: par, target , R, -
+25: call, -, -, move 
+26: -, rings , 1 , $2
+27: par, $2, V, -
+28: par, auxiliary , R, -
+29: par, target , R, -
+30: par, source , R, -
+31: call, -, -, hanoi 
+32: endu, hanoi , -, -
+33: par, "Rings: " , R, -
+34: call, -, -, writeString 
+35: par, RET, $3, -
+36: call, -, -, geti 
+37: :=, NumberOfRings , -, $3
+38: par, NumberOfRings , V, -
+39: par, "left" , R, -
+40: par, "right" , R, -
+41: par, "middle" , R, -
+42: call, -, -, hanoi 
+43: endu, solve , -, -
