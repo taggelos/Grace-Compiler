@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PushbackReader;
 
+import compiler.assembly.Assembler;
 import compiler.lexer.Lexer;
 import compiler.node.Start;
 import compiler.parser.*;
@@ -60,6 +61,8 @@ public class Main {
                     	for(Quad q : iv.h.quads) {
                     		fop.write((q.printQuad()+'\n').getBytes());
                     	}
+                    	Assembler as = new Assembler(iv.h.quads);
+                    	as.create();
                     }
                     
         			fop.flush();
