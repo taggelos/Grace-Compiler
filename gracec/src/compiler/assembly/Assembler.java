@@ -1,6 +1,7 @@
 package compiler.assembly;
 
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import compiler.symboltable.Quad;
 
@@ -10,6 +11,22 @@ public class Assembler {
 	public StringBuffer data = new StringBuffer();
 	boolean isMain = true;
 	int label=0;
+	int current_bp=2;
+	//int next_bp=2;
+	
+	HashMap<String, Integer> hm = new HashMap<String, Integer>();
+	
+	public static boolean isInteger(String s) {
+	    try { 
+	        Integer.parseInt(s.trim()); 
+	    } catch(NumberFormatException e) { 
+	        return false; 
+	    } catch(NullPointerException e) {
+	        return false;
+	    }
+	    // only got here if we didn't return false
+	    return true;
+	}
 	
 	public String nextLabel() {
 		label++;
@@ -27,7 +44,7 @@ public class Assembler {
 	public void create() {
 		init();
 		for(Quad q : quads) {
-    		//System.out.println(q.printQuad());
+    		System.out.println(hm);
     		switch (q.a) {
     		case "unit":
 				caseUnit(q);
@@ -94,10 +111,30 @@ public class Assembler {
 	
 	private void caseOper(Quad q) {
 		if(q.a.equals("+")) {
-			output.append("\tmove ebx, "+q.b+"\n");
-			output.append("\tmove ecx, "+q.c+"\n");
+			String a,b;
+			int c;
+			if(isInteger(q.b))
+				a=q.b;
+			else
+				a=hm.get(q.b).toString();
+			if(isInteger(q.c))
+				b=q.c;
+			else
+				b=hm.get(q.c).toString();
+			if(hm.containsKey(q.d))
+				c=hm.get(q.d);
+			else {
+				hm.put(q.d, current_bp);
+				c=hm.get(q.d);
+				current_bp += 2;
+			}
+				
+			output.append("\tmove ebx, "+a+"\n");
+			output.append("\tmove ecx, "+b+"\n");
 			output.append("\tmove eax, ebx\n");
 			output.append("\tadd eax, ecx\n");
+			output.append("\tmov word ptr [ebp - "+c+"], eax\n");
+			
 		}
 		else if(q.a.equals("-")) {
 			
@@ -113,9 +150,5 @@ public class Assembler {
 		}
 		
 	}
-
-	
-	
-	
 	
 }
