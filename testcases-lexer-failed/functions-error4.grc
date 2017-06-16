@@ -1,0 +1,5 @@
+fun main() : nothing
+    var i: int;
+{
+    puts("error m8",);
+}

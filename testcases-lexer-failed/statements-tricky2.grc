@@ -1,0 +1,22 @@
+fun main() : nothing
+    var i: int;
+    var j: char[10][10];
+    var dank_memes: int;
+{
+    if 1 = 2 then
+            if 1 = 3 then ;
+            else i <- 4;
+    else i <- 5;
+
+    if 1 = 6 then
+            if 1 = 7 then ;
+            else i <- 8;
+
+    if 1 = 9 then
+        while 0 # 0 do
+            if 1 = 10 then ;
+            else i <- 11;
+
+    return;
+    return 420 + dank_memes;
+}

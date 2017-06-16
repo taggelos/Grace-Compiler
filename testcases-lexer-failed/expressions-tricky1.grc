@@ -1,0 +1,18 @@
+fun main() : nothing
+    var i, j, k: int;
+    var c: char;
+    var p: char[32];
+
+    fun foo(p: int) : int
+    {
+        return p + 1;
+    }
+{
+    i <- -(-(-3));
+    i <- -++3;
+    j <- "Hello"[i + 3];
+    k <- 3 + foo( 5 mod 12) + foo(6 div 12) div foo(foo(foo(10)));
+    i <- (5)mod(6)mod-8;
+
+    p[i + j] <- 'l';
+}

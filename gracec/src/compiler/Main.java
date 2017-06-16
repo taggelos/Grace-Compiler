@@ -61,8 +61,8 @@ public class Main {
                     	for(Quad q : iv.h.quads) {
                     		fop.write((q.printQuad()+'\n').getBytes());
                     	}
-                    	Assembler as = new Assembler(iv.h.quads);
-                    	as.create();
+                    	//Assembler as = new Assembler(iv.h.quads);
+                    	//as.create();
                     }
                     
         			fop.flush();
