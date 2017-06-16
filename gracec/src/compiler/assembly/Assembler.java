@@ -58,28 +58,48 @@ public class Assembler {
 		for(Quad q : quads) {
     		System.out.println(hm);
     		switch (q.a) {
-    		case "unit":
-				caseUnit(q);
-				break;
-			case "endu":
-				caseEndu(q);
-				break;
-			case "jump":
-				caseJump(q);
-				break;	
-			case ":=":
-				caseAss(q);
-				break;	
-			case "*" :
-			case "+" :
-			case "-" :
-			case "/" :
-			case "mod" :
-				caseOper(q);
-				break;
-
-			default:
-				break;
+	    		case "unit":
+					caseUnit(q);
+					break;
+					
+				case "endu":
+					caseEndu(q);
+					break;
+					
+				case "jump":
+					caseJump(q);
+					break;
+					
+				case "par":
+					casePar(q);
+					break;	
+					
+				case "call":
+					caseCall(q);
+					break;
+					
+				case ":=":
+					caseAss(q);
+					break;	
+					
+				case "<" :
+				case "<=" :
+				case ">" :
+				case ">=" :
+				case "=" :
+					caseCompare(q);
+					break;	
+				
+				case "*" :
+				case "+" :
+				case "-" :
+				case "/" :
+				case "mod" :
+					caseOper(q);
+					break;
+	
+				default:
+					break;
 			}    	
     	}	
 		//output.elementAt(Methcount).append(data);
@@ -95,12 +115,6 @@ public class Assembler {
 		output.elementAt(Methcount).append(".text\n");
 		output.elementAt(Methcount).append("\t.global main\n");
 		data.append(".data\n");
-	}
-
-	private void caseJump(Quad q) {
-		// TODO Auto-generated method stub
-		output.elementAt(Methcount).append("\tjmp "+ nextLabel() +"\n");
-		
 	}
 
 	private void caseUnit(Quad q) {	
@@ -128,6 +142,48 @@ public class Assembler {
 		Methcount--;
 	}
 	
+
+	private void caseAss(Quad q) {
+		int off;
+		if(!hm.containsKey(q.d)) {
+			if(isInteger(q.d))
+				output.elementAt(Methcount).append("\tmov ax, "+q.d+"\n");
+		}
+		else {
+			off=hm.get(q.d);
+			output.elementAt(Methcount).append("\tmov ax, word ptr [ebp - "+off+"]\n");
+		}
+		System.err.println(q.b);
+		if(!hm.containsKey(q.b)) {
+			hm.put(q.b, current_bp);
+			current_bp += 2;
+		}
+		
+		off=hm.get(q.b);
+		output.elementAt(Methcount).append("\tmov word ptr [ebp - "+off+"], eax\n");
+	}
+	
+	private void caseJump(Quad q) {
+		// TODO Auto-generated method stub
+		output.elementAt(Methcount).append("\tjmp "+ nextLabel() +"\n");
+		
+	}
+
+	private void casePar(Quad q) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	private void caseCall(Quad q) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void caseCompare(Quad q) {
+		// TODO Auto-generated method stub
+		
+	}
+	
 	private void caseOper(Quad q) {
 		if(q.a.equals("+")) {
 			String a,b;
@@ -143,7 +199,12 @@ public class Assembler {
 			output.elementAt(Methcount).append("\tmove ebx, "+a+"\n");
 			output.elementAt(Methcount).append("\tmove ecx, "+b+"\n");
 			output.elementAt(Methcount).append("\tmove eax, ebx\n");
-			output.elementAt(Methcount).append("\tadd eax, ecx\n");			
+			output.elementAt(Methcount).append("\tadd eax, ecx\n");
+			
+			if(!hm.containsKey(q.d)) {
+				hm.put(q.d, current_bp);
+				current_bp += 2;
+			}
 		}
 		else if(q.a.equals("-")) {
 			String a,b;
@@ -159,7 +220,12 @@ public class Assembler {
 			output.elementAt(Methcount).append("\tmove ebx, "+a+"\n");
 			output.elementAt(Methcount).append("\tmove ecx, "+b+"\n");
 			output.elementAt(Methcount).append("\tmove eax, ebx\n");
-			output.elementAt(Methcount).append("\tsub eax, ecx\n");			
+			output.elementAt(Methcount).append("\tsub eax, ecx\n");
+			
+			if(!hm.containsKey(q.d)) {
+				hm.put(q.d, current_bp);
+				current_bp += 2;
+			}
 		}
 		else if(q.a.equals("*")) {
 			String a,b;
@@ -211,26 +277,6 @@ public class Assembler {
 			output.elementAt(Methcount).append("\tmove eax, edx\n");
 		}
 		
-	}
-	
-	private void caseAss(Quad q) {
-		int off;
-		if(!hm.containsKey(q.d)) {
-			if(isInteger(q.d))
-				output.elementAt(Methcount).append("\tmov ax, 1\n");
-		}
-		else {
-			off=hm.get(q.d);
-			output.elementAt(Methcount).append("\tmov ax, word ptr [ebp - "+off+"]\n");
-		}
-		
-		if(!hm.containsKey(q.b)) {
-			hm.put(q.b, current_bp);
-			current_bp += 2;
-		}
-		
-		off=hm.get(q.b);
-		output.elementAt(Methcount).append("\tmov word ptr [ebp - "+off+"], eax\n");
 	}
 	
 }

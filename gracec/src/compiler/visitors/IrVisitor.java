@@ -324,7 +324,6 @@ public class IrVisitor extends DepthFirstAdapter
                 }
             }
         }
-        System.err.println(st.contains(name).get_return_type());
         if(!st.contains(name).get_return_type().equals("nothing")) {
         	h.genQuad("par", "RET", getRegt(), "-");
         }
