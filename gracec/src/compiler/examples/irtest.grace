@@ -1,33 +1,22 @@
 fun main () : nothing 
-fun swap (x, y : int) : int
-   var  i : int; 
+var x, y, z, w :int;
+fun swap (x, y : int) : nothing
+   var z : int; 
    var a : int[][5][10];
    var b : int[];
    var s : char[];
    {
-      $i <- b[b[1]];
-      $b[i] <- b[1];
-      $i <- a[1][b[1]][6];
-      i <- a[1][2][6];
-      $a[1][b[1]][6] <- i;
-      $a[1][b[1]][5] <- i;
-      $a[1][i+1] <- a[1][2];
-      $x[i]<-i+1+--2+x[i];
-      i <- 1- -1;
-      i <- strlen(s)-1;
-      $if 0>1 or 0>2 and 0>3 then
-      if 3>4 and (0>1 or 1>0) then
-         return -1;
-      $else   
-      $return 2;
+      while x*w < y*z do
+         y <- w - y;
+      z <- x+y;
    }
-
-         var t : int;
-         var z : int[][5];
-      {
-         $t <- z[1][2+1];
-         swap(t,t);
-      }
+{
+   x <- 1;
+   y <- 2;
+   z <- 3;
+   w <- 4;
+   swap(x+z*y, w);
+}
 
 $a[1][2]
 
