@@ -1,0 +1,17 @@
+Δεν δέχεται putc("LALA"[10]);
+
+NullPointerException στο ch <- "meme"[0][0];
+var a : char[][];
+a <- "meme";
+
+Parsing exception σε ορισμό πρωτοτύπου της main
+
+Επιτρέπει return void σε συνάρτηση που επιστρέφει Int εαν υπάρχει return;
+ και return 2; σε διαφορετικά branches
+
+Δεν βλέπει μεταβλητές που δηλώθηκαν εκτός συνάρτησης αλλά εντός scope
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+NullPointerException στο FunctionVisitor.java:1011 (DONE?)
+Επιτρέπει σύγκριση σε string constants (DONE!)
+Επιτρέπει writeString undeclared function (DONE!) + ola ta declared na exoun ginei defined.

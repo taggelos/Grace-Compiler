@@ -379,9 +379,13 @@ public class IrVisitor extends DepthFirstAdapter
         {
             node.getRBr().apply(this);
         }
-        arrayname = node.getLVal().toString().split(" ")[0];
         
-        String type = getType(arrayname+" ", current);
+        
+        //if(!arrayname.contains("\"")) {
+        	arrayname = node.getLVal().toString().split(" ")[0];
+        	String type = getType(arrayname+" ", current);
+       
+        System.err.println(arrayname);
         String[] split = type.split("\\[");
         String s;
         String prev = index;

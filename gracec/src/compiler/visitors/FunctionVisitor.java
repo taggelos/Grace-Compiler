@@ -33,8 +33,7 @@ public class FunctionVisitor extends DepthFirstAdapter
   		  "strlen ",
   		  "strcmp ",
   		  "strcpy ",
-  		  "strcat ",
-  		  "writeString "
+  		  "strcat "
   		};
     static String[] smethodreturns = {
   		  "nothing", 
@@ -48,7 +47,6 @@ public class FunctionVisitor extends DepthFirstAdapter
   		  "char",
   		  "int",
   		  "int",
-  		  "nothing",
   		  "nothing",
   		  "nothing"
   		};
@@ -65,8 +63,7 @@ public class FunctionVisitor extends DepthFirstAdapter
   		  "ref char[]",
   		  "ref char[],ref char[]",
   		  "ref char[],ref char[]",
-  		  "ref char[],ref char[]",
-  		  "ref char[]"
+  		  "ref char[],ref char[]"
   		};
     
 
@@ -155,6 +152,17 @@ public class FunctionVisitor extends DepthFirstAdapter
         if(!methods.getLast().get_return_type().equals("nothing")){
         	errors.add("Function "+methods.getLast().getName() + "shall return \"nothing\".");
         }
+        
+        boolean er = true;
+        for(Method_t decs : fun_decs) {
+        	for(Method_t meth : methods) 
+        		if(decs.getName().equals(meth.getName()))
+        			er=false;
+
+        	if(er)
+            	errors.add("Function "+ decs.getName() + "has not been defined.");
+
+        }
         for(String e : errors)
         	System.err.println(e);
     }
@@ -216,6 +224,7 @@ public class FunctionVisitor extends DepthFirstAdapter
         	current = NewMethod;
             List<PLocalDef> copy = new ArrayList<PLocalDef>(node.getLocal());
             for(PLocalDef e : copy) {
+            	e.apply(this);
                 if(e instanceof AVarLocalDef){
                     AVarLocalDef a= (AVarLocalDef) e;
                     AVarDef n = (AVarDef) a.getVarDef();
@@ -225,10 +234,19 @@ public class FunctionVisitor extends DepthFirstAdapter
                         }
                     }                       
                 }
-                else if(e instanceof AFunLocalDef){
-                	
+                else if(e instanceof ADecLocalDef){
+                	String name;
+                	PFunDec dec = ((ADecLocalDef) e).getFunDec();
+                	name = dec.toString().split(" ")[0]+" ";
+                	System.err.println(dec.toString()+" -- "+current.getName());
+                	if(name.equals(current.getName()))
+                		errors.add("Method Already exists.");
+	                	 //String nam = ((AHeader)dec.getName()).toString();
+                	//System.err.println(dec);
+                	//AHeader dec = e.getFunDec();
+                	//if(dec)
                 }
-                e.apply(this);
+                
              }      
         }
         {
@@ -332,6 +350,7 @@ public class FunctionVisitor extends DepthFirstAdapter
     @Override
     public void caseAFunDec(AFunDec node)
     {
+    	
     	Method_t NewMethod =null;
         inAFunDec(node);
         if(node.getHeader() != null)
@@ -737,7 +756,13 @@ public class FunctionVisitor extends DepthFirstAdapter
         	typer = hm.get(node.getRight().toString());
         else
         	typer = varr.getType();
-        if(typel!=null && typer!=null && !typel.equals(typer)){
+        
+        System.err.println(typel);
+        if(typel!=null && typer!=null && (typel.contains("int") || typer.contains("int"))) {
+        	errors.add("Comparison should be between integers.");
+        	return;
+        }
+        else if(typel!=null && typer!=null && !typel.equals(typer)){
         	errors.add("Less-Than Expression of "+ node.getLeft().toString() +
         			" does not match type \""+ typel +"\". Type \""+typer+"\" found.");
         	return;
@@ -774,7 +799,11 @@ public class FunctionVisitor extends DepthFirstAdapter
         else
         	typer = varr.getType();
 
-        if(typel!=null && typer!=null && !typel.equals(typer)){
+        if(typel!=null && typer!=null && (typel.contains("int") || typer.contains("int"))) {
+        	errors.add("Comparison should be between integers.");
+        	return;
+        }
+        else if(typel!=null && typer!=null && !typel.equals(typer)){
         	errors.add("Less-Than Expression of "+ node.getLeft().toString() +" does not match type \""+ typel +"\". Type \""+typer+"\" found.");
         	return;
         }
@@ -810,7 +839,11 @@ public class FunctionVisitor extends DepthFirstAdapter
         else
         	typer = varr.getType();
 
-        if(typel!=null && typer!=null && !typel.equals(typer)){
+        if(typel!=null && typer!=null && (typel.contains("int") || typer.contains("int"))) {
+        	errors.add("Comparison should be between integers.");
+        	return;
+        }
+        else if(typel!=null && typer!=null && !typel.equals(typer)){
         	errors.add("Less-Than Expression of "+ node.getLeft().toString() +" does not match type \""+ typel +"\". Type \""+typer+"\" found.");
         	return;
         }
@@ -846,7 +879,11 @@ public class FunctionVisitor extends DepthFirstAdapter
         else
         	typer = varr.getType();
 
-        if(typel!=null && typer!=null && !typel.equals(typer)){
+        if(typel!=null && typer!=null && (typel.contains("int") || typer.contains("int"))) {
+        	errors.add("Comparison should be between integers.");
+        	return;
+        }
+        else if(typel!=null && typer!=null && !typel.equals(typer)){
         	errors.add("Less-Than Expression of "+ node.getLeft().toString() +" does not match type \""+ typel +"\". Type \""+typer+"\" found.");
         	return;
         }
@@ -882,7 +919,11 @@ public class FunctionVisitor extends DepthFirstAdapter
         else
         	typer = varr.getType();
 
-        if(typel!=null && typer!=null && !typel.equals(typer)){
+        if(typel!=null && typer!=null && (typel.contains("int") || typer.contains("int"))) {
+        	errors.add("Comparison should be between integers.");
+        	return;
+        }
+        else if(typel!=null && typer!=null && !typel.equals(typer)){
         	errors.add("Less-Than Expression of "+ node.getLeft().toString() +" does not match type \""+ typel +"\". Type \""+typer+"\" found.");
         	return;
         }
@@ -918,7 +959,11 @@ public class FunctionVisitor extends DepthFirstAdapter
         else
         	typer = varr.getType();
 
-        if(typel!=null && typer!=null && !typel.equals(typer)){
+        if(typel!=null && typer!=null && (typel.contains("int") || typer.contains("int"))) {
+        	errors.add("Comparison should be between integers.");
+        	return;
+        }
+        else if(typel!=null && typer!=null && !typel.equals(typer)){
         	errors.add("Less-Than Expression of "+ node.getLeft().toString() +" does not match type \""+ typel +"\". Type \""+typer+"\" found.");
         	return;
         }
@@ -1008,11 +1053,13 @@ public class FunctionVisitor extends DepthFirstAdapter
             	type2 = hm.get(val);
         }
         
-        if(type1.equals("int") && type2.equals("int")) {
-	        hm.put(node.toString(), type2);
-        }
-        else {
-        	errors.add("Invalid add expression types "+type1+ " and " + type2+".");
+        if(type1!=null && type2!=null) {
+	        if(type1.equals("int") && type2.equals("int")) {
+		        hm.put(node.toString(), type2);
+	        }
+	        else {
+	        	errors.add("Invalid add expression types "+type1+ " and " + type2+".");
+	        }
         }
         outAAddExpr(node);
     }

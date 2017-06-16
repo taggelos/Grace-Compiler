@@ -153,7 +153,7 @@ public class Assembler {
 			off=hm.get(q.d);
 			output.elementAt(Methcount).append("\tmov ax, word ptr [ebp - "+off+"]\n");
 		}
-		System.err.println(q.b);
+		//System.err.println(q.b);
 		if(!hm.containsKey(q.b)) {
 			hm.put(q.b, current_bp);
 			current_bp += 2;
