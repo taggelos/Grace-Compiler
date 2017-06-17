@@ -1,0 +1,17 @@
+1: unit, main , -, -
+2: unit, meme , -, -
+3: unit, dank , -, -
+4: +, a , b , $1
+5: :=, $1, -, $$
+6: ret, -, -, -
+7: endu, dank , -, -
+8: par, RET, $2, -
+9: call, -, -, dank 
+10: :=, $2, -, $$
+11: ret, -, -, -
+12: endu, meme , -, -
+13: par, RET, $3, -
+14: call, -, -, meme 
+15: par, $3, V, -
+16: call, -, -, puti 
+17: endu, main , -, -

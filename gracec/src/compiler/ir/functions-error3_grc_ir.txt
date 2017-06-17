@@ -1,0 +1,6 @@
+1: unit, main , -, -
+2: unit, nested , -, -
+3: endu, nested , -, -
+4: par, "Hello world!" , R, -
+5: call, -, -, puts 
+6: endu, main , -, -

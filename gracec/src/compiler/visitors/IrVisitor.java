@@ -379,11 +379,15 @@ public class IrVisitor extends DepthFirstAdapter
         {
             node.getRBr().apply(this);
         }
-        
-        
-        //if(!arrayname.contains("\"")) {
+        arrayname = node.getLVal().toString();
+        String type;
+        if(!arrayname.contains("\"")) {
         	arrayname = node.getLVal().toString().split(" ")[0];
-        	String type = getType(arrayname+" ", current);
+        	type = getType(arrayname+" ", current);
+        }
+        else {
+        	type = "char[]";
+        }
        
         System.err.println(arrayname);
         String[] split = type.split("\\[");

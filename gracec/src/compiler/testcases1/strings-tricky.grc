@@ -1,0 +1,9 @@
+fun main() : nothing
+{
+    puts("Hello world!");
+    $$ '\\' $$
+    $$ \" $$
+    $$ """
+    'nope''
+    $$
+}

@@ -44,11 +44,11 @@ public class Assembler {
 	
 	public String nextLabel() {
 		label++;
-		return "L"+label;
+		return "@L"+label;
 	}
 	
 	public String getlastLabel() {
-		return "L"+label;
+		return "@L"+label;
 	}
 
     public Assembler(LinkedList<Quad> quads) {
@@ -84,6 +84,10 @@ public class Assembler {
 					caseJump(q);
 					LabelMaps.put(getlastLabel(), Integer.valueOf(q.d));
 					break;
+					
+				case "array":
+					caseArray(q);
+					break;	
 					
 				case "par":
 					casePar(q);
@@ -137,8 +141,6 @@ public class Assembler {
 		//output.append("_"+q.b + "\tproc near\n");
 		//output.append("\tpush ebp\n" + "\tmov bp, sp\n" + "\tsub sp,8\n");
 		
-		
-		
 		if(isMain)
 			output.elementAt(Methcount).append("main:\n");
 		else {
@@ -157,7 +159,6 @@ public class Assembler {
 		output.elementAt(Methcount).append("\tmove esp, ebp\n\tpop ebp\n\tret\n");
 		Methcount--;
 	}
-	
 
 	private void caseAss(Quad q) {
 		int off;
@@ -177,6 +178,11 @@ public class Assembler {
 		
 		off=hm.get(q.b);
 		output.elementAt(Methcount).append("\tmov word ptr [ebp - "+off+"], eax\n");
+	}
+	
+	private void caseArray(Quad q) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 	private void caseJump(Quad q) {

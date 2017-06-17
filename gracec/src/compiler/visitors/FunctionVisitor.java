@@ -10,7 +10,7 @@ public class FunctionVisitor extends DepthFirstAdapter
 {
 	public static LinkedList<Method_t> methods;
     public LinkedList<String> errors;
-    public LinkedList<Method_t> fun_decs;
+    public static LinkedList<Method_t> fun_decs;
     public LinkedList<String> bools;
     Method_t from = null;
     Method_t current = null;
@@ -77,10 +77,17 @@ public class FunctionVisitor extends DepthFirstAdapter
     public Variable_t getType(String var, Method_t meth) {
   
         String methodvar = meth.methContains(var);
-        if(methodvar == null && meth.from != null) {             // An den brisketai se sunarthsh...
-            String fromvar = meth.from.methContains(var);
-            if(fromvar != null)            // An den brisketai oute sto from...  
-            	methodvar = fromvar;
+        Method_t from;
+        if(methodvar == null) {
+        	from = meth.from;
+        	while(from != null) {             // An den brisketai se sunarthsh...
+	            String fromvar = from.methContains(var);
+	            if(fromvar != null) {            // An den brisketai oute sto from...  
+	            	methodvar = fromvar;
+	            	break;
+	            }
+	            from = from.from;
+	        }
         }
         return new Variable_t(methodvar, var);
 
@@ -89,9 +96,22 @@ public class FunctionVisitor extends DepthFirstAdapter
     public static Method_t CheckCall(String call_name, Method_t meth) {
     	if(meth.getName().equals(call_name))
 			return meth;
-		for(Method_t m : meth.methodList) {
-			if(m.getName().equals(call_name))
+    	for(Method_t m : fun_decs) {
+    		if(m.getName().equals(call_name))
 				return m;
+    	}
+		for(Method_t m : meth.methodList) {
+			if(m.getName().equals(call_name)) {
+				return m;
+			}
+		}
+		Method_t from = meth.from;
+		if(from != null) {
+			for(Method_t m : from.methodList) {
+				if(m.getName().equals(call_name)) {
+					return m;
+				}
+			}
 		}
 		for(int i = 0; i<smethodnames.length; i++){
 			String[] spl=null;
@@ -238,13 +258,8 @@ public class FunctionVisitor extends DepthFirstAdapter
                 	String name;
                 	PFunDec dec = ((ADecLocalDef) e).getFunDec();
                 	name = dec.toString().split(" ")[0]+" ";
-                	System.err.println(dec.toString()+" -- "+current.getName());
                 	if(name.equals(current.getName()))
                 		errors.add("Method Already exists.");
-	                	 //String nam = ((AHeader)dec.getName()).toString();
-                	//System.err.println(dec);
-                	//AHeader dec = e.getFunDec();
-                	//if(dec)
                 }
                 
              }      
@@ -533,11 +548,26 @@ public class FunctionVisitor extends DepthFirstAdapter
             for(PExpr e : copy) {
                 e.apply(this);
                 val = e.toString();
+                String br[];
+                br = val.split("\\[");
+                val = br[0];
+                brcount = br.length-1;
+                String brtype = null;
             	if(!hm.isEmpty()) {
             		if(!hm.containsKey(val))
             			errors.add("Invalid parameter of method " + name+"."+val);
-            		else if(hm.get(val) == null || !hm.get(val).equals(m.methodParams.get(count).getType().replaceAll("[0123456789 ]", "")))
+            		else if(hm.get(val) == null) {
+            			brtype = hm.get(val);
+            			if(brcount!=0) {
+            				while(brcount>0) {
+            				brtype = brtype+"[]";
+            				brcount--;
+            				}
+            			}
+            			if(!brtype.equals(m.methodParams.get(count).getType().replaceAll("[0123456789 ]", "")))
+            			
             			errors.add("Invalid parameter type " + hm.get(val) + ". Expecting " + m.methodParams.get(count).getType()+".");
+            		}
             	}
             	count++;
             }
@@ -578,6 +608,7 @@ public class FunctionVisitor extends DepthFirstAdapter
     @Override
     public void caseAIdBracketsLVal(AIdBracketsLVal node)
     {
+    	System.err.println("asdasddgsdfh");
         inAIdBracketsLVal(node);
         if(node.getLVal() != null)
         {
@@ -605,19 +636,27 @@ public class FunctionVisitor extends DepthFirstAdapter
         		brcount++;
         	}
         }
-        
+        String type;
         Variable_t t = getType(node.toString().split(" ")[0]+" ", current);
-        
+        System.err.println("-->"+t.getName());
     	if(t.getType() == null) {
-			return;
+    		if(t.getName().contains("\""))
+    			type = "char[]";
+    		else
+    			return;
 		}
-        String type= t.getType();
-        type = type.replaceAll("[0123456789 ]", "");
+    	else {
+    		type= t.getType();
+    	}
         
+        type = type.replaceAll("[0123456789 ]", "");
+        System.err.println("-->"+type);
         for(int z=0; z<type.length(); z++) {
         	if(type.charAt(z) == '[')
         		j++;
         }
+        
+        System.out.println("aaaaaaa"+brcount+", "+j);
         if((i-brcount)>j)
         	errors.add("Invalid array type. "+type +" expected.");
         
@@ -757,7 +796,6 @@ public class FunctionVisitor extends DepthFirstAdapter
         else
         	typer = varr.getType();
         
-        System.err.println(typel);
         if(typel!=null && typer!=null && (!typel.contains("int") || !typer.contains("int"))) {
         	errors.add("Comparison should be between integers.");
         	return;
@@ -799,7 +837,7 @@ public class FunctionVisitor extends DepthFirstAdapter
         else
         	typer = varr.getType();
 
-        if(typel!=null && typer!=null && (typel.contains("int") || typer.contains("int"))) {
+        if(typel!=null && typer!=null && (!typel.contains("int") || !typer.contains("int"))) {
         	errors.add("Comparison should be between integers.");
         	return;
         }
@@ -839,7 +877,7 @@ public class FunctionVisitor extends DepthFirstAdapter
         else
         	typer = varr.getType();
 
-        if(typel!=null && typer!=null && (typel.contains("int") || typer.contains("int"))) {
+        if(typel!=null && typer!=null && (!typel.contains("int") || !typer.contains("int"))) {
         	errors.add("Comparison should be between integers.");
         	return;
         }
@@ -879,7 +917,7 @@ public class FunctionVisitor extends DepthFirstAdapter
         else
         	typer = varr.getType();
 
-        if(typel!=null && typer!=null && (typel.contains("int") || typer.contains("int"))) {
+        if(typel!=null && typer!=null && (!typel.contains("int") || !typer.contains("int"))) {
         	errors.add("Comparison should be between integers.");
         	return;
         }
@@ -919,7 +957,7 @@ public class FunctionVisitor extends DepthFirstAdapter
         else
         	typer = varr.getType();
 
-        if(typel!=null && typer!=null && (typel.contains("int") || typer.contains("int"))) {
+        if(typel!=null && typer!=null && (!typel.contains("int") || !typer.contains("int"))) {
         	errors.add("Comparison should be between integers.");
         	return;
         }
@@ -959,7 +997,7 @@ public class FunctionVisitor extends DepthFirstAdapter
         else
         	typer = varr.getType();
 
-        if(typel!=null && typer!=null && (typel.contains("int") || typer.contains("int"))) {
+        if(typel!=null && typer!=null && (!typel.contains("int") || !typer.contains("int"))) {
         	errors.add("Comparison should be between integers.");
         	return;
         }
@@ -1549,7 +1587,7 @@ public class FunctionVisitor extends DepthFirstAdapter
         	typer = hm.get(node.getRight().toString());
         else
         	typer = varr.getType();
-
+        System.err.println(hm);
         if(typel!=null && typer!=null && !typel.equals(typer)){
         	errors.add("Assignment of "+ node.getLeft().toString().replaceAll(" ","") +" does not match type \""+ typel +"\". Type \""+typer+"\" found.");
         }

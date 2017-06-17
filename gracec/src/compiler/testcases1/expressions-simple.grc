@@ -1,0 +1,10 @@
+fun main() : nothing
+    var i, j, k: int;
+{
+    i <- 1 + 2;
+    j <- 3 * 4 + 12 - 5 * (999 div 333);
+    k <- i - j - 5 + 12;
+    k <- 3 div 12;
+    k <- 25 mod 20 mod 3;
+    i <--i;
+}

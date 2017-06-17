@@ -1,0 +1,36 @@
+1: unit, main , -, -
+2: par, 'a' , V, -
+3: par, RET, $1, -
+4: call, -, -, ord 
+5: par, $1, V, -
+6: par, RET, $2, -
+7: call, -, -, chr 
+8: par, $2, V, -
+9: call, -, -, putc 
+10: par, 1000 , V, -
+11: call, -, -, puti 
+12: par, "Did you ever hear the tragedy of Darth Plagueis the Wise? I thought not. It\'s not a story the Jedi would tell you. It\'s a Sith legend. Darth Plagueis was a Dark Lord of the Sith, so powerful and so wise he could use the Force to influence the midichlorians to create life... He had such a knowledge of the dark side that he could even keep the ones he cared about from dying. The dark side of the Force is a pathway to many abilities some consider to be unnatural. He became so powerful... the only thing he was afraid of was losing his power, which eventually, of course, he did. Unfortunately, he taught his apprentice everything he knew, then his apprentice killed him in his sleep. Ironic, he could save others from death, but not himself." , R, -
+13: call, -, -, puts 
+14: +, 10 , 0, $3
+15: array, "GET READY FOR THE NEXT BATTLE" , $3, $4
+16: par, [$4], V, -
+17: call, -, -, putc 
+18: par, dest , R, -
+19: par, "Yoshimitsu" , R, -
+20: call, -, -, strcpy 
+21: par, dest , R, -
+22: par, "Yoshimitsu" , R, -
+23: par, RET, $5, -
+24: call, -, -, strcmp 
+25: par, $5, V, -
+26: call, -, -, puti 
+27: par, dest , R, -
+28: par, "YOSHIMITSU" , R, -
+29: par, RET, $6, -
+30: call, -, -, strcmp 
+31: par, $6, V, -
+32: call, -, -, puti 
+33: par, dest , R, -
+34: par, "." , R, -
+35: call, -, -, strcat 
+36: endu, main , -, -

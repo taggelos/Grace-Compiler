@@ -1,0 +1,7 @@
+fun main() : nothing
+	fun nested(memes: int; ref dank, tree_fiddy: char[][]) : nothing
+	{
+	}
+{
+	puts("Hello world!");
+}

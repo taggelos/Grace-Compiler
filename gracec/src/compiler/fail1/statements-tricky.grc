@@ -1,0 +1,23 @@
+fun main() : nothing
+    var i: int;
+    var j: char[10][10];
+    var dank_memes: int;
+{
+    ;;;;;;;;;;;;;;;;;;;;;
+
+    "lolnope m8"[0] <- '\0';
+    j[5][5] <- '?';
+
+    {
+        puts("Nope m8");
+    }
+
+    if 3 # 4 then {{{}}}
+
+    if not not not not 3 > 999 then puts("ded code m8");
+
+    if 1 < i and i <= 3 or 1 = 1 then puts("oi?");
+
+    return;
+    return 420 + dank_memes;
+}

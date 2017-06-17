@@ -1,0 +1,5 @@
+fun main() : nothing
+    var i, j, k: int;
+{
+    i <- 5mod 12;
+}

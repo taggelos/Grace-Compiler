@@ -1,0 +1,5 @@
+fun main() : nothing
+    var i: int;
+{
+    if -3 > = 999 then puts("error m8");
+}

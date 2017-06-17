@@ -1,0 +1,6 @@
+1: unit, main , -, -
+2: unit, foo , -, -
+3: :=, 420 , -, $$
+4: ret, -, -, -
+5: endu, foo , -, -
+6: endu, main , -, -

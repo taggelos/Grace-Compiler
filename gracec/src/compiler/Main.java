@@ -31,12 +31,12 @@ public class Main {
 
         for(int i = 0; i < args.length; i++) {
             try {
+            	File fold = new File(args[i]);
+            	//System.err.println(new File(fold.getParent()+"/../ir/", fold.getName()));
                 fis = new FileInputStream(args[i]);
-                file = new File(args[i].replace(".", "_")+"_ir.txt");
-    			fop = new FileOutputStream(file);
-    			if (!file.exists()) {
-    				file.createNewFile();
-    			}
+                file = new File(fold.getParent()+"/../ir/", fold.getName().replace(".", "_")+"_ir.txt");
+    			
+    			
                 
                 Parser p = new Parser(
                         new Lexer(
@@ -52,21 +52,26 @@ public class Main {
                     FunctionVisitor fv = new FunctionVisitor();
                     tree.apply(fv);
                     
-                    SymbolTable symboltable = new SymbolTable(fv.methods);
+                    SymbolTable symboltable = new SymbolTable(FunctionVisitor.methods);
                     //symboltable.printST();
                     
                     if(fv.errors.isEmpty()){
+                    	fop = new FileOutputStream(file);
+                    	if (!file.exists()) {
+            				file.createNewFile();
+            			}
                     	IrVisitor iv = new IrVisitor(symboltable);
                     	tree.apply(iv);
                     	for(Quad q : iv.h.quads) {
                     		fop.write((q.printQuad()+'\n').getBytes());
                     	}
                     	Assembler as = new Assembler(iv.h.quads);
-                    	as.create();
+                    	//as.create();
+                    	fop.flush();
+            			fop.close();
                     }
                     
-        			fop.flush();
-        			fop.close();
+        			
                 } catch (Exception e) {
                     e.printStackTrace();
                 } 
@@ -78,7 +83,7 @@ public class Main {
                 try {
                     if(fis != null && fop!=null)
                         fis.close();
-                    	fop.close();
+                    	//fop.close();
                 } 
                 catch(IOException ex) {
                     System.err.println(ex.getMessage());

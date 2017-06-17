@@ -1,0 +1,32 @@
+fun main() : nothing
+    var i: int;
+    var j: char[10];
+{
+    i <- 999;
+    j[0] <- 'n';
+    puti(i);
+    if 3 # 4 then {
+    } else {
+    }
+
+    if 3 = 4 then
+        puts("NYEH HEH HEH!");
+
+    if (( 3 + geti() < 4 + geti() )) then
+        puts("NYEH HEH HEH!");
+    else
+        puts("ayy lmao");
+
+    if 1 < i and i <= 3 then puts("oi?");
+    if not (1 < i) and (i <= 3) then puts("oi?");
+
+    if 3 > 999 then puts("ded code m8");
+    if not 3 > 999 then puts("ded code m8");
+
+    if -3 >= 999 then puts("ded code m8");
+
+    while i > 0 do
+        if 4 + 5 = 9 then
+            puts("ayy lmao");
+        i <- i - 1;
+}

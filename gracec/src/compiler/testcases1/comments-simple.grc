@@ -1,0 +1,11 @@
+fun main() : nothing
+{
+    puts("Hello world!");  $ This is a line comment
+
+    $$ This is a
+       multiline comment
+    $$
+
+    puts("Hoho haha");
+    $Should not be printed: puts("Nyeh heh heh!");
+}

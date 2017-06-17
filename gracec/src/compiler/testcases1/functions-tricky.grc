@@ -1,0 +1,13 @@
+fun main() : nothing
+	fun nested(memes: int; ref dank, tree_fiddy: char) : nothing
+        fun very_long_function_name_from_the_ghastly_eyrie_i_can_see_to_the_ends_of_the_world_and_from_this_vantage_point_i_declare_with_utter_certainty_that_this_one_is_in_the_bag() : nothing;
+
+		fun moar_nested(ref baz: char[][10][10]) : nothing
+			var p, q: int[10][10];
+		{
+		}
+	{
+	}
+{
+	puts("Hello world!");
+}
