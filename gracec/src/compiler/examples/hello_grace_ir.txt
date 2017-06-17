@@ -1,0 +1,16 @@
+1: unit, hello , -, -
+2: unit, swap , -, -
+3: <, 3 , 2 , 5
+4: jump, -, -, 6
+5: :=, j , -, 0 
+6: :=, i , -, 1 
+7: :=, j , -, 1 
+8: endu, swap , -, -
+9: +, i , 2 , $1
+10: :=, i , -, $1
+11: par, "Hello world!\n" , R, -
+12: call, -, -, puts 
+13: par, 1 , V, -
+14: par, 2 , V, -
+15: call, -, -, swap 
+16: endu, hello , -, -

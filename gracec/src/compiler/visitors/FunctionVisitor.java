@@ -758,7 +758,7 @@ public class FunctionVisitor extends DepthFirstAdapter
         	typer = varr.getType();
         
         System.err.println(typel);
-        if(typel!=null && typer!=null && (typel.contains("int") || typer.contains("int"))) {
+        if(typel!=null && typer!=null && (!typel.contains("int") || !typer.contains("int"))) {
         	errors.add("Comparison should be between integers.");
         	return;
         }

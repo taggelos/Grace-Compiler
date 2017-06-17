@@ -3,6 +3,7 @@ package compiler.assembly;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Vector;
 
@@ -19,6 +20,7 @@ public class Assembler {
 	//int next_bp=2;
 	
 	HashMap<String, Integer> hm = new HashMap<String, Integer>();
+	HashMap<String, Integer> LabelMaps = new HashMap<String, Integer>();
 	
 	public static boolean isInteger(String s) {
 	    try { 
@@ -57,6 +59,18 @@ public class Assembler {
 		init();
 		for(Quad q : quads) {
     		System.out.println(hm);
+    		
+    		Iterator it = LabelMaps.entrySet().iterator();
+    	    while (it.hasNext()) {
+    	        HashMap.Entry pair = (HashMap.Entry)it.next();
+    	        //System.err.println(pair.getKey() + " = " + pair.getValue());
+    	        if(pair.getValue().equals(q.num)) {
+    	        	output.elementAt(Methcount).append(pair.getKey()+":\n");
+    	        	it.remove();
+    	        	break;
+    	        }
+    	    }
+    		
     		switch (q.a) {
 	    		case "unit":
 					caseUnit(q);
@@ -68,6 +82,7 @@ public class Assembler {
 					
 				case "jump":
 					caseJump(q);
+					LabelMaps.put(getlastLabel(), Integer.valueOf(q.d));
 					break;
 					
 				case "par":
@@ -88,6 +103,7 @@ public class Assembler {
 				case ">=" :
 				case "=" :
 					caseCompare(q);
+					LabelMaps.put(getlastLabel(), Integer.valueOf(q.d));
 					break;	
 				
 				case "*" :
@@ -147,11 +163,11 @@ public class Assembler {
 		int off;
 		if(!hm.containsKey(q.d)) {
 			if(isInteger(q.d))
-				output.elementAt(Methcount).append("\tmov ax, "+q.d+"\n");
+				output.elementAt(Methcount).append("\tmov eax, "+q.d+"\n");
 		}
 		else {
 			off=hm.get(q.d);
-			output.elementAt(Methcount).append("\tmov ax, word ptr [ebp - "+off+"]\n");
+			output.elementAt(Methcount).append("\tmov eax, word ptr [ebp - "+off+"]\n");
 		}
 		//System.err.println(q.b);
 		if(!hm.containsKey(q.b)) {
@@ -180,21 +196,67 @@ public class Assembler {
 	}
 
 	private void caseCompare(Quad q) {
-		// TODO Auto-generated method stub
+		String a,b;
+		if(isInteger(q.b))
+			a=q.b;
+		else
+			a="word ptr [ebp-"+hm.get(q.b).toString()+"]";
+		if(isInteger(q.c))
+			b=q.c;
+		else
+			b="word ptr [ebp-"+hm.get(q.b).toString()+"]";
+		
+		if(q.a.equals(">")) {
+			output.elementAt(Methcount).append("\tmov eax, "+a+"\n");
+			output.elementAt(Methcount).append("\tmov edx, "+b+"\n");
+			output.elementAt(Methcount).append("\tcmp eax, edx\n");
+			output.elementAt(Methcount).append("\tjg "+ nextLabel() +"\n");
+		}
+		else if(q.a.equals("<")) {
+			output.elementAt(Methcount).append("\tmov eax, "+a+"\n");
+			output.elementAt(Methcount).append("\tmov edx, "+b+"\n");
+			output.elementAt(Methcount).append("\tcmp eax, edx\n");
+			output.elementAt(Methcount).append("\tjl "+ nextLabel() +"\n");
+		}
+		else if(q.a.equals(">=")) {
+			output.elementAt(Methcount).append("\tmov eax, "+a+"\n");
+			output.elementAt(Methcount).append("\tmov edx, "+b+"\n");
+			output.elementAt(Methcount).append("\tcmp eax, edx\n");
+			output.elementAt(Methcount).append("\tjge "+ nextLabel() +"\n");
+		}
+		else if(q.a.equals("<=")) {
+			output.elementAt(Methcount).append("\tmov eax, "+a+"\n");
+			output.elementAt(Methcount).append("\tmov edx, "+b+"\n");
+			output.elementAt(Methcount).append("\tcmp eax, edx\n");
+			output.elementAt(Methcount).append("\tjle "+ nextLabel() +"\n");
+		}
+		else if(q.a.equals("=")) {
+			output.elementAt(Methcount).append("\tmov eax, "+a+"\n");
+			output.elementAt(Methcount).append("\tmov edx, "+b+"\n");
+			output.elementAt(Methcount).append("\tcmp eax, edx\n");
+			output.elementAt(Methcount).append("\tjz "+ nextLabel() +"\n");
+		}
+		else if(q.a.equals("#")) {
+			output.elementAt(Methcount).append("\tmov eax, "+a+"\n");
+			output.elementAt(Methcount).append("\tmov edx, "+b+"\n");
+			output.elementAt(Methcount).append("\tcmp eax, edx\n");
+			output.elementAt(Methcount).append("\tjnz "+ nextLabel() +"\n");
+		}
 		
 	}
 	
 	private void caseOper(Quad q) {
+		String a,b;
+		if(isInteger(q.b))
+			a=q.b;
+		else
+			a="word ptr [ebp-"+hm.get(q.b).toString()+"]";
+		if(isInteger(q.c))
+			b=q.c;
+		else
+			b="word ptr [ebp-"+hm.get(q.b).toString()+"]";
+		
 		if(q.a.equals("+")) {
-			String a,b;
-			if(isInteger(q.b))
-				a=q.b;
-			else
-				a=hm.get(q.b).toString();
-			if(isInteger(q.c))
-				b=q.c;
-			else
-				b=hm.get(q.c).toString();
 				
 			output.elementAt(Methcount).append("\tmove ebx, "+a+"\n");
 			output.elementAt(Methcount).append("\tmove ecx, "+b+"\n");
@@ -207,16 +269,7 @@ public class Assembler {
 			}
 		}
 		else if(q.a.equals("-")) {
-			String a,b;
-			if(isInteger(q.b))
-				a=q.b;
-			else
-				a=hm.get(q.b).toString();
-			if(isInteger(q.c))
-				b=q.c;
-			else
-				b=hm.get(q.c).toString();
-				
+			
 			output.elementAt(Methcount).append("\tmove ebx, "+a+"\n");
 			output.elementAt(Methcount).append("\tmove ecx, "+b+"\n");
 			output.elementAt(Methcount).append("\tmove eax, ebx\n");
@@ -228,55 +281,27 @@ public class Assembler {
 			}
 		}
 		else if(q.a.equals("*")) {
-			String a,b;
-			if(isInteger(q.b))
-				a=q.b;
-			else
-				a=hm.get(q.b).toString();
-			if(isInteger(q.c))
-				b=q.c;
-			else
-				b=hm.get(q.c).toString();
-				
+							
 			output.elementAt(Methcount).append("\tmove ebx, "+a+"\n");
 			output.elementAt(Methcount).append("\tmove ecx, "+b+"\n");
 			output.elementAt(Methcount).append("\tmove eax, ebx\n");
 			output.elementAt(Methcount).append("\timul eax, ecx\n");			
 		}
 		else if(q.a.equals("/")) {
-			String a,b;
-			if(isInteger(q.b))
-				a=q.b;
-			else
-				a=hm.get(q.b).toString();
-			if(isInteger(q.c))
-				b=q.c;
-			else
-				b=hm.get(q.c).toString();
-				
+			
 			output.elementAt(Methcount).append("\tmove eax, "+a+"\n");
 			output.elementAt(Methcount).append("\tcdq\n");
 			output.elementAt(Methcount).append("\tmove ebx, "+b+"\n");
 			output.elementAt(Methcount).append("\tidiv ebx, ecx\n");	// eax -> div, edx -> mod		
 		}
 		else if(q.a.equals("mod")) {
-			String a,b;
-			if(isInteger(q.b))
-				a=q.b;
-			else
-				a=hm.get(q.b).toString();
-			if(isInteger(q.c))
-				b=q.c;
-			else
-				b=hm.get(q.c).toString();
-				
+			
 			output.elementAt(Methcount).append("\tmove eax, "+a+"\n");
 			output.elementAt(Methcount).append("\tcdq\n");
 			output.elementAt(Methcount).append("\tmove ebx, "+b+"\n");
 			output.elementAt(Methcount).append("\tidiv ebx, ecx\n");	// eax -> div, edx -> mod
 			output.elementAt(Methcount).append("\tmove eax, edx\n");
 		}
-		
 	}
 	
 }
