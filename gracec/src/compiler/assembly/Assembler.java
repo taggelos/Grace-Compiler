@@ -193,7 +193,26 @@ public class Assembler {
 
 	private void casePar(Quad q) {
 		// TODO Auto-generated method stub
-		
+		String a;
+		if(q.c.equals("V")) {
+			if(isInteger(q.b))
+				a=q.b;
+			else
+				a="word ptr [ebp-"+hm.get(q.b).toString()+"]";
+			output.elementAt(Methcount).append("\tmov eax, "+a+"\n");
+			output.elementAt(Methcount).append("\tpush eax\n");
+		}
+		else if(q.c.equals("R")) {
+			if(isInteger(q.b))
+				a=q.b;
+			else
+				a="word ptr [ebp-"+hm.get(q.b).toString()+"]";
+			output.elementAt(Methcount).append("\tlea esi, "+a+"\n");
+			output.elementAt(Methcount).append("\tpush esi\n");
+		}
+		else if(q.b.equals("RET")) {
+			
+		}
 	}
 	
 	private void caseCall(Quad q) {

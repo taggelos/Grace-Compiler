@@ -1,0 +1,14 @@
+1: unit, main , -, -
+2: unit, wrong_type , -, -
+3: =, 3 , 3 , 5
+4: jump, -, -, 7
+5: ret, -, -, -
+6: jump, -, -, 9
+7: :=, 0 , -, $$
+8: ret, -, -, -
+9: endu, wrong_type , -, -
+10: par, RET, $1, -
+11: call, -, -, wrong_type 
+12: par, $1, V, -
+13: call, -, -, puti 
+14: endu, main , -, -

@@ -252,6 +252,11 @@ public class FunctionVisitor extends DepthFirstAdapter
                     	if(!NewMethod.addVar(new Variable_t(n.getType().toString().replaceAll(" ", ""), id.toString()))){
                             errors.add("Variable " + id + " already exists!");
                         }
+                    	if(current.getName().equals(id.toString()))
+                			errors.add(id+" method alerady exists!");
+                    	for(Method_t m : current.methodList)
+                    		if(m.getName().equals(id.toString()))
+                    			errors.add(id+" method alerady exists!");
                     }                       
                 }
                 else if(e instanceof ADecLocalDef){
@@ -393,7 +398,7 @@ public class FunctionVisitor extends DepthFirstAdapter
         	}
         }
         for(Method_t meth: methods){
-        	if(current.getName().equals(name)){
+        	if(meth.getName().equals(name)){
         		errors.add("Method "+ meth.getName() +"already defined!");
         		return;
         	}
@@ -554,9 +559,11 @@ public class FunctionVisitor extends DepthFirstAdapter
                 brcount = br.length-1;
                 String brtype = null;
             	if(!hm.isEmpty()) {
+            		System.err.println(hm.get(val));
             		if(!hm.containsKey(val))
             			errors.add("Invalid parameter of method " + name+"."+val);
-            		else if(hm.get(val) == null) {
+            		else {
+            			
             			brtype = hm.get(val);
             			if(brcount!=0) {
             				while(brcount>0) {
@@ -608,7 +615,6 @@ public class FunctionVisitor extends DepthFirstAdapter
     @Override
     public void caseAIdBracketsLVal(AIdBracketsLVal node)
     {
-    	System.err.println("asdasddgsdfh");
         inAIdBracketsLVal(node);
         if(node.getLVal() != null)
         {
@@ -638,7 +644,6 @@ public class FunctionVisitor extends DepthFirstAdapter
         }
         String type;
         Variable_t t = getType(node.toString().split(" ")[0]+" ", current);
-        System.err.println("-->"+t.getName());
     	if(t.getType() == null) {
     		if(t.getName().contains("\""))
     			type = "char[]";
@@ -650,13 +655,11 @@ public class FunctionVisitor extends DepthFirstAdapter
     	}
         
         type = type.replaceAll("[0123456789 ]", "");
-        System.err.println("-->"+type);
         for(int z=0; z<type.length(); z++) {
         	if(type.charAt(z) == '[')
         		j++;
         }
         
-        System.out.println("aaaaaaa"+brcount+", "+j);
         if((i-brcount)>j)
         	errors.add("Invalid array type. "+type +" expected.");
         
@@ -1587,7 +1590,6 @@ public class FunctionVisitor extends DepthFirstAdapter
         	typer = hm.get(node.getRight().toString());
         else
         	typer = varr.getType();
-        System.err.println(hm);
         if(typel!=null && typer!=null && !typel.equals(typer)){
         	errors.add("Assignment of "+ node.getLeft().toString().replaceAll(" ","") +" does not match type \""+ typel +"\". Type \""+typer+"\" found.");
         }
@@ -1675,7 +1677,8 @@ public class FunctionVisitor extends DepthFirstAdapter
             node.getReturnexpr().apply(this);
             val = node.toString();
             Variable_t t = getType(node.toString(), current); 
-            t.printVar();
+            //t.printVar();
+            System.err.println(current.get_return_type()+" , "+ hm.get(val));
             if(t.getType() == null ) {
             	if(hm.containsKey(val)) {
             		type = hm.get(val);
@@ -1692,6 +1695,10 @@ public class FunctionVisitor extends DepthFirstAdapter
             	errors.add("Return statement " + val +" is type of \""+t.getType()+"\"! Required \""+current.get_return_type()+ "\" in method " + current.getName());
     			return;
             }
+        }
+        else {
+        	if(!current.get_return_type().equals("nothing"))
+            	errors.add("Return statement should be of type "+current.get_return_type()+".");
         }
         
         outAReturnstmtStmt(node);

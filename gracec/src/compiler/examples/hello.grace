@@ -14,6 +14,6 @@ var z : int[][2];
 {
 	
   i <- i + 2;
-  puts("Hello world!\n");
+  $puts("Hello world!\n");
   swap(1,2);
 }

@@ -1,0 +1,17 @@
+1: unit, main , -, -
+2: unit, missing_ref , -, -
+3: +, 0 , 0, $1
+4: array, n, $1, $2
+5: +, 0 , 0, $3
+6: array, n, $3, $4
+7: +, [$4], 1 , $5
+8: :=, [$2], -, $5
+9: +, 0 , 0, $6
+10: array, n, $6, $7
+11: :=, [$7], -, $$
+12: ret, -, -, -
+13: endu, missing_ref , -, -
+14: par, arr , V, -
+15: par, RET, $8, -
+16: call, -, -, missing_ref 
+17: endu, main , -, -

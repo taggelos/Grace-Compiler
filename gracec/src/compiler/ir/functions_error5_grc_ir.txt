@@ -1,0 +1,11 @@
+1: unit, main , -, -
+2: unit, ref_must_be_lvalue , -, -
+3: +, n , 1 , $1
+4: :=, n , -, $1
+5: :=, n , -, $$
+6: ret, -, -, -
+7: endu, ref_must_be_lvalue , -, -
+8: par, 10 , R, -
+9: par, RET, $2, -
+10: call, -, -, ref_must_be_lvalue 
+11: endu, main , -, -
