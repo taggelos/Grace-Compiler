@@ -211,14 +211,19 @@ public class FunctionVisitor extends DepthFirstAdapter
             	if(from != null)
             	from.addMethod(NewMethod);
             	from = NewMethod;
-            	
+
+                boolean isRef = false;
             	for(PFparDef par : header.getPars()) {
             		for(TIdentifier id : ((AFparDef) par).getNames()) {
             			Variable_t NewVar = new Variable_t(((AFparDef) par).getTypes().toString().replaceAll(" ", ""), id.toString());
             			if(((AFparDef) par).getRef() != null)
             				NewVar.setRef();
+            			else {
+            				if(((AFparDef) par).getTypes().toString().contains("["))
+            					errors.add("Param " + id.toString() + "should be referance!");
+            			}
             			if(!NewMethod.addParam(NewVar))
-            				errors.add("Param " + id.toString() + " already exists!");
+            				errors.add("Param " + id.toString() + "already exists!");
             		}
             	}
             }
@@ -558,22 +563,48 @@ public class FunctionVisitor extends DepthFirstAdapter
                 val = br[0];
                 brcount = br.length-1;
                 String brtype = null;
+                
+                if(m.methodParams.get(count).isRef())
+                	if(!(e instanceof ALValExpr))
+                		errors.add("Parameter should be referance.");
+                
+                Variable_t m1;
+				String m2;
+                m1 = m.methodParams.get(count);
+                m2 = current.methContains(val);
+                if(m1!=null && m2!=null) {
+	                String spl1[] = m1.getType().split("\\[");
+	                String spl2[] = m2.split("\\[");
+	                int index1, index2;
+	                String sp1, sp2;
+	                if(spl1.length == spl2.length) {
+	                	for(int i=1; i<spl1.length; i++) {
+	                		System.err.println(spl1[i].replaceAll("]", ""));
+	                		sp1 = spl1[i].replaceAll("]", "");
+	                		sp2 = spl2[i].replaceAll("]", "");
+	                		if(!sp1.isEmpty() && !sp2.isEmpty()) {
+	                			index1 = Integer.valueOf(sp1);
+	                			index2 = Integer.valueOf(sp2);
+	                			if(index1 < index2)
+	                				errors.add("Index out of bounds.");
+	                		}
+	                	}
+	                }
+                }
+                	
             	if(!hm.isEmpty()) {
-            		System.err.println(hm.get(val));
             		if(!hm.containsKey(val))
             			errors.add("Invalid parameter of method " + name+"."+val);
             		else {
             			
             			brtype = hm.get(val);
-            			if(brcount!=0) {
-            				while(brcount>0) {
-            				brtype = brtype+"[]";
-            				brcount--;
-            				}
-            			}
+            			System.err.println(brcount+"--->"+brtype);
+        				while(brcount>0) {
+        					brtype = brtype.substring(0, brtype.length()-2);
+        					brcount--;
+        				}
             			if(!brtype.equals(m.methodParams.get(count).getType().replaceAll("[0123456789 ]", "")))
-            			
-            			errors.add("Invalid parameter type " + hm.get(val) + ". Expecting " + m.methodParams.get(count).getType()+".");
+            				errors.add("Invalid parameter type " + hm.get(val) + ". Expecting " + m.methodParams.get(count).getType()+".");
             		}
             	}
             	count++;
@@ -1676,9 +1707,7 @@ public class FunctionVisitor extends DepthFirstAdapter
         	String val;
             node.getReturnexpr().apply(this);
             val = node.toString();
-            Variable_t t = getType(node.toString(), current); 
-            //t.printVar();
-            System.err.println(current.get_return_type()+" , "+ hm.get(val));
+            Variable_t t = getType(node.toString(), current);
             if(t.getType() == null ) {
             	if(hm.containsKey(val)) {
             		type = hm.get(val);
