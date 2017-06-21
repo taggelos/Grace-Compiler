@@ -579,7 +579,6 @@ public class FunctionVisitor extends DepthFirstAdapter
 	                String sp1, sp2;
 	                if(spl1.length == spl2.length) {
 	                	for(int i=1; i<spl1.length; i++) {
-	                		System.err.println(spl1[i].replaceAll("]", ""));
 	                		sp1 = spl1[i].replaceAll("]", "");
 	                		sp2 = spl2[i].replaceAll("]", "");
 	                		if(!sp1.isEmpty() && !sp2.isEmpty()) {
@@ -598,7 +597,6 @@ public class FunctionVisitor extends DepthFirstAdapter
             		else {
             			
             			brtype = hm.get(val);
-            			System.err.println(brcount+"--->"+brtype);
         				while(brcount>0) {
         					brtype = brtype.substring(0, brtype.length()-2);
         					brcount--;

@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Vector;
 
+import compiler.symboltable.Method_t;
 import compiler.symboltable.Quad;
 import compiler.symboltable.SymbolTable;
 import compiler.symboltable.Variable_t;
@@ -16,6 +17,7 @@ public class Assembler {
 	public Vector<StringBuffer> output = new Vector<StringBuffer>();
 	public StringBuffer data = new StringBuffer();
 	public SymbolTable st;
+	public Method_t current;
 	int Methcount = 0;
 	boolean isMain = true;
 	int label=0;
@@ -28,6 +30,25 @@ public class Assembler {
 	
 	HashMap<String, Integer> hm = new HashMap<String, Integer>();
 	HashMap<String, Integer> LabelMaps = new HashMap<String, Integer>();
+	
+	public Variable_t getType(String var, Method_t meth) {
+		  
+        String methodvar = meth.methContains(var);
+        Method_t from;
+        if(methodvar == null) {
+        	from = meth.from;
+        	while(from != null) {             // An den brisketai se sunarthsh...
+	            String fromvar = from.methContains(var);
+	            if(fromvar != null) {            // An den brisketai oute sto from...  
+	            	methodvar = fromvar;
+	            	break;
+	            }
+	            from = from.from;
+	        }
+        }
+        return new Variable_t(methodvar, var);
+
+    } 
 	
 	public static boolean isInteger(String s) {
 	    try { 
@@ -181,6 +202,7 @@ public class Assembler {
 		output.elementAt(Methcount).append("\tpush ebp\n" + "\tmov ebp, esp\n");
 		varAllocation(output.elementAt(Methcount), q.b);
 		output.elementAt(Methcount).append("\n");
+		current = st.contains(q.b);
 	}
 	
 	private void caseEndu(Quad q) {	
@@ -198,6 +220,7 @@ public class Assembler {
 
 	private void caseAss(Quad q) {
 		int off;
+		String name = q.b.replaceAll("\\[", "").replaceAll("]", "");
 		if(!hm.containsKey(q.d)) {
 			if(isInteger(q.d))
 				output.elementAt(Methcount).append("\tmov eax, "+q.d+"\n");
@@ -207,18 +230,53 @@ public class Assembler {
 			output.elementAt(Methcount).append("\tmov eax, DWORD PTR [ebp - "+off+"]\n");
 		}
 		//System.err.println(q.b);
-		if(!hm.containsKey(q.b)) {
-			hm.put(q.b, current_bp);
-			current_bp += 4;
-		}
-		
-		off=hm.get(q.b);
+		//if(!hm.containsKey(name)) {
+		//	hm.put(name, current_bp);
+		//	current_bp += 4;
+		//}
+		System.err.println(name+" -- "+hm.get(name));
+		off=hm.get(name);
 		output.elementAt(Methcount).append("\tmov DWORD PTR [ebp - "+off+"], eax\n");
 	}
 	
 	private void caseArray(Quad q) {
 		// TODO Auto-generated method stub
 		
+		String a, b, c;
+		int size;
+		
+		Variable_t var = getType(q.b+" ", current);
+		System.err.println("--->"+var.getType());
+		if(var.getType().contains("int"))
+			size = 4;
+		else
+			size = 1;
+		
+		if(isInteger(q.c))
+			a=q.c;
+		else 
+			a="DWORD PTR [ebp-"+hm.get(q.c).toString()+"]";
+		
+		if(isInteger(q.b))
+			b=q.b;
+		else 
+			b="DWORD PTR [ebp-"+hm.get(q.b+" ").toString()+"]";
+		
+		c = q.d.replaceAll("\\[", "").replaceAll("]", "");
+		System.err.println(">>> "+c);
+		if(!hm.containsKey(c)) {
+			hm.put(c, current_bp);
+			current_bp += 4;
+		}
+			
+		
+		output.elementAt(Methcount).append("\tmov eax, "+a+"\n");
+		output.elementAt(Methcount).append("\tmov eac, "+size+"\n");
+		output.elementAt(Methcount).append("\timul ecx\n");
+		output.elementAt(Methcount).append("\tlea ecx, "+b+"\n");
+		output.elementAt(Methcount).append("\tadd eax, ecx\n");
+		System.err.println(hm);
+		output.elementAt(Methcount).append("\tmov DWORD PTR [ebp-"+hm.get(c).toString()+"], "+"eax\n");
 	}
 	
 	private void caseJump(Quad q) {
@@ -345,7 +403,7 @@ public class Assembler {
 		
 		if(!hm.containsKey(q.d)) {
 			hm.put(q.d, current_bp);
-			current_bp += 2;
+			current_bp += 4;
 		}
 		
 		if(q.a.equals("+")) {

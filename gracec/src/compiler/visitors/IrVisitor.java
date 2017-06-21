@@ -389,7 +389,6 @@ public class IrVisitor extends DepthFirstAdapter
         	type = "char[]";
         }
        
-        System.err.println(arrayname);
         String[] split = type.split("\\[");
         String s;
         String prev = index;
