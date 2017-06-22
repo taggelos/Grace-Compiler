@@ -30,7 +30,7 @@ public class Assembler {
 	//int next_bp=2;
 	
 	HashMap<String, Integer> hm = new HashMap<String, Integer>();
-	HashMap<String, Integer> LabelMaps = new HashMap<String, Integer>();
+	HashMap<Integer, String> LabelMaps = new HashMap<Integer, String>();
 	Standards standards = new Standards();
 	
 	public Variable_t getType(String var, Method_t meth) {
@@ -74,7 +74,7 @@ public class Assembler {
 	
 	public void varAllocation(StringBuffer stringBuffer, String name) {
 		int offset=0;
-		for(Variable_t var : st.contains(name).methodVars) {
+		for(Variable_t var : st.contains(name+" ").methodVars) {
 			offset += 4;
 			hm.put(var.getName().trim(), current_bp);
 			current_bp += 4;
@@ -111,13 +111,14 @@ public class Assembler {
 		for(Quad q : quads) {
     		System.out.println(hm);
     		
-    		Iterator it = LabelMaps.entrySet().iterator();
-    	    while (it.hasNext()) {
-    	        HashMap.Entry pair = (HashMap.Entry)it.next();
+    		Set<Integer> keys = LabelMaps.keySet();  //get all keys
+    		for(Integer i: keys)
+    		{
     	        //System.err.println(pair.getKey() + " = " + pair.getValue());
-    	        if(pair.getValue().equals(q.num)) {
-    	        	output.elementAt(Methcount).append(pair.getKey()+":\n");
-    	        	it.remove();
+    	        if(i.equals(q.num)) {
+    	        	//System.err.println(">>>>>"+pair.getValue());
+    	        	output.elementAt(Methcount).append(LabelMaps.get(i)+":\n");
+    	        	//it.remove();
     	        	break;
     	        }
     	    }
@@ -133,7 +134,8 @@ public class Assembler {
 					
 				case "jump":
 					caseJump(q);
-					LabelMaps.put(getlastLabel(), Integer.valueOf(q.d));
+					//if(!LabelMaps.containsKey(q.d))
+						
 					break;
 					
 				case "array":
@@ -158,7 +160,7 @@ public class Assembler {
 				case ">=" :
 				case "=" :
 					caseCompare(q);
-					LabelMaps.put(getlastLabel(), Integer.valueOf(q.d));
+					
 					break;	
 				
 				case "*" :
@@ -178,7 +180,7 @@ public class Assembler {
 			}    	
     	}
 		//System.err.println(standards.code);
-		
+		System.err.println(LabelMaps);
 		for(StringBuffer sb : output)
 			System.out.println(sb.toString());
 		
@@ -213,7 +215,7 @@ public class Assembler {
 		
 		isMain = false;
 		output.elementAt(Methcount).append("\tpush ebp\n" + "\tmov ebp, esp\n");
-		varAllocation(output.elementAt(Methcount), q.b);
+		varAllocation(output.elementAt(Methcount), q.b.trim());
 		output.elementAt(Methcount).append("\n");
 		current = st.contains(q.b);
 	}
@@ -293,7 +295,14 @@ public class Assembler {
 	}
 	
 	private void caseJump(Quad q) {
-		output.elementAt(Methcount).append("\tjmp "+ nextLabel() +"\n");
+		String lb;
+		if(LabelMaps.containsKey(Integer.valueOf(q.d)))
+			lb = LabelMaps.get(Integer.valueOf(q.d));
+		else {
+			lb = nextLabel();
+			LabelMaps.put(Integer.valueOf(q.d), lb);
+		}
+		output.elementAt(Methcount).append("\tjmp "+ lb +"\n");
 	}
 
 	private void casePar(Quad q) {
@@ -363,43 +372,51 @@ public class Assembler {
 
 	private void caseCompare(Quad q) {
 		String a,b;
-		if(isInteger(q.b))
+		if(isInteger(q.b.trim()))
 			a=q.b;
 		else
-			a="DWORD PTR [ebp-"+hm.get(q.b).toString()+"]";
+			a="DWORD PTR [ebp-"+hm.get(q.b.trim()).toString()+"]";
 		if(isInteger(q.c))
 			b=q.c;
 		else
-			b="DWORD PTR [ebp-"+hm.get(q.b).toString()+"]";
+			b="DWORD PTR [ebp-"+hm.get(q.b.trim()).toString()+"]";
 		
 		output.elementAt(Methcount).append("\tmov eax, "+a+"\n");
 		output.elementAt(Methcount).append("\tmov edx, "+b+"\n");
 		output.elementAt(Methcount).append("\tcmp eax, edx\n");
 		
+		String lb;
+		if(LabelMaps.containsKey(Integer.valueOf(q.d)))
+			lb = LabelMaps.get(Integer.valueOf(q.d));
+		else {
+			lb = nextLabel();
+			LabelMaps.put(Integer.valueOf(q.d), lb);
+		}
+		
 		if(q.a.equals(">"))
-			output.elementAt(Methcount).append("\tjg "+ nextLabel() +"\n");
+			output.elementAt(Methcount).append("\tjg "+ lb +"\n");
 		else if(q.a.equals("<"))
-			output.elementAt(Methcount).append("\tjl "+ nextLabel() +"\n");
+			output.elementAt(Methcount).append("\tjl "+ lb +"\n");
 		else if(q.a.equals(">="))
-			output.elementAt(Methcount).append("\tjge "+ nextLabel() +"\n");
+			output.elementAt(Methcount).append("\tjge "+ lb +"\n");
 		else if(q.a.equals("<="))
-			output.elementAt(Methcount).append("\tjle "+ nextLabel() +"\n");
+			output.elementAt(Methcount).append("\tjle "+ lb +"\n");
 		else if(q.a.equals("="))
-			output.elementAt(Methcount).append("\tjz "+ nextLabel() +"\n");
+			output.elementAt(Methcount).append("\tjz "+ lb +"\n");
 		else if(q.a.equals("#")) 
-			output.elementAt(Methcount).append("\tjnz "+ nextLabel() +"\n");
+			output.elementAt(Methcount).append("\tjnz "+ lb +"\n");
 	}
 	
 	private void caseOper(Quad q) {
 		String a,b;
-		if(isInteger(q.b))
+		if(isInteger(q.b.trim()))
 			a=q.b;
 		else
-			a="DWORD PTR [ebp-"+hm.get(q.b).toString()+"]";
+			a="DWORD PTR [ebp-"+hm.get(q.b.trim()).toString()+"]";
 		if(isInteger(q.c))
 			b=q.c;
 		else
-			b="DWORD PTR [ebp-"+hm.get(q.b).toString()+"]";
+			b="DWORD PTR [ebp-"+hm.get(q.b.trim()).toString()+"]";
 		
 		if(!hm.containsKey(q.d)) {
 			hm.put(q.d.trim(), current_bp);
