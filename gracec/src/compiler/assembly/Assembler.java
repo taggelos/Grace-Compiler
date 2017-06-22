@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Set;
 import java.util.Vector;
 
 import compiler.symboltable.Method_t;
@@ -30,6 +31,7 @@ public class Assembler {
 	
 	HashMap<String, Integer> hm = new HashMap<String, Integer>();
 	HashMap<String, Integer> LabelMaps = new HashMap<String, Integer>();
+	Standards standards = new Standards();
 	
 	public Variable_t getType(String var, Method_t meth) {
 		  
@@ -74,7 +76,7 @@ public class Assembler {
 		int offset=0;
 		for(Variable_t var : st.contains(name).methodVars) {
 			offset += 4;
-			hm.put(var.getName(), current_bp);
+			hm.put(var.getName().trim(), current_bp);
 			current_bp += 4;
 		}
 		
@@ -92,11 +94,11 @@ public class Assembler {
 	
 	public String nextLabel() {
 		label++;
-		return "@L"+label;
+		return "L"+label;
 	}
 	
 	public String getlastLabel() {
-		return "@L"+label;
+		return "L"+label;
 	}
 
     public Assembler(LinkedList<Quad> quads, SymbolTable symboltable) {
@@ -166,15 +168,26 @@ public class Assembler {
 				case "mod" :
 					caseOper(q);
 					break;
+					
+				case "ret":
+					caseReturn(q);
+					break;	
 	
 				default:
 					break;
 			}    	
-    	}	
-		//output.elementAt(Methcount).append(data);
-		//System.out.println("LEN: "+output.);
+    	}
+		//System.err.println(standards.code);
+		
 		for(StringBuffer sb : output)
 			System.out.println(sb.toString());
+		
+		Set<String> keys = standards.code.keySet();  //get all keys
+		for(String i: keys)
+		{
+		    System.out.println(i+":");
+		    System.out.println(standards.code.get(i));
+		}
 		System.out.println(data.toString());
 	}
 
@@ -209,6 +222,8 @@ public class Assembler {
 		//output.append("_"+q.b + "\tmov sp, bp\n");
 		//output.append("\tpop ebp\n" + "\tmov bp, sp\n" + "\tsub sp,8\n");
 		output.elementAt(Methcount).append("\n");
+		String epilogue = "endof_"+current.getName();
+		output.elementAt(Methcount).append(epilogue+":\n");
 		if(si_used) {
 			output.elementAt(Methcount).append("\tpop esi\n");
 			si_used = false;
@@ -220,13 +235,14 @@ public class Assembler {
 
 	private void caseAss(Quad q) {
 		int off;
-		String name = q.b.replaceAll("\\[", "").replaceAll("]", "");
-		if(!hm.containsKey(q.d)) {
-			if(isInteger(q.d))
-				output.elementAt(Methcount).append("\tmov eax, "+q.d+"\n");
+		String name = q.b.replaceAll("\\[", "").replaceAll("]", "").trim();
+		String val = q.d.replaceAll("\\[", "").replaceAll("]", "").trim();
+		if(!hm.containsKey(val)) {
+			if(isInteger(val))
+				output.elementAt(Methcount).append("\tmov eax, "+val+"\n");
 		}
 		else {
-			off=hm.get(q.d);
+			off=hm.get(val);
 			output.elementAt(Methcount).append("\tmov eax, DWORD PTR [ebp - "+off+"]\n");
 		}
 		//System.err.println(q.b);
@@ -234,7 +250,7 @@ public class Assembler {
 		//	hm.put(name, current_bp);
 		//	current_bp += 4;
 		//}
-		System.err.println(name+" -- "+hm.get(name));
+		//System.err.println(name+" -- "+hm.get(name));
 		off=hm.get(name);
 		output.elementAt(Methcount).append("\tmov DWORD PTR [ebp - "+off+"], eax\n");
 	}
@@ -246,36 +262,33 @@ public class Assembler {
 		int size;
 		
 		Variable_t var = getType(q.b+" ", current);
-		System.err.println("--->"+var.getType());
+		//System.err.println("--->"+var.getType());
 		if(var.getType().contains("int"))
 			size = 4;
 		else
 			size = 1;
 		
-		if(isInteger(q.c))
-			a=q.c;
-		else 
-			a="DWORD PTR [ebp-"+hm.get(q.c).toString()+"]";
+
+		a="DWORD PTR [ebp-"+hm.get(q.b).toString()+"]";
 		
-		if(isInteger(q.b))
-			b=q.b;
-		else 
-			b="DWORD PTR [ebp-"+hm.get(q.b+" ").toString()+"]";
-		
-		c = q.d.replaceAll("\\[", "").replaceAll("]", "");
-		System.err.println(">>> "+c);
+		c = q.d.replaceAll("\\[", "").replaceAll("]", "").trim();
+		//System.err.println(">>> "+c);
 		if(!hm.containsKey(c)) {
-			hm.put(c, current_bp);
+			hm.put(c.trim(), current_bp);
 			current_bp += 4;
 		}
 			
-		
-		output.elementAt(Methcount).append("\tmov eax, "+a+"\n");
-		output.elementAt(Methcount).append("\tmov eac, "+size+"\n");
+		if(isInteger(q.c))
+			b=q.c;
+		else 
+			b="DWORD PTR [ebp-"+hm.get(q.c.trim().replaceAll("\\[", "").replaceAll("]", "")).toString()+"]";
+			
+		output.elementAt(Methcount).append("\tmov eax, "+b+"\n");
+		output.elementAt(Methcount).append("\tmov ecx, "+size+"\n");
 		output.elementAt(Methcount).append("\timul ecx\n");
-		output.elementAt(Methcount).append("\tlea ecx, "+b+"\n");
+		output.elementAt(Methcount).append("\tlea ecx, "+a+"\n");
 		output.elementAt(Methcount).append("\tadd eax, ecx\n");
-		System.err.println(hm);
+		//System.err.println(hm);
 		output.elementAt(Methcount).append("\tmov DWORD PTR [ebp-"+hm.get(c).toString()+"], "+"eax\n");
 	}
 	
@@ -290,14 +303,14 @@ public class Assembler {
 		int offset=4;
 		
 		//if(!st.contains(q.b).methodParams.isEmpty())
-			output.elementAt(Methcount).append("\tpush esi\n");
-			si_used = true;
+			//output.elementAt(Methcount).append("\tpush esi\n");
+			//si_used = true;
 		
 		if(q.c.equals("V")) {
 			if(isInteger(q.b))
 				a=q.b;
 			else {
-				a="DWORD PTR [ebp-"+hm.get(q.b).toString()+"]";
+				a="DWORD PTR [ebp-"+hm.get(q.b.trim().replaceAll("\\[", "").replaceAll("]", "")).toString()+"]";
 				//offset += args*4;
 				//a = "DWORD PTR [ebp + "+ offset+"]";
 				//output.elementAt(Methcount).append("\tmov esi, "+a+"\n");
@@ -338,6 +351,14 @@ public class Assembler {
 		
 		output.elementAt(Methcount).append("\tcall grace_"+q.d+"\n");
 		deallocateArgs(output.elementAt(Methcount), q.d);
+		for(String name : standards.smethodnames) {
+			if(name.equals(q.d)) {
+				standards.create(name);
+				if(name.equals("puti "))
+					data.append("\tint_fmt: .asciz  \"%d\"");
+				break;
+			}
+		}
 	}
 
 	private void caseCompare(Quad q) {
@@ -351,43 +372,22 @@ public class Assembler {
 		else
 			b="DWORD PTR [ebp-"+hm.get(q.b).toString()+"]";
 		
-		if(q.a.equals(">")) {
-			output.elementAt(Methcount).append("\tmov eax, "+a+"\n");
-			output.elementAt(Methcount).append("\tmov edx, "+b+"\n");
-			output.elementAt(Methcount).append("\tcmp eax, edx\n");
-			output.elementAt(Methcount).append("\tjg "+ nextLabel() +"\n");
-		}
-		else if(q.a.equals("<")) {
-			output.elementAt(Methcount).append("\tmov eax, "+a+"\n");
-			output.elementAt(Methcount).append("\tmov edx, "+b+"\n");
-			output.elementAt(Methcount).append("\tcmp eax, edx\n");
-			output.elementAt(Methcount).append("\tjl "+ nextLabel() +"\n");
-		}
-		else if(q.a.equals(">=")) {
-			output.elementAt(Methcount).append("\tmov eax, "+a+"\n");
-			output.elementAt(Methcount).append("\tmov edx, "+b+"\n");
-			output.elementAt(Methcount).append("\tcmp eax, edx\n");
-			output.elementAt(Methcount).append("\tjge "+ nextLabel() +"\n");
-		}
-		else if(q.a.equals("<=")) {
-			output.elementAt(Methcount).append("\tmov eax, "+a+"\n");
-			output.elementAt(Methcount).append("\tmov edx, "+b+"\n");
-			output.elementAt(Methcount).append("\tcmp eax, edx\n");
-			output.elementAt(Methcount).append("\tjle "+ nextLabel() +"\n");
-		}
-		else if(q.a.equals("=")) {
-			output.elementAt(Methcount).append("\tmov eax, "+a+"\n");
-			output.elementAt(Methcount).append("\tmov edx, "+b+"\n");
-			output.elementAt(Methcount).append("\tcmp eax, edx\n");
-			output.elementAt(Methcount).append("\tjz "+ nextLabel() +"\n");
-		}
-		else if(q.a.equals("#")) {
-			output.elementAt(Methcount).append("\tmov eax, "+a+"\n");
-			output.elementAt(Methcount).append("\tmov edx, "+b+"\n");
-			output.elementAt(Methcount).append("\tcmp eax, edx\n");
-			output.elementAt(Methcount).append("\tjnz "+ nextLabel() +"\n");
-		}
+		output.elementAt(Methcount).append("\tmov eax, "+a+"\n");
+		output.elementAt(Methcount).append("\tmov edx, "+b+"\n");
+		output.elementAt(Methcount).append("\tcmp eax, edx\n");
 		
+		if(q.a.equals(">"))
+			output.elementAt(Methcount).append("\tjg "+ nextLabel() +"\n");
+		else if(q.a.equals("<"))
+			output.elementAt(Methcount).append("\tjl "+ nextLabel() +"\n");
+		else if(q.a.equals(">="))
+			output.elementAt(Methcount).append("\tjge "+ nextLabel() +"\n");
+		else if(q.a.equals("<="))
+			output.elementAt(Methcount).append("\tjle "+ nextLabel() +"\n");
+		else if(q.a.equals("="))
+			output.elementAt(Methcount).append("\tjz "+ nextLabel() +"\n");
+		else if(q.a.equals("#")) 
+			output.elementAt(Methcount).append("\tjnz "+ nextLabel() +"\n");
 	}
 	
 	private void caseOper(Quad q) {
@@ -402,7 +402,7 @@ public class Assembler {
 			b="DWORD PTR [ebp-"+hm.get(q.b).toString()+"]";
 		
 		if(!hm.containsKey(q.d)) {
-			hm.put(q.d, current_bp);
+			hm.put(q.d.trim(), current_bp);
 			current_bp += 4;
 		}
 		
@@ -444,6 +444,13 @@ public class Assembler {
 			output.elementAt(Methcount).append("\tidiv ebx, ecx\n");	// eax -> div, edx -> mod
 			output.elementAt(Methcount).append("\tmov eax, edx\n");
 		}
+		output.elementAt(Methcount).append("\tmov DWORD PTR [ebp-"+hm.get(q.d)+"], eax\n");
+		
+	}
+	
+	private void caseReturn(Quad q) {
+		String epilogue = "endof_"+current.getName();
+		output.elementAt(Methcount).append("\tjmp "+ epilogue +"\n");
 	}
 	
 }
