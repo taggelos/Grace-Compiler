@@ -450,7 +450,7 @@ public class IrVisitor extends DepthFirstAdapter
         }
         {
         	trueList.getLast().add(h.nextQuad());
-        	h.genQuad("jump2", "-", "-", "*");
+        	h.genQuad("jump", "-", "-", "*");
         	h.backpatchall(falseList.getLast(), h.nextQuad());
             List<PStmt> copy = new ArrayList<PStmt>(node.getElseSt());
             for(PStmt e : copy)
