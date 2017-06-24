@@ -62,13 +62,11 @@ public class Main {
             			}
                     	IrVisitor iv = new IrVisitor(symboltable);
                     	tree.apply(iv);
-                    	IrVisitor2 iv2 = new IrVisitor2(iv.h.quads,symboltable);
-                    	iv2.create();
                     	for(Quad q : iv.h.quads) {
                     		fop.write((q.printQuad()+'\n').getBytes());
                     	}
-                    	//Assembler as = new Assembler(iv.h.quads, symboltable);
-                    	//as.create();
+                    	Assembler as = new Assembler(iv.h.quads, symboltable);
+                    	as.create();
                     	fop.flush();
             			fop.close();
                     }

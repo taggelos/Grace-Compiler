@@ -23,34 +23,6 @@ public class Helpers {
     	lastQuad = q;
     }
     
-    public boolean compQuad(Quad q1,Quad q2){
-    	if(q1.a.equals(q2.a)  && q1.b.equals(q2.b) && q1.c.equals(q2.c) && q1.d.equals(q2.d) && q1.num==q2.num)
-    		return true;
-    	return false;
-    }
-    
-    public void remQuad(Quad q){
-    	//quads.remove(q);
-    	Iterator<Quad> iter = quads.iterator();
-    	while (iter.hasNext()) {
-    		Quad data = iter.next();
-    	    if (compQuad(data,q)) {
-    	        iter.remove();
-    	    }   
-    	}
-    }    
-    
-    public void remQuad(int num){
-    	//quads.remove(q);
-    	Iterator<Quad> iter = quads.iterator();
-    	while (iter.hasNext()) {
-    		Quad data = iter.next();
-    	    if (data.num==num) {
-    	        iter.remove();
-    	    }   
-    	}
-    } 
-    
 	public int nextQuad(){
 		//if(lastQuad == firstQuad) return firstQuad;
 		return curline;	

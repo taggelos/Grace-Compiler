@@ -1,28 +1,32 @@
-fun main () : nothing
-var b : int;
+$$fun main () : nothing
+
 var a : int;
 
     fun f() : nothing
+    var b : int;
     {
-        $while a < 52 do 
-        ${
+        b <- 50;
+        while b < 52 do 
+        {
         puti(a);
-        $a <- a + 1;
-        $}
+        b <- b + 1;
+        }
         return;
     }
 {
+
 a <- 50;
 f();
 }
 $$
+$$
 fun main () : nothing
-var a : int[10];
+var a : int[3];
 var x : int;
 {
 	a[0] <- 0;
-	x <- a[0];
-    puti(x);
+	$x <- a[0];
+    puti(a[0]);
 }
 $$
 $$
@@ -36,3 +40,29 @@ var x : int;
  return;
 }
 $$
+
+$$
+fun main () : nothing
+var x:int;
+    fun f() : nothing 
+    {
+        x<-4;
+    }
+{
+    x<-45;
+    f();
+    puti(x);
+}
+$$
+
+fun main () : nothing
+var x:int;
+    fun f() : nothing 
+    {
+        puti(x);
+    }
+{
+    x<-45;
+    f();
+    
+}

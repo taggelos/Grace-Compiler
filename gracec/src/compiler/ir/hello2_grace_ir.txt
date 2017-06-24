@@ -1,9 +1,8 @@
 1: unit, main , -, -
 2: unit, f , -, -
-3: par, a , V, -
+3: par, x , V, -
 4: call, -, -, puti 
-5: ret, -, -, -
-6: endu, f , -, -
-7: :=, a , -, 50 
-8: call, -, -, f 
-9: endu, main , -, -
+5: endu, f , -, -
+6: :=, x , -, 45 
+7: call, -, -, f 
+8: endu, main , -, -
