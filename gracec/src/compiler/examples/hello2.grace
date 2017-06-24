@@ -4,23 +4,25 @@ var a : int;
 
     fun f() : nothing
     {
+        $while a < 52 do 
+        ${
         puti(a);
+        $a <- a + 1;
+        $}
         return;
     }
 {
-
 a <- 50;
 f();
 }
 $$
 fun main () : nothing
-var a : int[];
+var a : int[10];
 var x : int;
 {
 	a[0] <- 0;
 	x <- a[0];
     puti(x);
-    return;
 }
 $$
 $$
