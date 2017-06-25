@@ -96,7 +96,7 @@ public class Assembler {
 	}
 	
 	private boolean isStandard(String name) {
-		if(name.equals("puti") || name.equals("puts") || name.equals("gets"))
+		if(name.equals("puti") || name.equals("puts") || name.equals("gets") || name.equals("getc") || name.equals("strlen"))
 			return true;
 		return false;
 	}
@@ -554,6 +554,8 @@ public class Assembler {
 				standards.create(name);
 				if(name.equals("puti "))
 					data.append("\tint_fmt: .asciz  \"%d\"");
+				else if(name.equals("strlen "))
+					data.append("\tint_fmt: .asciz  \"%d\n\"\n\tchar_fmt: .asciz  \"%c\n\"\n\tchars_fmt: .asciz  \"%s\n\"\n");
 				break;
 			}
 		}
