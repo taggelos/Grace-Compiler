@@ -57,12 +57,44 @@ $$
 
 fun main () : nothing
 var x:int;
+    fun f(a : int) : nothing 
+    {
+
+        puti(x);
+    }
+{
+    x<-45;
+    f(x);
+    
+}
+
+$$
+fun main () : nothing
+var x:int;
+var y : int;
+    fun f(a : int) : nothing 
+    {
+
+        puti(a+a);
+    }
+{
+    x<-45;
+    y <- 10;
+    f(x);
+    
+}
+$$
+$$
+fun main () : nothing
+var x,y :int;
     fun f(a,b : int) : nothing 
     {
         puti(a+b);
     }
 {
     x<-45;
-    f(x, x);
+    y<- 10;
+    f(x,y);
     
 }
+$$

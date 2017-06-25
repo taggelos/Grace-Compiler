@@ -29,10 +29,10 @@ public class Assembler {
 	int args = 0;
 	boolean isCallee=false;
 	int str=0;
-	String update="";
+	StringBuffer update=new StringBuffer();
 	int current_scope=0;
 	int scope;
-	int current_par = 16;
+	int current_par = 8;
 	
 	HashMap<String, Integer> current_bp = new HashMap<String, Integer>();
 	public HashMap<String,HashMap<String, Integer>> paramhm = new HashMap<String, HashMap<String, Integer>>();
@@ -170,7 +170,6 @@ public class Assembler {
 		int offset=4;
 		for(Variable_t var : st.contains(name).methodParams) 
 			offset += 4;
-
 		stringBuffer.append("\tadd esp, "+offset+"\n");
 	}
 	
@@ -178,16 +177,15 @@ public class Assembler {
 		
 		System.err.println(meth.getName());
 		if(isStandard(meth.getName().trim())) {
-			output.elementAt(Methcount).append("\tsub esp, 4\n");
+			output.elementAt(Methcount).append("\tsub esp, 4\n\tpush ebp\n");
 		}
 		else if(scopes.get(meth.getName()) > scopes.get(current.getName())) {
-			output.elementAt(Methcount).append("\tpush ebp\n");
+			output.elementAt(Methcount).append("\tsub esp, 4\n\tpush ebp\n");
 		}
 		else if(scopes.get(meth.getName()) == scopes.get(current.getName())) {
 			output.elementAt(Methcount).append("\tpush DWPRD PTR [ebp + 8]\n");
 		}
 		else {
-			//output.elementAt(Methcount).append("\tpush esi\n");
 			si_used = true;
 			for(int i=scopes.get(current.getName()); i<scopes.get(meth.getName()); i++)
 				output.elementAt(Methcount).append("\tmov esi, DWORD PTR [ebp + 8]\n");
@@ -203,6 +201,32 @@ public class Assembler {
 		}
 		return null;
 	}
+	
+	public String find2(String name) {
+		String a = null;
+		boolean flag=false;
+		if(!hm.elementAt(Methcount).containsKey(name.trim().replaceAll("\\[", "").replaceAll("]", ""))) {
+			
+			for(Variable_t var : current.methodParams) {
+				if(var.getName().equals(name.replaceAll("\\[", "").replaceAll("]", ""))) {
+					a="DWORD PTR [ebp + "+paramhm.get(current.getName().trim()).get(var.getName().trim())+"]";
+					flag = true;
+					break;
+				}
+			}
+		
+			if(!flag) {
+				output.elementAt(Methcount).append("\tpush esi\n\tmov esi, DWORD PTR [ebp + 8]\n");
+				a="DWORD PTR [esi - "+hm.elementAt(Methcount-1).get(name.trim().replaceAll("\\[", "").replaceAll("]", "")).toString()+"]\n";
+				si_used = true;
+			}
+			flag = false;
+		}
+		else
+			a="DWORD PTR [ebp - "+hm.elementAt(Methcount).get(name.trim().replaceAll("\\[", "").replaceAll("]", "")).toString()+"]";
+		
+		return a;
+	}
 
     public Assembler(LinkedList<Quad> quads, SymbolTable symboltable) {
     	this.quads= quads;
@@ -217,11 +241,8 @@ public class Assembler {
     		Set<Integer> keys = LabelMaps.keySet();  //get all keys
     		for(Integer i: keys)
     		{
-    	        //System.err.println(pair.getKey() + " = " + pair.getValue());
     	        if(i.equals(q.num)) {
-    	        	//System.err.println(">>>>>"+pair.getValue());
     	        	output.elementAt(Methcount).append(LabelMaps.get(i)+":\n");
-    	        	//it.remove();
     	        	break;
     	        }
     	    }
@@ -237,8 +258,6 @@ public class Assembler {
 					
 				case "jump":
 					caseJump(q);
-					//if(!LabelMaps.containsKey(q.d))
-						
 					break;
 					
 				case "array":
@@ -307,8 +326,6 @@ public class Assembler {
 	}
 
 	private void caseUnit(Quad q) {	
-		//output.append("_"+q.b + "\tproc near\n");
-		//output.append("\tpush ebp\n" + "\tmov bp, sp\n" + "\tsub sp,8\n");
 		bp = 4;
 		current_par=16;
 		args=0;
@@ -336,8 +353,6 @@ public class Assembler {
 	}
 	
 	private void caseEndu(Quad q) {	
-		//output.append("_"+q.b + "\tmov sp, bp\n");
-		//output.append("\tpop ebp\n" + "\tmov bp, sp\n" + "\tsub sp,8\n");
 		output.elementAt(Methcount).append("\n");
 		String epilogue;
 		if(Methcount==0)
@@ -361,7 +376,30 @@ public class Assembler {
 		String off;
 		String name = q.b.replaceAll("\\[", "").replaceAll("]", "").trim();
 		String val = q.d.replaceAll("\\[", "").replaceAll("]", "").trim();
-		off=find(Methcount, name);
+		
+		if(!isInteger(name))
+			name=find2(name);
+		
+		if(!isInteger(val)) {
+			if(val.contains("\"")) {
+				if(!datahm.containsKey(val)) {
+					datahm.put(val, nextdata());
+					data.append("\t"+datahm.get(val)+": .asciz "+val+"\n");
+					
+				}
+				output.elementAt(Methcount).append("\tmov eax, OFFSET FLAT:"+datahm.get(val)+"\n");
+			}
+			else {
+				val=find2(val);
+				
+			}
+			//output.elementAt(Methcount).append("\tmov DWORD PTR [ebp - "+off+"], eax\n");
+		}
+		else {
+			output.elementAt(Methcount).append("\tmov "+name+", "+val+"\n");
+		}
+		
+		/* off=find(Methcount, name);
 		
 		if(!hm.elementAt(Methcount).containsKey(name) && !isInteger(name)) {
 			output.elementAt(Methcount).append("\tpush esi\n");
@@ -388,34 +426,25 @@ public class Assembler {
 			off=find(Methcount, val);
 			output.elementAt(Methcount).append("\tmov eax, DWORD PTR [ebp - "+off+"]\n");
 		}
-		//System.err.println(q.b);
-		//if(!hm.containsKey(name)) {
-		//	hm.elementAt(Methcount).put(name, current_bp);
-		//	current_bp += 4;
-		//}
-		//System.err.println(name+" -- "+hm.get(name));
+		
 		output.elementAt(Methcount).append("\tmov DWORD PTR [ebp - "+off+"], eax\n");
+		*/
 	}
 	
 	private void caseArray(Quad q) {
 		// TODO Auto-generated method stub
-		
 		String a, b, c;
 		int size;
 		
 		Variable_t var = getType(q.b+" ", current);
-		//System.err.println("--->"+var.getType());
 		if(var.getType().contains("int"))
 			size = 4;
 		else
 			size = 1;
 		
-
 		a="DWORD PTR [ebp-"+hm.elementAt(Methcount).get(q.b).toString()+"]";
 		
 		c = q.d.replaceAll("\\[", "").replaceAll("]", "").trim();
-		//int target = Integer.valueOf(q.b);
-		//System.err.println(">>> "+c);
 		if(!hm.elementAt(Methcount).containsKey(c)) {
 			current_bp.put(current.getName(), bp);
 			hm.elementAt(Methcount).put(c.trim(), current_bp.get(current.getName()));
@@ -449,37 +478,21 @@ public class Assembler {
 
 	private void casePar(Quad q) {
 		// TODO Auto-generated method stub
-		args++;
+		
 		String a = null, b;
 		int offset=4;
 		System.err.println(paramhm);
-		//if(!st.contains(q.b).methodParams.isEmpty())
-			//output.elementAt(Methcount).append("\tpush esi\n");
-			//si_used = true;
 		boolean flag = false;
 		if(q.c.equals("V")) {
 			if(isInteger(q.b))
 				a=q.b;
-			
-			else {
-				/* if(!paramhm.get(current.getName().trim()).containsKey(q.b.trim().replaceAll("\\[", "").replaceAll("]", "")))
-					a="DWORD PTR [esi - "+paramhm.get(current.getName().trim()).get(q.b.trim().replaceAll("\\[", "").replaceAll("]", "")).toString()+"]\n";
-				else {
-					for(Variable_t var : current.methodParams) {
-						System.err.println(q.b.replaceAll("\\[", "").replaceAll("]", "")+">>>"+var.getName());
-						if(var.getName().equals(q.b.trim().replaceAll("\\[", "").replaceAll("]", ""))) {
-							a="DWORD PTR [ebp + "+paramhm.get(current.getName().trim()).get(q.b.trim().replaceAll("\\[", "").replaceAll("]", "")).toString()+"]";
-							break;
-						}
-					}
-					a="DWORD PTR [ebp - "+paramhm.get(current.getName().trim()).get(q.b.trim().replaceAll("\\[", "").replaceAll("]", "")).toString()+"]";
-				} */		
+			else {	
 				System.err.println("--->"+Methcount);
 				if(!hm.elementAt(Methcount).containsKey(q.b.trim().replaceAll("\\[", "").replaceAll("]", ""))) {
 					
 					for(Variable_t var : current.methodParams) {
 						if(var.getName().equals(q.b.replaceAll("\\[", "").replaceAll("]", ""))) {
-							a="DWORD PTR [ebp + "+(16*args)+"]";
+							a="DWORD PTR [ebp + "+(16+((args++)*4))+"]";
 							flag = true;
 							break;
 						}
@@ -496,18 +509,8 @@ public class Assembler {
 					a="DWORD PTR [ebp - "+hm.elementAt(Methcount).get(q.b.trim().replaceAll("\\[", "").replaceAll("]", "")).toString()+"]";
 				
 			}
-				
-			//offset += args*4;
-			//a = "DWORD PTR [ebp + "+ offset+"]";
-			//output.elementAt(Methcount).append("\tmov esi, "+a+"\n");
-			//a = "DWORD PTR [esi - "+ current_si+"]";
-			//current_si += 4;
 			
-			update = "\tmov eax, "+a+"\n\tpush eax\n";
-			//output.elementAt(Methcount).append("\tmov eax, "+a+"\n");
-			//output.elementAt(Methcount).append("\tpush eax\n");
-			
-			
+			update.append("\tmov eax, "+a+"\n\tpush eax\n");
 		}
 		else if(q.c.equals("R")) {
 			if(isInteger(q.b))
@@ -519,7 +522,7 @@ public class Assembler {
 					
 				}
 				a="OFFSET FLAT:"+datahm.get(q.b);
-				update = "\tmov eax, "+a+"\n\tpush eax\n";
+				update.append("\tmov eax, "+a+"\n\tpush eax\n");
 			}
 			else {
 				//a="DWORD PTR [ebp-"+hm.get(q.b).toString()+"]";
@@ -529,9 +532,6 @@ public class Assembler {
 				//a = "DWORD PTR [esi - "+ current_si+"]";
 				//current_si += 4;
 			}
-			
-			//output.elementAt(Methcount).append("\tlea esi, "+a+"\n");
-			//output.elementAt(Methcount).append("\tpush esi\n");
 		}
 		else if(q.b.equals("RET")) {
 			
@@ -540,11 +540,13 @@ public class Assembler {
 	
 	private void caseCall(Quad q) {
 		// TODO Auto-generated method stub
+		args=0;
+		
+		output.elementAt(Methcount).append(update);
+		update.delete(0, update.length());
 		updateAL(output.elementAt(Methcount), st.contains(q.d));
-		if(!update.isEmpty()) {
-			output.elementAt(Methcount).append(update);
-			update="";
-		}
+		
+
 		output.elementAt(Methcount).append("\tcall grace_"+q.d+"\n");
 		deallocateArgs(output.elementAt(Methcount), q.d);
 		for(String name : standards.smethodnames) {
@@ -562,11 +564,11 @@ public class Assembler {
 		if(isInteger(q.b.trim()))
 			a=q.b;
 		else
-			a=find(Methcount, q.b);
+			a=find2(q.b);
 		if(isInteger(q.c))
 			b=q.c;
 		else
-			b=find(Methcount, q.c);
+			b=find2(q.c);
 		
 		String lb = nextLabel();
 		LabelMaps.put(Integer.valueOf(q.num), lb);
@@ -598,15 +600,20 @@ public class Assembler {
 	}
 	
 	private void caseOper(Quad q) {
-		String a,b;
+		String a = null,b = null;
+		boolean flag=false;
+		String aa = null;
 		if(isInteger(q.b.trim()))
 			a=q.b;
-		else
-			a=find(Methcount, q.b);
+		else {
+			a = find2(q.b);
+		}
+		
 		if(isInteger(q.c))
 			b=q.c;
-		else
-			b="DWORD PTR [ebp-"+hm.elementAt(Methcount).get(q.c.trim()).toString()+"]";
+		else {
+			b=find2(q.c);
+		}
 		
 		if(!hm.elementAt(Methcount).containsKey(q.d)) {
 			current_bp.put(current.getName(), bp);
@@ -615,26 +622,20 @@ public class Assembler {
 		}
 		
 		if(q.a.equals("+")) {
-				
-			output.elementAt(Methcount).append("\tmov ebx, "+a+"\n");
 			output.elementAt(Methcount).append("\tmov ecx, "+b+"\n");
-			output.elementAt(Methcount).append("\tmov eax, ebx\n");
+			output.elementAt(Methcount).append("\tmov eax, "+a+"\n");
 			output.elementAt(Methcount).append("\tadd eax, ecx\n");	
-			
 		}
 		else if(q.a.equals("-")) {
-			
-			output.elementAt(Methcount).append("\tmov ebx, "+a+"\n");
 			output.elementAt(Methcount).append("\tmov ecx, "+b+"\n");
-			output.elementAt(Methcount).append("\tmov eax, ebx\n");
+			output.elementAt(Methcount).append("\tmov eax, "+a+"\n");
 			output.elementAt(Methcount).append("\tsub eax, ecx\n");
 			
 		}
 		else if(q.a.equals("*")) {
 							
-			output.elementAt(Methcount).append("\tmov ebx, "+a+"\n");
 			output.elementAt(Methcount).append("\tmov ecx, "+b+"\n");
-			output.elementAt(Methcount).append("\tmov eax, ebx\n");
+			output.elementAt(Methcount).append("\tmov eax, "+a+"\n");
 			output.elementAt(Methcount).append("\timul eax, ecx\n");			
 		}
 		else if(q.a.equals("/")) {
