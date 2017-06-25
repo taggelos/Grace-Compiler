@@ -24,25 +24,206 @@ public class IrVisitor2 {
 
 	HashMap<String, String> myhm = new HashMap<String, String>();
 	
+	//nop kai = 
+	public boolean revertConds(){ //reverts condition and deletes jump
+		boolean myret=false; //if sth changed boolean
+		for (int i = 0; i < quads.size()-1; i ++){		
+			if (quads.get(i+1).a.equals("jump")){
+				switch (quads.get(i).a) {					
+				case "<":
+					h2.setQuad(quads.get(i), new Quad(quads.get(i).num,">=",quads.get(i).b,quads.get(i).c,quads.get(i+1).d));
+					h2.remQuad(quads.get(i+1));
+					myret=true;
+					break;	
+				case ">":
+					h2.setQuad(quads.get(i), new Quad(quads.get(i).num,"<=",quads.get(i).b,quads.get(i).c,quads.get(i+1).d));
+					h2.remQuad(quads.get(i+1));
+					myret=true;
+					break;
+				case "<=":
+					h2.setQuad(quads.get(i), new Quad(quads.get(i).num,">",quads.get(i).b,quads.get(i).c,quads.get(i+1).d));
+					h2.remQuad(quads.get(i+1));
+					myret=true;
+					break;
+				case ">=":
+					h2.setQuad(quads.get(i), new Quad(quads.get(i).num,"<",quads.get(i).b,quads.get(i).c,quads.get(i+1).d));
+					h2.remQuad(quads.get(i+1));
+					myret=true;
+					break;
+				default:
+					break;
+				}					
+			}
+		}
+		return myret;
+	}	
 	
-	public Variable_t getType(String var, Method_t meth) {
-		  
-        String methodvar = meth.methContains(var);
-        Method_t from;
-        if(methodvar == null) {
-        	from = meth.from;
-        	while(from != null) {             // An den brisketai se sunarthsh...
-	            String fromvar = from.methContains(var);
-	            if(fromvar != null) {            // An den brisketai oute sto from...  
-	            	methodvar = fromvar;
-	            	break;
-	            }
-	            from = from.from;
-	        }
-        }
-        return new Variable_t(methodvar, var);
+	public boolean checkSameAss(String s){ //check if there is same assignment again
+		int count=0;
+		for (int i = 0; i < quads.size(); i ++){
+			if(quads.get(i).a.equals(":=") && quads.get(i).b.equals(s))
+				count++;
+		}
+		//System.err.println(count +s );
+		if (count > 1) return true; 
+		return false;
+	}
+	
+	public boolean constantAndCopyPropagation(boolean simpleVersion){ //tested perfectly + meta extra oi prakseis+copyprop + oxi g while kalo
+		boolean myret=false,simpleV=false; //if sth changed boolean
+		for (int i = 0; i < quads.size(); i ++){
+			if(quads.get(i).a.equals(":=") && !isInteger(quads.get(i).b)){ //&& isInteger(quads.get(i).d) //(for the other propagation only)
+				if(simpleVersion && checkSameAss(quads.get(i).b)) simpleV=true;
+				if (!simpleV ){ 
+					for (int j = i+1; j < quads.size(); j ++){
+							if(quads.get(j).a.equals(":="))
+								if (quads.get(i).b.equals(quads.get(j).b) ){ 
+									break;
+								}
+							switch (quads.get(j).a) {
+							case "<":				
+							case ">":
+							case "<=":
+							case ">=":
+							case "=":
+								if(quads.get(j).b.equals(quads.get(i).b) ){
+									h2.setQuad(quads.get(j), new Quad(quads.get(j).num,quads.get(j).a,quads.get(i).d,quads.get(j).c,quads.get(j).d));
+									myret=true;
+								}
+								if (quads.get(j).c.equals(quads.get(i).b)){
+									h2.setQuad(quads.get(j), new Quad(quads.get(j).num,quads.get(j).a,quads.get(j).b,quads.get(i).d,quads.get(j).d));
+									myret=true;
+								}
+								break;
+							case ":=":
+								if(quads.get(j).d.equals(quads.get(i).b) ){
+									h2.setQuad(quads.get(j), new Quad(quads.get(j).num,quads.get(j).a,quads.get(j).b,quads.get(j).c,quads.get(i).d));
+									myret=true;
+								}
+								break;
+							case "*" :
+							case "+" :
+							case "-" :
+							case "/" :
+							case "mod" :
+								if(quads.get(j).b.equals(quads.get(i).b) ){
+									h2.setQuad(quads.get(j), new Quad(quads.get(j).num,quads.get(j).a,quads.get(i).d,quads.get(j).c,quads.get(j).d));
+									myret=true;
+								}
+								if(quads.get(j).c.equals(quads.get(i).b) ){
+									h2.setQuad(quads.get(j), new Quad(quads.get(j).num,quads.get(j).a,quads.get(j).b,quads.get(i).d,quads.get(j).d));
+									myret=true;
+								}
+								break;
+							default:
+								break;						
+							}
+						
+					}
+				}
+				simpleV=false;
+			}
+			
+		}
+		return myret;
+	}	
+	
+	
+	public void checkIfUsed(String qa){
+		switch (qa) {
+		case "<":				
+		case ">":
+		case "<=":
+		case ">=":
+		case "=":
+			for (int i = 0; i < quads.size(); i ++){
+				
+			}
+			break;
+		default:
+			break;
+		}
+		
+	}
+	
+	/*public boolean copyPropagation(){
+		boolean myret=false;
+		for (int i = 0; i < quads.size(); i ++){
+			if(quads.get(i).a.equals(":=")){
+				if (!isInteger(quads.get(i).b) && !isInteger(quads.get(i).d)){ 
+					for (int j = i+1; j < quads.size(); j ++){
+							if(quads.get(j).a.equals(":="))
+								if (quads.get(i).b.equals(quads.get(j).b) ){ 
+									break;
+								}
+							switch (quads.get(j).a) {
+							case "<":				
+							case ">":
+							case "<=":
+							case ">=":
+							case "=":
+								if(quads.get(j).b.equals(quads.get(i).b) ){
 
-    } 
+									System.err.println("asdas " + quads.get(j).b  +"  "+quads.get(i).b);
+									h2.setQuad(quads.get(j), new Quad(quads.get(j).num,quads.get(j).a,quads.get(i).d,quads.get(j).c,quads.get(j).d));
+
+									System.err.println("asdas " + quads.get(j).b  +"  "+quads.get(i).b);
+									myret=true;
+								}
+								if (quads.get(j).c.equals(quads.get(i).b)){
+									h2.setQuad(quads.get(j), new Quad(quads.get(j).num,quads.get(j).a,quads.get(j).b,quads.get(i).d,quads.get(j).d));
+									myret=true;
+								}
+								break;
+							default:
+								break;							
+						
+							}
+				}
+				
+			}
+		}
+		}
+		return myret;
+	}*/
+		
+	public boolean constantFolding(){ //kind of??
+		boolean myret=false;
+		for (int i = 0; i < quads.size(); i ++){
+			if(isInteger(quads.get(i).b)==true && isInteger(quads.get(i).c)==true)
+				switch (quads.get(i).a) {
+					case "*" :
+						int mult = Integer.parseInt(quads.get(i).b.trim()) * Integer.parseInt(quads.get(i).c.trim());//needs float too
+						h2.setQuad(quads.get(i), new Quad(quads.get(i).num,":=",quads.get(i).d,"-",Integer.toString(mult)));
+						myret=true;
+						break;
+					case "+" :
+						int plus = Integer.parseInt(quads.get(i).b.trim()) + Integer.parseInt(quads.get(i).c.trim());//needs float too
+						h2.setQuad(quads.get(i), new Quad(quads.get(i).num,":=",quads.get(i).d,"-",Integer.toString(plus)));
+						myret=true;
+						break;
+					case "-" :
+						int minus = Integer.parseInt(quads.get(i).b.trim()) - Integer.parseInt(quads.get(i).c.trim());//needs float too
+						h2.setQuad(quads.get(i), new Quad(quads.get(i).num,":=",quads.get(i).d,"-",Integer.toString(minus)));
+						myret=true;
+						break;
+					case "/" :
+						System.err.println(quads.get(i).b);
+						int div = Integer.parseInt(quads.get(i).b.trim()) / Integer.parseInt(quads.get(i).c.trim());//needs float too
+						h2.setQuad(quads.get(i), new Quad(quads.get(i).num,":=",quads.get(i).d,"-",Integer.toString(div)));
+						myret=true;
+						break;
+					case "mod" : 
+						int mod = Integer.parseInt(quads.get(i).b.trim()) % Integer.parseInt(quads.get(i).c.trim());//needs float too
+						h2.setQuad(quads.get(i), new Quad(quads.get(i).num,":=",quads.get(i).d,"-",Integer.toString(mod)));
+						myret=true;
+						break;
+					default:
+						break;						
+				}
+		}
+		return myret;
+	}
 	
 	public static boolean isInteger(String s) {
 	    try { 
@@ -56,6 +237,38 @@ public class IrVisitor2 {
 	    return true;
 	}
 	
+	public void iterateOverJumps(){//while problem?
+		int next=0;
+		for(Quad q : quads) {
+			if (q.a.equals("jump")){
+				next=Integer.parseInt(q.d);
+			}
+			else{
+				next++;
+			}
+			if (q.num+1==next){
+				//do sth
+			}			
+		}
+	}
+	
+	//idio provlhma kai remove unused variables
+	public void remJumpsOfNextLine(){ //TODO needs checks g kathe jump mhn xrhsimopoieitai apo allh prin svhstei
+		for (int i = 0; i < quads.size()-1; i ++){
+			if (quads.get(i+1).equals("jump"))
+				switch (quads.get(i).a) {					
+				case "<":				
+				case ">":
+				case "<=":
+				case ">=":
+				case "=":
+					if(quads.get(i).d.trim().equals(quads.get(i+1).d))
+					break;
+				default:
+					break;
+				}
+		}
+	}
 
     public IrVisitor2(LinkedList<Quad> quads, SymbolTable symboltable) {
     	this.quads= quads;
@@ -76,59 +289,59 @@ public class IrVisitor2 {
 					break;
 					
 				case "jump":
-					caseJump(q);
-					//if(!LabelMaps.containsKey(q.d))
-						
-					break;
-					
+					caseJump(q);						
+					break;					
 				case "array":
 					caseArray(q);
-					break;	
-					
+					break;						
 				case "par":
 					casePar(q);
-					break;	
-					
+					break;						
 				case "call":
 					caseCall(q);
-					break;
-					
+					break;					
 				case ":=":
 					caseAss(q);
-					break;	
-					
+					break;						
 				case "<" :
 				case "<=" :
 				case ">" :
 				case ">=" :
 				case "=" :
-					caseCompare(q);
-					
-					break;	
-				
+					caseCompare(q);					
+					break;					
 				case "*" :
 				case "+" :
 				case "-" :
 				case "/" :
 				case "mod" :
 					caseOper(q);
-					break;
-					
+					break;					
 				case "ret":
 					caseReturn(q);
-					break;	
-	
+					break;		
 				default:
 					break;
 			}  
     	}
+		/*
 		for (HashMap.Entry<String,LinkedList<Integer>> entry : vars.entrySet()) {
 		    System.err.println(entry.getKey() + ", " + entry.getValue());
 		    if(entry.getValue().get(1)==0){
 		    	h2.remQuad(entry.getValue().get(0));
 		    }
-		}
-		h2.printQuads();		
+		}*/
+		this.quads=h2.quads;
+		//constantFolding(); //???
+		//constantAndCopyPropagation();
+		//constantAndCopyPropagation(true); //true for simple
+		revertConds();
+		//constantFolding();
+		while(constantAndCopyPropagation(true) || constantFolding()){
+		System.err.println("as");
+		};
+		h2.printQuads();	
+		
 	}
 
 	private void init() {
@@ -154,8 +367,7 @@ public class IrVisitor2 {
 				vars.put(q.c.trim(),ml);
 			}
 		}
-		h2.genQuad(q.a, q.b, q.c, q.d);
-		//h2.remQuad(q);
+		
 		int cursum;
 		boolean flag=false;
 		if(q.a.equals("+")) {
@@ -163,14 +375,14 @@ public class IrVisitor2 {
 				
 			}
 			if(isInteger(q.b.trim())) {
-				//myhm.put(key, value)	
+				
 			}
 			if(isInteger(q.c.trim())) {
 			
 			}
 
 			if(q.b.trim().equals("t")){
-				h2.remQuad(q);
+				//h2.remQuad(q);
 				flag=true;
 			}
 		}
@@ -187,7 +399,7 @@ public class IrVisitor2 {
 			
 		}
 
-		//h2.genQuad(q.a, q.b, q.c, q.d);
+		h2.genQuad(q.a, q.b, q.c, q.d);
 	}
 	
 	private void caseAss(Quad q) {
@@ -204,8 +416,7 @@ public class IrVisitor2 {
 				ml.add(1);
 				vars.put(q.c.trim(),ml);
 			}
-		}
-		
+		}	
 		
 		h2.genQuad(q.a, q.b, q.c, q.d);		
 		
@@ -239,7 +450,6 @@ public class IrVisitor2 {
 		h2.genQuad(q.a, q.b, q.c, q.d);
 		
 	}
-	
 	
 	private void caseArray(Quad q) {
 		// TODO Auto-generated method stub
