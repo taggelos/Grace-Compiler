@@ -33,9 +33,17 @@ public class Standards {
     		createputi();
     	else if(name.equals("gets ")) 
     		creategets();
+    	else if(name.equals("puts "))
+    		createputs();
     }
     
-    public void createputi() {
+    public void createputs() {
+    	StringBuffer lines = new StringBuffer();
+    	lines.append("\tpush ebp\n\tmov ebp, esp\n\t\n\tmov eax, DWORD PTR [ebp + 8]\n\tpush eax\n\tcall printf\n\tadd esp, 8\n\t\n\tmov esp, ebp\n\tpop ebp\n\tret\n\t");
+    	code.put("grace_puts", lines);
+	}
+
+	public void createputi() {
     	StringBuffer lines = new StringBuffer();
     	lines.append("\tpush ebp\n\tmov ebp, esp\n\t\n\tpush eax\n\tmov eax, OFFSET FLAT:int_fmt\n\tpush eax\n\tcall printf\n\tadd esp, 8\n\t\n\tmov esp, ebp\n\tpop ebp\n\tret\n\t");
     	code.put("grace_puti", lines);

@@ -23,16 +23,22 @@ public class Assembler {
 	int Methcount = 0;
 	boolean isMain = true;
 	int label=0;
-	int current_bp = 4;
+	int bp = 4;
 	int current_si = 4;
 	boolean si_used = false;
 	int args = 0;
 	boolean isCallee=false;
-	//int next_bp=2;
+	int str=0;
 	String update="";
+	int current_scope=0;
+	int scope;
+	int current_par = 16;
 	
+	HashMap<String, Integer> current_bp = new HashMap<String, Integer>();
+	public HashMap<String,HashMap<String, Integer>> paramhm = new HashMap<String, HashMap<String, Integer>>();
+	HashMap<String, Integer> scopes = new HashMap<String, Integer>();
 	public Vector<HashMap<String, Integer>> hm = new Vector<HashMap<String, Integer>>();
-	//HashMap<String, Integer> hm = new HashMap<String, Integer>();
+	HashMap<String, String> datahm = new HashMap<String, String>();
 	HashMap<Integer, String> LabelMaps = new HashMap<Integer, String>();
 	Standards standards = new Standards();
 	
@@ -84,8 +90,13 @@ public class Assembler {
 		return "L"+label;
 	}
 	
+	public String nextdata() {
+		str++;
+		return "string"+str;
+	}
+	
 	private boolean isStandard(String name) {
-		if(name.equals("grace_puti"))
+		if(name.equals("puti") || name.equals("puts") || name.equals("gets"))
 			return true;
 		return false;
 	}
@@ -114,8 +125,9 @@ public class Assembler {
 			}
 			offset = type*count;
 			total += offset;
-			hm.elementAt(Methcount).put(var.getName().trim(), current_bp);
-			current_bp += offset;
+			current_bp.put(name, bp);
+			hm.elementAt(Methcount).put(var.getName().trim(), current_bp.get(name));
+			bp += offset;
 		}
 		
 		if(offset != 0)
@@ -147,8 +159,9 @@ public class Assembler {
 				}
 			}
 			offset = type*count;
-			hm.elementAt(Methcount).put(var.getName().trim(), current_bp);
-			current_bp += offset;
+			System.err.println(paramhm.get(current.getName().trim()));
+			paramhm.get(current.getName().trim()).put(var.getName().trim(), current_par);
+			current_par += offset;
 		}
 		
 	}
@@ -162,22 +175,24 @@ public class Assembler {
 	}
 	
 	private void updateAL(StringBuffer stringBuffer, Method_t meth) {
-		// TODO Auto-generated method stub
-		if(current.from == null) {
-			output.elementAt(Methcount).append("\tpush ebp\n");
-			return;
-		}
 		
-		for(Method_t m : current.methodList) {
-			System.err.println(meth.getName()+" AAAAA "+m.getName());
-			if(isStandard(meth.getName().trim())) {
-				output.elementAt(Methcount).append("\tpush ebp\n");
-				return;
-			}
+		System.err.println(meth.getName());
+		if(isStandard(meth.getName().trim())) {
+			output.elementAt(Methcount).append("\tsub esp, 4\n");
 		}
-		output.elementAt(Methcount).append("\tpush esi\n");
-		si_used = true;
-		output.elementAt(Methcount).append("\tmov esi, DWORD PTR [ebp + 8]\n\tpush esi\n");
+		else if(scopes.get(meth.getName()) > scopes.get(current.getName())) {
+			output.elementAt(Methcount).append("\tpush ebp\n");
+		}
+		else if(scopes.get(meth.getName()) == scopes.get(current.getName())) {
+			output.elementAt(Methcount).append("\tpush DWPRD PTR [ebp + 8]\n");
+		}
+		else {
+			//output.elementAt(Methcount).append("\tpush esi\n");
+			si_used = true;
+			for(int i=scopes.get(current.getName()); i<scopes.get(meth.getName()); i++)
+				output.elementAt(Methcount).append("\tmov esi, DWORD PTR [ebp + 8]\n");
+			output.elementAt(Methcount).append("\tpush esi\n");
+		}
 	}
 	
 	public String find(int i, String name) {
@@ -284,6 +299,7 @@ public class Assembler {
 	private void init() {
 		output.addElement(new StringBuffer());
 		hm.addElement(new HashMap<String, Integer>());
+		paramhm.put("main", new HashMap<String, Integer>());
 		output.elementAt(Methcount).append(".intel_syntax noprefix\n");
 		output.elementAt(Methcount).append(".text\n");
 		output.elementAt(Methcount).append("\t.global main\n");
@@ -293,23 +309,30 @@ public class Assembler {
 	private void caseUnit(Quad q) {	
 		//output.append("_"+q.b + "\tproc near\n");
 		//output.append("\tpush ebp\n" + "\tmov bp, sp\n" + "\tsub sp,8\n");
-		args = 0;
+		bp = 4;
+		current_par=16;
+		args=0;
+		current = st.contains(q.b);
 		if(isMain)
 			output.elementAt(Methcount).append("main:\n");
 		else {
 			Methcount++;
 			output.addElement(new StringBuffer());
 			hm.addElement(new HashMap<String, Integer>());
+			paramhm.put(q.b.trim(), new HashMap<String, Integer>());
 			output.elementAt(Methcount).append("grace_"+q.b+":\n");
 		}
-
+		
 		output.elementAt(Methcount).append("\tpush ebp\n" + "\tmov ebp, esp\n");
 		parAllocation(output.elementAt(Methcount), q.b.trim());
 		varAllocation(output.elementAt(Methcount), q.b.trim());
 		
 		output.elementAt(Methcount).append("\n");
-		current = st.contains(q.b);
+		
 		isMain = false;
+		
+		current_scope++;
+		scopes.put(q.b, current_scope);
 	}
 	
 	private void caseEndu(Quad q) {	
@@ -331,7 +354,7 @@ public class Assembler {
 		output.elementAt(Methcount).append("\tmov esp, ebp\n\tpop ebp\n\tret\n");
 		Methcount--;
 		current = current.from;
-		
+		current_scope--;
 	}
 
 	private void caseAss(Quad q) {
@@ -351,6 +374,14 @@ public class Assembler {
 		if(!hm.elementAt(Methcount).containsKey(val)) {
 			if(isInteger(val))
 				output.elementAt(Methcount).append("\tmov eax, "+val+"\n");
+			else if(val.contains("\"")) {
+				if(!datahm.containsKey(val)) {
+					datahm.put(val, nextdata());
+					data.append("\t"+datahm.get(val)+": .asciz "+val+"\n");
+					
+				}
+				output.elementAt(Methcount).append("\tmov eax, OFFSET FLAT:"+datahm.get(val)+"\n");
+			}
 		}
 		else {
 			
@@ -386,8 +417,9 @@ public class Assembler {
 		//int target = Integer.valueOf(q.b);
 		//System.err.println(">>> "+c);
 		if(!hm.elementAt(Methcount).containsKey(c)) {
-			hm.elementAt(Methcount).put(c.trim(), current_bp);
-			current_bp += 4;
+			current_bp.put(current.getName(), bp);
+			hm.elementAt(Methcount).put(c.trim(), current_bp.get(current.getName()));
+			bp += 4;
 		}
 			
 		if(isInteger(q.c))
@@ -420,37 +452,56 @@ public class Assembler {
 		args++;
 		String a = null, b;
 		int offset=4;
-		System.err.println(hm);
+		System.err.println(paramhm);
 		//if(!st.contains(q.b).methodParams.isEmpty())
 			//output.elementAt(Methcount).append("\tpush esi\n");
 			//si_used = true;
-		
+		boolean flag = false;
 		if(q.c.equals("V")) {
 			if(isInteger(q.b))
 				a=q.b;
+			
 			else {
-				/* if(!hm.elementAt(Methcount).containsKey(q.b.trim().replaceAll("\\[", "").replaceAll("]", "")))
-					a="DWORD PTR [esi - "+hm.elementAt(Methcount-1).get(q.b.trim().replaceAll("\\[", "").replaceAll("]", "")).toString()+"]\n";
-				for(Variable_t var : current.methodVars) {	// H' sta parameters
-					System.err.println(q.b.replaceAll("\\[", "").replaceAll("]", "")+">>>"+var.getName());
-					if(var.getName().equals(q.b.trim().replaceAll("\\[", "").replaceAll("]", ""))) {
-						a="DWORD PTR [ebp - "+hm.elementAt(Methcount).get(q.b.trim().replaceAll("\\[", "").replaceAll("]", "")).toString()+"]";
-						break;
-					} */
+				/* if(!paramhm.get(current.getName().trim()).containsKey(q.b.trim().replaceAll("\\[", "").replaceAll("]", "")))
+					a="DWORD PTR [esi - "+paramhm.get(current.getName().trim()).get(q.b.trim().replaceAll("\\[", "").replaceAll("]", "")).toString()+"]\n";
+				else {
+					for(Variable_t var : current.methodParams) {
+						System.err.println(q.b.replaceAll("\\[", "").replaceAll("]", "")+">>>"+var.getName());
+						if(var.getName().equals(q.b.trim().replaceAll("\\[", "").replaceAll("]", ""))) {
+							a="DWORD PTR [ebp + "+paramhm.get(current.getName().trim()).get(q.b.trim().replaceAll("\\[", "").replaceAll("]", "")).toString()+"]";
+							break;
+						}
+					}
+					a="DWORD PTR [ebp - "+paramhm.get(current.getName().trim()).get(q.b.trim().replaceAll("\\[", "").replaceAll("]", "")).toString()+"]";
+				} */		
+				System.err.println("--->"+Methcount);
+				if(!hm.elementAt(Methcount).containsKey(q.b.trim().replaceAll("\\[", "").replaceAll("]", ""))) {
+					
+					for(Variable_t var : current.methodParams) {
+						if(var.getName().equals(q.b.replaceAll("\\[", "").replaceAll("]", ""))) {
+							a="DWORD PTR [ebp + "+(16*args)+"]";
+							flag = true;
+							break;
+						}
+					}
 				
-				if(!hm.elementAt(Methcount).containsKey(q.b.trim().replaceAll("\\[", "").replaceAll("]", "")))
-					a="DWORD PTR [esi - "+hm.elementAt(Methcount-1).get(q.b.trim().replaceAll("\\[", "").replaceAll("]", "")).toString()+"]\n";
+					if(!flag) {
+						output.elementAt(Methcount).append("\tpush esi\n\tmov esi, DWORD PTR [ebp + 8]\n");
+						a="DWORD PTR [esi - "+hm.elementAt(Methcount-1).get(q.b.trim().replaceAll("\\[", "").replaceAll("]", "")).toString()+"]\n";
+						si_used = true;
+					}
+					flag = false;
+				}
 				else
 					a="DWORD PTR [ebp - "+hm.elementAt(Methcount).get(q.b.trim().replaceAll("\\[", "").replaceAll("]", "")).toString()+"]";
-
 				
-				}
+			}
 				
-				//offset += args*4;
-				//a = "DWORD PTR [ebp + "+ offset+"]";
-				//output.elementAt(Methcount).append("\tmov esi, "+a+"\n");
-				//a = "DWORD PTR [esi - "+ current_si+"]";
-				//current_si += 4;
+			//offset += args*4;
+			//a = "DWORD PTR [ebp + "+ offset+"]";
+			//output.elementAt(Methcount).append("\tmov esi, "+a+"\n");
+			//a = "DWORD PTR [esi - "+ current_si+"]";
+			//current_si += 4;
 			
 			update = "\tmov eax, "+a+"\n\tpush eax\n";
 			//output.elementAt(Methcount).append("\tmov eax, "+a+"\n");
@@ -461,6 +512,15 @@ public class Assembler {
 		else if(q.c.equals("R")) {
 			if(isInteger(q.b))
 				a=q.b;
+			else if(q.b.contains("\"")) {
+				if(!datahm.containsKey(q.b)) {
+					datahm.put(q.b, nextdata());
+					data.append("\t"+datahm.get(q.b)+": .asciz "+q.b+"\n");
+					
+				}
+				a="OFFSET FLAT:"+datahm.get(q.b);
+				update = "\tmov eax, "+a+"\n\tpush eax\n";
+			}
 			else {
 				//a="DWORD PTR [ebp-"+hm.get(q.b).toString()+"]";
 				offset += args*4;
@@ -470,8 +530,6 @@ public class Assembler {
 				//current_si += 4;
 			}
 			
-			output.elementAt(Methcount).append("\tlea esi, "+a+"\n");
-			output.elementAt(Methcount).append("\tpush esi\n");
 			//output.elementAt(Methcount).append("\tlea esi, "+a+"\n");
 			//output.elementAt(Methcount).append("\tpush esi\n");
 		}
@@ -551,8 +609,9 @@ public class Assembler {
 			b="DWORD PTR [ebp-"+hm.elementAt(Methcount).get(q.c.trim()).toString()+"]";
 		
 		if(!hm.elementAt(Methcount).containsKey(q.d)) {
-			hm.elementAt(Methcount).put(q.d.trim(), current_bp);
-			current_bp += 4;
+			current_bp.put(current.getName(), bp);
+			hm.elementAt(Methcount).put(q.d.trim(), current_bp.get(current.getName()));
+			bp += 4;
 		}
 		
 		if(q.a.equals("+")) {

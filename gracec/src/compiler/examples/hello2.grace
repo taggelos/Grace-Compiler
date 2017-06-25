@@ -57,12 +57,12 @@ $$
 
 fun main () : nothing
 var x:int;
-    fun f() : nothing 
+    fun f(a,b : int) : nothing 
     {
-        puti(x);
+        puti(a+b);
     }
 {
     x<-45;
-    f();
+    f(x, x);
     
 }
