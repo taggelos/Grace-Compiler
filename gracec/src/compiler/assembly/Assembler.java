@@ -183,7 +183,7 @@ public class Assembler {
 			output.elementAt(Methcount).append("\tsub esp, 4\n\tpush ebp\n");
 		}
 		else if(scopes.get(meth.getName()) == scopes.get(current.getName())) {
-			output.elementAt(Methcount).append("\tpush DWPRD PTR [ebp + 8]\n");
+			output.elementAt(Methcount).append("\tsub esp, 4\n\tpush DWORD PTR [ebp + 8]\n");
 		}
 		else {
 			si_used = true;
@@ -377,58 +377,33 @@ public class Assembler {
 		String name = q.b.replaceAll("\\[", "").replaceAll("]", "").trim();
 		String val = q.d.replaceAll("\\[", "").replaceAll("]", "").trim();
 		
-		if(!isInteger(name))
-			name=find2(name);
+		System.err.println(q.printQuad());
 		
-		if(!isInteger(val)) {
-			if(val.contains("\"")) {
-				if(!datahm.containsKey(val)) {
-					datahm.put(val, nextdata());
-					data.append("\t"+datahm.get(val)+": .asciz "+val+"\n");
-					
-				}
-				output.elementAt(Methcount).append("\tmov eax, OFFSET FLAT:"+datahm.get(val)+"\n");
+		if(!isInteger(q.b.replaceAll("\\[", "").replaceAll("]", "")))
+			name=find2(q.b.replaceAll("\\[", "").replaceAll("]", ""));
+		
+		if(!isInteger(q.d.replaceAll("\\[", "").replaceAll("]", ""))) {
+			if(q.d.equals("$$")) {
+				output.elementAt(Methcount).append("\tmov esi, DWORD PTR [ebp + 12]\n\tmov DWORD PTR [esi], "+name+"\n");
+				return;
 			}
-			else {
-				val=find2(val);
-				
-			}
-			//output.elementAt(Methcount).append("\tmov DWORD PTR [ebp - "+off+"], eax\n");
-		}
-		else {
-			output.elementAt(Methcount).append("\tmov "+name+", "+val+"\n");
-		}
-		
-		/* off=find(Methcount, name);
-		
-		if(!hm.elementAt(Methcount).containsKey(name) && !isInteger(name)) {
-			output.elementAt(Methcount).append("\tpush esi\n");
-			si_used = true;
-			output.elementAt(Methcount).append("\tmov esi, DWORD PTR [ebp + 8]\n\tpush esi\n");
-			output.elementAt(Methcount).append("\tmov eax, DWORD PTR [esi - "+hm.elementAt(Methcount-1).get(name)+"]\n");
-			
-		}
-		
-		if(!hm.elementAt(Methcount).containsKey(val)) {
-			if(isInteger(val))
-				output.elementAt(Methcount).append("\tmov eax, "+val+"\n");
 			else if(val.contains("\"")) {
 				if(!datahm.containsKey(val)) {
 					datahm.put(val, nextdata());
 					data.append("\t"+datahm.get(val)+": .asciz "+val+"\n");
-					
 				}
 				output.elementAt(Methcount).append("\tmov eax, OFFSET FLAT:"+datahm.get(val)+"\n");
+				return;
+			}
+			else {
+				val=find2(q.d.replaceAll("\\[", "").replaceAll("]", ""));
+				output.elementAt(Methcount).append("\tmov eax, "+val+"\n");
+				val = "eax";
 			}
 		}
-		else {
-			
-			off=find(Methcount, val);
-			output.elementAt(Methcount).append("\tmov eax, DWORD PTR [ebp - "+off+"]\n");
-		}
 		
-		output.elementAt(Methcount).append("\tmov DWORD PTR [ebp - "+off+"], eax\n");
-		*/
+		output.elementAt(Methcount).append("\tmov "+name+", "+val+"\n");
+		
 	}
 	
 	private void caseArray(Quad q) {
@@ -534,7 +509,13 @@ public class Assembler {
 			}
 		}
 		else if(q.b.equals("RET")) {
-			
+			if(!hm.elementAt(Methcount).containsKey(q.c)) {
+				current_bp.put(current.getName(), bp);
+				hm.elementAt(Methcount).put(q.c.trim(), current_bp.get(current.getName()));
+				bp += 4;
+			}
+			output.elementAt(Methcount).append("\tlea esi, DWORD PTR [ebp - "+hm.elementAt(Methcount).get(q.c.trim())+"]\n");
+			output.elementAt(Methcount).append("\tpush esi\n");
 		}
 	}
 	

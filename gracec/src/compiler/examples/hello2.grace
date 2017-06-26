@@ -1,7 +1,32 @@
-$$fun main () : nothing
+$$
+fun main () : nothing
+var x:int;
+    fun f(a,b :int) : int 
+    { 
+    return 1;
+    }
+{
+    x<-45;
+   x<- f(x,x);
+    puti(x);
+}
+$$
 
+
+fun main () : nothing
+var a : int[3];
+var x : int;
+{
+    a[0] <- 0;
+    $x <- a[0];
+    puti(a[0]);
+}
+
+
+
+$$
+fun main () : nothing
 var a : int;
-
     fun f() : nothing
     var b : int;
     {
@@ -14,30 +39,8 @@ var a : int;
         return;
     }
 {
-
 a <- 50;
 f();
-}
-$$
-$$
-fun main () : nothing
-var a : int[3];
-var x : int;
-{
-	a[0] <- 0;
-	$x <- a[0];
-    puti(a[0]);
-}
-$$
-$$
-fun main(): nothing
-var i : int;
-var x : int;
-{
- x<-0; 
- i<-x*1+2;
- if x >0 or x<4 then
- return;
 }
 $$
 
@@ -54,7 +57,7 @@ var x:int;
     puti(x);
 }
 $$
-
+$$
 fun main () : nothing
 var x:int;
     fun f(a : int) : nothing 
@@ -67,6 +70,19 @@ var x:int;
     f(x);
     
 }
+$$
+
+$$
+fun main(): nothing
+var i : int;
+var x : int;
+{
+ x<-0; 
+ i<-x*1+2;
+ if x >0 or x<4 then
+ return;
+}
+$$
 
 $$
 fun main () : nothing
@@ -95,6 +111,43 @@ var x,y :int;
     x<-45;
     y<- 10;
     f(x,y);
+    
+}
+$$
+$$
+fun main () : nothing
+var x:int;
+     fun fa(z: int) : nothing 
+    {
+      puti(z);
+    }
+    fun f(a,b :int) : nothing 
+    {
+      fa(a);
+    }
+
+{
+    x<-45;
+    f(x,x);
+    
+}
+$$
+$$
+fun main () : nothing
+var x:int;
+    fun f(a,b :int) : nothing 
+    var x :int;
+    {
+   x<-5;
+      a<-a;
+      
+      b<-b;
+      b<-1;
+      puti(b);
+    }
+{
+    x<-45;
+    f(x,x);
     
 }
 $$
