@@ -75,10 +75,10 @@ public class Assembler {
 	
 	public int getSize(String input) {
 		if(input.contains("\""))
-			return input.replaceAll("\" ", "").length();	//String case
+			return input.replaceAll("\" ", "").length();
 		else if(input.contains("\'"))						
-			return 1;										//Char const case
-		return 4;											//Int case
+			return 1;										
+		return 4;											
 	}
 	
 	public String nextLabel() {
@@ -125,7 +125,6 @@ public class Assembler {
 			}
 			offset = type*count;
 			total += offset;
-			System.err.println(">>>>>>"+current_bp);
 			current_bp.put(name, current_bp.get(current.getName().trim())+4);
 			hm.elementAt(Methcount).put(var.getName().trim(), current_bp.get(name));
 			bp += offset;
@@ -160,7 +159,6 @@ public class Assembler {
 				}
 			}
 			offset = type*count;
-			System.err.println(paramhm.get(current.getName().trim()));
 			paramhm.get(current.getName().trim()).put(var.getName().trim(), current_par);
 			current_par += offset;
 		}
@@ -175,8 +173,6 @@ public class Assembler {
 	}
 	
 	private void updateAL(StringBuffer stringBuffer, Method_t meth) {
-		
-		System.err.println(meth.getName());
 		if(isStandard(meth.getName().trim())) {
 			if(meth.get_return_type().equals("nothing"))
 				output.elementAt(Methcount).append("\tsub esp, 4\n");
@@ -212,10 +208,9 @@ public class Assembler {
 	public String find2(String name, boolean isOp) {
 		String a = null;
 		boolean flag=false;
-		System.err.println("--->"+hm.elementAt(Methcount));
 		if(!hm.elementAt(Methcount).containsKey(name.trim().replaceAll("\\[", "").replaceAll("]", ""))) {
 			for(Variable_t var : current.methodParams) {
-				if(var.getName().equals(name.replaceAll("\\[", "").replaceAll("]", ""))) {  //mov esi, DWORD PTR [ebp + 16] mov eax, DWORD PTR [esi]
+				if(var.getName().equals(name.replaceAll("\\[", "").replaceAll("]", ""))) {
 					if(isOp) {
 						a="DWORD PTR [esi]";
 						output.elementAt(Methcount).append("\tmov esi, DWORD PTR [ebp + 16]\n");
@@ -249,9 +244,8 @@ public class Assembler {
 	public void create() {
 		init();
 		for(Quad q : quads) {
-    		System.out.println(hm);
     		
-    		Set<Integer> keys = LabelMaps.keySet();  //get all keys
+    		Set<Integer> keys = LabelMaps.keySet();
     		for(Integer i: keys)
     		{
     	        if(i.equals(q.num)) {
@@ -295,7 +289,6 @@ public class Assembler {
 				case ">=" :
 				case "=" :
 					caseCompare(q);
-					
 					break;	
 				
 				case "*" :
@@ -314,12 +307,10 @@ public class Assembler {
 					break;
 			}    	
     	}
-		//System.err.println(standards.code);
-		System.err.println(LabelMaps);
 		for(StringBuffer sb : output)
 			System.out.println(sb.toString());
 		
-		Set<String> keys = standards.code.keySet();  //get all keys
+		Set<String> keys = standards.code.keySet();
 		for(String i: keys)
 		{
 		    System.out.println(i+":");
@@ -397,8 +388,6 @@ public class Assembler {
 		
 		String wtf=null;
 		
-		System.err.println(q.printQuad());
-		
 		if(!isInteger(q.b.replaceAll("\\[", "").replaceAll("]", ""))) {
 			
 			
@@ -450,7 +439,6 @@ public class Assembler {
 	}
 	
 	private void caseArray(Quad q) {
-		// TODO Auto-generated method stub
 		String a, b, c;
 		int size;
 		
@@ -495,17 +483,13 @@ public class Assembler {
 	}
 
 	private void casePar(Quad q) {
-		// TODO Auto-generated method stub
-		
 		String a = null, b;
 		int offset=4;
-		//system.err.println(paramhm);
 		boolean flag = false;
 		if(q.c.equals("V")) {
 			if(isInteger(q.b))
 				a=q.b;
-			else {	
-				//system.err.println("--->"+Methcount);
+			else {
 				if(!hm.elementAt(Methcount).containsKey(q.b.trim().replaceAll("\\[", "").replaceAll("]", ""))) {
 					
 					for(Variable_t var : current.methodParams) {
@@ -543,13 +527,6 @@ public class Assembler {
 				update.append("\tmov eax, "+a+"\n\tpush eax\n");
 			}
 			else {
-				//a="DWORD PTR [ebp-"+hm.get(q.b).toString()+"]";
-				////offset += args*4;
-				////a = "DWORD PTR [ebp + "+ offset+"]";
-				//output.elementAt(Methcount).append("\tmov esi, "+a+"\n");
-				//a = "DWORD PTR [esi - "+ current_si+"]";
-				//current_si += 4;
-				
 				a = find2(q.b, false);
 				
 				output.elementAt(Methcount).append("\tlea esi, "+a+"\n");
@@ -562,14 +539,12 @@ public class Assembler {
 				hm.elementAt(Methcount).put(q.c.trim(), current_bp.get(current.getName().trim()));
 				bp += 4;
 			}
-			//system.err.println("----->>>"+hm.elementAt(Methcount));
 			output.elementAt(Methcount).append("\tlea esi, DWORD PTR [ebp - "+hm.elementAt(Methcount).get(q.c.trim())+"]\n");
 			output.elementAt(Methcount).append("\tpush esi\n");
 		}
 	}
 	
 	private void caseCall(Quad q) {
-		// TODO Auto-generated method stub
 		args=0;
 		
 		output.elementAt(Methcount).append(update);
@@ -655,7 +630,6 @@ public class Assembler {
 			b=find2(q.c, true);
 		}
 		
-		//system.err.println(current_bp);
 		if(!hm.elementAt(Methcount).containsKey(q.d)) {
 			current_bp.put(current.getName(), current_bp.get(current.getName().trim())+4);
 			hm.elementAt(Methcount).put(q.d.trim(), current_bp.get(current.getName()));

@@ -1,14 +1,10 @@
 1: unit, main , -, -
-2: unit, fa , -, -
-3: par, z , V, -
-4: call, -, -, puti 
-5: endu, fa , -, -
-6: unit, f , -, -
-7: par, a , V, -
-8: call, -, -, fa 
-9: endu, f , -, -
-10: :=, x , -, 45 
-11: par, x , V, -
-12: par, x , V, -
-13: call, -, -, f 
-14: endu, main , -, -
+2: unit, f , -, -
+3: +, 4 , a , $1
+4: par, $1, V, -
+5: call, -, -, puti 
+6: endu, f , -, -
+7: :=, x , -, 4 
+8: par, x , R, -
+9: call, -, -, f 
+10: endu, main , -, -

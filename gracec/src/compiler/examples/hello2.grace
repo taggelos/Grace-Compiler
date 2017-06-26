@@ -1,4 +1,4 @@
-$$
+
 fun main () : nothing
 var x:int;
     fun f(ref a: int) : nothing 
@@ -10,7 +10,7 @@ var x:int;
    f(x);
  
 }
-$$
+
 
 $$
 fun main () : nothing

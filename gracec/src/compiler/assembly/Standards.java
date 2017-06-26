@@ -44,13 +44,13 @@ public class Standards {
     public void createstrlen() {
     	StringBuffer lines = new StringBuffer();
     	lines.append("\tpush ebp\n\tmov ebp, esp\n\tmov eax , DWORD PTR [ebp + 16]\n\tpush eax\n\tcall strlen\n\tadd esp, 4\n\tmov edx, DWORD ptr [ebp+12]\n\tmov DWORD PTR [edx], eax\n\tmov esp, ebp\n\tpop ebp\n\tret\n");
-    	code.put("grace_puts", lines);
+    	code.put("grace_strlen", lines);
 	}
 
 	public void createputc() {
 		StringBuffer lines = new StringBuffer();
     	lines.append("\tpush ebp\n\tmov ebp, esp\n\tpush eax\n\tmov eax, OFFSET FLAT:char_fmt\n\tpush eax\n\tcall printf\n\tadd esp, 8\n\n\tmov esp, ebp\n\tpop ebp\n\tret\n");
-    	code.put("grace_puts", lines);
+    	code.put("grace_putc", lines);
 	}
 
 	public void createputs() {
