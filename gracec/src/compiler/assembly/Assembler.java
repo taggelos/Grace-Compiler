@@ -177,13 +177,19 @@ public class Assembler {
 		
 		System.err.println(meth.getName());
 		if(isStandard(meth.getName().trim())) {
-			output.elementAt(Methcount).append("\tsub esp, 4\n\tpush ebp\n");
+			if(meth.get_return_type().equals("nothing"))
+				output.elementAt(Methcount).append("\tsub esp, 4\n");
+			output.elementAt(Methcount).append("\tpush ebp\n");
 		}
 		else if(scopes.get(meth.getName()) > scopes.get(current.getName())) {
-			output.elementAt(Methcount).append("\tsub esp, 4\n\tpush ebp\n");
+			if(meth.get_return_type().equals("nothing"))
+				output.elementAt(Methcount).append("\tsub esp, 4\n");
+			output.elementAt(Methcount).append("\tpush ebp\n");
 		}
 		else if(scopes.get(meth.getName()) == scopes.get(current.getName())) {
-			output.elementAt(Methcount).append("\tsub esp, 4\n\tpush DWORD PTR [ebp + 8]\n");
+			if(meth.get_return_type().equals("nothing"))
+				output.elementAt(Methcount).append("\tsub esp, 4\n");
+			output.elementAt(Methcount).append("\tpush DWORD PTR [ebp + 8]\n");
 		}
 		else {
 			si_used = true;
@@ -206,7 +212,6 @@ public class Assembler {
 		String a = null;
 		boolean flag=false;
 		if(!hm.elementAt(Methcount).containsKey(name.trim().replaceAll("\\[", "").replaceAll("]", ""))) {
-			
 			for(Variable_t var : current.methodParams) {
 				if(var.getName().equals(name.replaceAll("\\[", "").replaceAll("]", ""))) {
 					a="DWORD PTR [ebp + "+paramhm.get(current.getName().trim()).get(var.getName().trim())+"]";
@@ -384,6 +389,10 @@ public class Assembler {
 		
 		if(!isInteger(q.d.replaceAll("\\[", "").replaceAll("]", ""))) {
 			if(q.d.equals("$$")) {
+				if(!isInteger(name)) {
+					output.elementAt(Methcount).append("\tmov eax, "+name+"\n");
+					name = "eax";
+				}
 				output.elementAt(Methcount).append("\tmov esi, DWORD PTR [ebp + 12]\n\tmov DWORD PTR [esi], "+name+"\n");
 				return;
 			}
@@ -421,7 +430,7 @@ public class Assembler {
 		
 		c = q.d.replaceAll("\\[", "").replaceAll("]", "").trim();
 		if(!hm.elementAt(Methcount).containsKey(c)) {
-			current_bp.put(current.getName(), bp);
+			current_bp.put(current.getName(), current_bp.get(current.getName().trim())+4);
 			hm.elementAt(Methcount).put(c.trim(), current_bp.get(current.getName()));
 			bp += 4;
 		}
@@ -501,19 +510,23 @@ public class Assembler {
 			}
 			else {
 				//a="DWORD PTR [ebp-"+hm.get(q.b).toString()+"]";
-				offset += args*4;
-				a = "DWORD PTR [ebp + "+ offset+"]";
+				////offset += args*4;
+				////a = "DWORD PTR [ebp + "+ offset+"]";
 				//output.elementAt(Methcount).append("\tmov esi, "+a+"\n");
 				//a = "DWORD PTR [esi - "+ current_si+"]";
 				//current_si += 4;
+				
+				output.elementAt(Methcount).append("\tlea esi, DWORD PTR [ebp - "+hm.elementAt(Methcount).get(q.c.trim())+"]\n");
+				output.elementAt(Methcount).append("\tpush esi\n");
 			}
 		}
 		else if(q.b.equals("RET")) {
 			if(!hm.elementAt(Methcount).containsKey(q.c)) {
-				current_bp.put(current.getName(), bp);
-				hm.elementAt(Methcount).put(q.c.trim(), current_bp.get(current.getName()));
+				current_bp.put(current.getName().trim(), current_bp.get(current.getName().trim())+4);
+				hm.elementAt(Methcount).put(q.c.trim(), current_bp.get(current.getName().trim()));
 				bp += 4;
 			}
+			System.err.println("----->>>"+hm.elementAt(Methcount));
 			output.elementAt(Methcount).append("\tlea esi, DWORD PTR [ebp - "+hm.elementAt(Methcount).get(q.c.trim())+"]\n");
 			output.elementAt(Methcount).append("\tpush esi\n");
 		}
@@ -533,10 +546,18 @@ public class Assembler {
 		for(String name : standards.smethodnames) {
 			if(name.equals(q.d)) {
 				standards.create(name);
-				if(name.equals("puti "))
-					data.append("\tint_fmt: .asciz  \"%d\"");
-				else if(name.equals("strlen "))
-					data.append("\tint_fmt: .asciz  \"%d\n\"\n\tchar_fmt: .asciz  \"%c\n\"\n\tchars_fmt: .asciz  \"%s\n\"\n");
+				if(name.equals("puti ")) {
+					if(!datahm.containsKey(".asciz  \"%d\"")) {
+						data.append("\tint_fmt: .asciz  \"%d\"");
+						datahm.put(".asciz  \"%d\"", "int_fmt");
+					}
+				}
+				else if(name.equals("strlen ")) {
+					if(!datahm.containsKey("strln_strings")) {
+						data.append("\tint_fmt: .asciz  \"%d\n\"\n\tchar_fmt: .asciz  \"%c\n\"\n\tchars_fmt: .asciz  \"%s\n\"\n");
+						datahm.put("\tint_fmt: .asciz  \"%d\n\"\n\tchar_fmt: .asciz  \"%c\n\"\n\tchars_fmt: .asciz  \"%s\n\"\n", "strln_strings");
+					}
+				}
 				break;
 			}
 		}
@@ -599,7 +620,7 @@ public class Assembler {
 		}
 		
 		if(!hm.elementAt(Methcount).containsKey(q.d)) {
-			current_bp.put(current.getName(), bp);
+			current_bp.put(current.getName(), current_bp.get(current.getName().trim())+4);
 			hm.elementAt(Methcount).put(q.d.trim(), current_bp.get(current.getName()));
 			bp += 4;
 		}

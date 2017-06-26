@@ -1,27 +1,30 @@
-$$
+
 fun main () : nothing
 var x:int;
-    fun f(a,b :int) : int 
+var t :int;
+    fun f() : int 
     { 
-    return 1;
+     return x;
     }
 {
-    x<-45;
-   x<- f(x,x);
-    puti(x);
+   x <- 666; 
+   t<- f();
+   puti(t);
 }
+
 $$
-
-
 fun main () : nothing
 var a : int[3];
 var x : int;
 {
-    a[0] <- 0;
-    $x <- a[0];
-    puti(a[0]);
+    x <- 0;
+    $x <- x;
+    if x = 0 then
+        puti(12);
+    else
+        puti(14);
 }
-
+$$
 
 
 $$
