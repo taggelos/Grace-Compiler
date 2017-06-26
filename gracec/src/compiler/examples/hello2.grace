@@ -1,4 +1,33 @@
+$$
+fun main () : nothing
+var x:int;
+    fun f(ref a: int) : nothing 
+    { 
+     puti(4+a);
+    }
+{
+ x<-4;
+   f(x);
+ 
+}
+$$
 
+$$
+fun main () : nothing
+var x:int;
+var y:int;
+    fun f(ref a: int) : nothing 
+    { 
+     a<-y;
+    }
+{
+    y<-666;
+   f(x);
+   puti(x);
+}
+$$
+
+$$
 fun main () : nothing
 var x:int;
 var t :int;
@@ -11,6 +40,7 @@ var t :int;
    t<- f();
    puti(t);
 }
+$$
 
 $$
 fun main () : nothing
@@ -36,7 +66,7 @@ var a : int;
         b <- 50;
         while b < 52 do 
         {
-        puti(a);
+        puti(b);
         b <- b + 1;
         }
         return;

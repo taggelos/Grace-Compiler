@@ -125,7 +125,8 @@ public class Assembler {
 			}
 			offset = type*count;
 			total += offset;
-			current_bp.put(name, bp);
+			System.err.println(">>>>>>"+current_bp);
+			current_bp.put(name, current_bp.get(current.getName().trim())+4);
 			hm.elementAt(Methcount).put(var.getName().trim(), current_bp.get(name));
 			bp += offset;
 		}
@@ -208,13 +209,20 @@ public class Assembler {
 		return null;
 	}
 	
-	public String find2(String name) {
+	public String find2(String name, boolean isOp) {
 		String a = null;
 		boolean flag=false;
+		System.err.println("--->"+hm.elementAt(Methcount));
 		if(!hm.elementAt(Methcount).containsKey(name.trim().replaceAll("\\[", "").replaceAll("]", ""))) {
 			for(Variable_t var : current.methodParams) {
-				if(var.getName().equals(name.replaceAll("\\[", "").replaceAll("]", ""))) {
-					a="DWORD PTR [ebp + "+paramhm.get(current.getName().trim()).get(var.getName().trim())+"]";
+				if(var.getName().equals(name.replaceAll("\\[", "").replaceAll("]", ""))) {  //mov esi, DWORD PTR [ebp + 16] mov eax, DWORD PTR [esi]
+					if(isOp) {
+						a="DWORD PTR [esi]";
+						output.elementAt(Methcount).append("\tmov esi, DWORD PTR [ebp + 16]\n");
+					}
+					else
+						a="DWORD PTR [ebp + "+paramhm.get(current.getName().trim()).get(var.getName().trim())+"]";
+						
 					flag = true;
 					break;
 				}
@@ -222,7 +230,7 @@ public class Assembler {
 		
 			if(!flag) {
 				output.elementAt(Methcount).append("\tpush esi\n\tmov esi, DWORD PTR [ebp + 8]\n");
-				a="DWORD PTR [esi - "+hm.elementAt(Methcount-1).get(name.trim().replaceAll("\\[", "").replaceAll("]", "")).toString()+"]\n";
+				a="DWORD PTR [esi - "+hm.elementAt(Methcount-1).get(name.trim().replaceAll("\\[", "").replaceAll("]", "")).toString()+"]";
 				si_used = true;
 			}
 			flag = false;
@@ -332,12 +340,17 @@ public class Assembler {
 
 	private void caseUnit(Quad q) {	
 		bp = 4;
+		current = st.contains(q.b);
+		
 		current_par=16;
 		args=0;
-		current = st.contains(q.b);
-		if(isMain)
+		
+		if(isMain) {
 			output.elementAt(Methcount).append("main:\n");
+			current_bp.put("main", 0);
+		}
 		else {
+			current_bp.put(current.getName().trim(), 0);
 			Methcount++;
 			output.addElement(new StringBuffer());
 			hm.addElement(new HashMap<String, Integer>());
@@ -378,18 +391,36 @@ public class Assembler {
 	}
 
 	private void caseAss(Quad q) {
-		String off;
+		boolean flag=false;
 		String name = q.b.replaceAll("\\[", "").replaceAll("]", "").trim();
 		String val = q.d.replaceAll("\\[", "").replaceAll("]", "").trim();
 		
+		String wtf=null;
+		
 		System.err.println(q.printQuad());
 		
-		if(!isInteger(q.b.replaceAll("\\[", "").replaceAll("]", "")))
-			name=find2(q.b.replaceAll("\\[", "").replaceAll("]", ""));
+		if(!isInteger(q.b.replaceAll("\\[", "").replaceAll("]", ""))) {
+			
+			
+			for(Variable_t var : st.contains(current.getName()).methodParams) {
+				if(var.getName().equals(q.b.replaceAll("\\[", "").replaceAll("]", ""))) {
+					if(var.isRef()) {
+						name = find2(q.b.replaceAll("\\[", "").replaceAll("]", ""), false);
+						wtf = "\tmov esi, "+name+"\n"; 
+						name = "DWORD PTR [esi]";
+						flag=true;
+						break;
+					}
+						
+				}
+			}
+			if(!flag)
+				name=find2(q.b.replaceAll("\\[", "").replaceAll("]", ""), false);
+		}
 		
 		if(!isInteger(q.d.replaceAll("\\[", "").replaceAll("]", ""))) {
 			if(q.d.equals("$$")) {
-				if(!isInteger(name)) {
+				if(!isInteger(q.b.replaceAll("\\[", "").replaceAll("]", "").trim())) {
 					output.elementAt(Methcount).append("\tmov eax, "+name+"\n");
 					name = "eax";
 				}
@@ -405,12 +436,15 @@ public class Assembler {
 				return;
 			}
 			else {
-				val=find2(q.d.replaceAll("\\[", "").replaceAll("]", ""));
+				val=find2(q.d.replaceAll("\\[", "").replaceAll("]", ""), false);
 				output.elementAt(Methcount).append("\tmov eax, "+val+"\n");
 				val = "eax";
 			}
 		}
 		
+		if(wtf != null) {
+			output.elementAt(Methcount).append(wtf);
+		}
 		output.elementAt(Methcount).append("\tmov "+name+", "+val+"\n");
 		
 	}
@@ -465,13 +499,13 @@ public class Assembler {
 		
 		String a = null, b;
 		int offset=4;
-		System.err.println(paramhm);
+		//system.err.println(paramhm);
 		boolean flag = false;
 		if(q.c.equals("V")) {
 			if(isInteger(q.b))
 				a=q.b;
 			else {	
-				System.err.println("--->"+Methcount);
+				//system.err.println("--->"+Methcount);
 				if(!hm.elementAt(Methcount).containsKey(q.b.trim().replaceAll("\\[", "").replaceAll("]", ""))) {
 					
 					for(Variable_t var : current.methodParams) {
@@ -516,7 +550,9 @@ public class Assembler {
 				//a = "DWORD PTR [esi - "+ current_si+"]";
 				//current_si += 4;
 				
-				output.elementAt(Methcount).append("\tlea esi, DWORD PTR [ebp - "+hm.elementAt(Methcount).get(q.c.trim())+"]\n");
+				a = find2(q.b, false);
+				
+				output.elementAt(Methcount).append("\tlea esi, "+a+"\n");
 				output.elementAt(Methcount).append("\tpush esi\n");
 			}
 		}
@@ -526,7 +562,7 @@ public class Assembler {
 				hm.elementAt(Methcount).put(q.c.trim(), current_bp.get(current.getName().trim()));
 				bp += 4;
 			}
-			System.err.println("----->>>"+hm.elementAt(Methcount));
+			//system.err.println("----->>>"+hm.elementAt(Methcount));
 			output.elementAt(Methcount).append("\tlea esi, DWORD PTR [ebp - "+hm.elementAt(Methcount).get(q.c.trim())+"]\n");
 			output.elementAt(Methcount).append("\tpush esi\n");
 		}
@@ -568,11 +604,11 @@ public class Assembler {
 		if(isInteger(q.b.trim()))
 			a=q.b;
 		else
-			a=find2(q.b);
+			a=find2(q.b, false);
 		if(isInteger(q.c))
 			b=q.c;
 		else
-			b=find2(q.c);
+			b=find2(q.c, false);
 		
 		String lb = nextLabel();
 		LabelMaps.put(Integer.valueOf(q.num), lb);
@@ -610,15 +646,16 @@ public class Assembler {
 		if(isInteger(q.b.trim()))
 			a=q.b;
 		else {
-			a = find2(q.b);
+			a = find2(q.b, true);
 		}
 		
 		if(isInteger(q.c))
 			b=q.c;
 		else {
-			b=find2(q.c);
+			b=find2(q.c, true);
 		}
 		
+		//system.err.println(current_bp);
 		if(!hm.elementAt(Methcount).containsKey(q.d)) {
 			current_bp.put(current.getName(), current_bp.get(current.getName().trim())+4);
 			hm.elementAt(Methcount).put(q.d.trim(), current_bp.get(current.getName()));
