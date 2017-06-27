@@ -211,7 +211,7 @@ public class Assembler {
 		if(!hm.elementAt(Methcount).containsKey(name.trim().replaceAll("\\[", "").replaceAll("]", ""))) {
 			for(Variable_t var : current.methodParams) {
 				if(var.getName().equals(name.replaceAll("\\[", "").replaceAll("]", ""))) {
-					if(isOp) {
+					if(isOp && var.isRef()) {
 						a="DWORD PTR [esi]";
 						output.elementAt(Methcount).append("\tmov esi, DWORD PTR [ebp + 16]\n");
 					}
@@ -529,8 +529,8 @@ public class Assembler {
 			else {
 				a = find2(q.b, false);
 				
-				output.elementAt(Methcount).append("\tlea esi, "+a+"\n");
-				output.elementAt(Methcount).append("\tpush esi\n");
+				update.append("\tlea esi, "+a+"\n");
+				update.append("\tpush esi\n");
 			}
 		}
 		else if(q.b.equals("RET")) {
@@ -539,8 +539,8 @@ public class Assembler {
 				hm.elementAt(Methcount).put(q.c.trim(), current_bp.get(current.getName().trim()));
 				bp += 4;
 			}
-			output.elementAt(Methcount).append("\tlea esi, DWORD PTR [ebp - "+hm.elementAt(Methcount).get(q.c.trim())+"]\n");
-			output.elementAt(Methcount).append("\tpush esi\n");
+			update.append("\tlea esi, DWORD PTR [ebp - "+hm.elementAt(Methcount).get(q.c.trim())+"]\n");
+			update.append("\tpush esi\n");
 		}
 	}
 	

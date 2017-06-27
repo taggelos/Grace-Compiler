@@ -1,6 +1,24 @@
 
 fun main () : nothing
 var x:int;
+var y:int;
+    fun f(x:int) : int
+    var l :int;
+    { 
+      x<-5;
+      puti(x);
+      return 2;
+    }
+{
+  x<-4;
+   y<-f(x);
+   y <- y + 2;
+   puti(y);
+}
+
+$$
+fun main () : nothing
+var x:int;
     fun f(ref a: int) : nothing 
     { 
      puti(4+a);
@@ -10,7 +28,7 @@ var x:int;
    f(x);
  
 }
-
+$$
 
 $$
 fun main () : nothing
