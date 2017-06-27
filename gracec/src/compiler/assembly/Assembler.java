@@ -96,7 +96,7 @@ public class Assembler {
 	}
 	
 	private boolean isStandard(String name) {
-		if(name.equals("puti") || name.equals("puts") || name.equals("gets") || name.equals("getc") || name.equals("strlen"))
+		if(name.equals("puti") || name.equals("puts") || name.equals("gets") || name.equals("getc") || name.equals("strlen") || name.equals("geti"))
 			return true;
 		return false;
 	}

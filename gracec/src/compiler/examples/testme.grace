@@ -1,16 +1,39 @@
-fun main(): nothing
-var i : int;
-var x : int;
-var y: int;
-var t: int;
-{
- t<-0;
- y<-2 - 3;
- while  y>2 do 
+fun main () : nothing
+    var i : int;
+	var x : int;
+	var y: int;
+	var t: int;
+	fun bsort (n : int; ref ar : int[]) : nothing
+      var a, i : int;{
+      	x<-a+0;
+		x<-0+a;
+		x<-a-0;
+		x<-a*1;
+		x<-1*a;
+		x<-a div 1;
+		x<-a mod 1;
+		t<-1;
+x<-a * 0;
+x<-0 * a;
 
- x<-t;
- 	t<-y;
-}
+      }
+   {
+   		t <- x;
+         x <- y;
+         y <- t;
+      t <- 1;
+      while t > 0 do {
+        t <- 0;
+        i <- 0;
+        while i < y-1 do {
+          if t > t then {
+            t<-t;
+            t <- 1;
+          }
+          i <- i+1;
+        }
+      }
+   }
 
 $$
 fun main(): nothing

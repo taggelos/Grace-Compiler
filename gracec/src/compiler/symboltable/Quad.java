@@ -17,7 +17,12 @@ public class Quad {
         this.d=d;       
     }
     
-    public String printQuad() {
+    @Override
+	public String toString() {
+    	return Integer.toString(num)+ ": " + a + ", " + b + ", " + c +", "+ d+"\n";
+	}
+
+	public String printQuad() {
     	return Integer.toString(num)+ ": " + a + ", " + b + ", " + c +", "+ d ;
     }
     

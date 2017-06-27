@@ -39,9 +39,17 @@ public class Standards {
     		createputs();
     	else if(name.equals("strlen "))
     		createstrlen();
+    	else if(name.equals("geti "))
+        	creategeti();
     }
     
-    public void createstrlen() {
+    private void creategeti() {
+    	StringBuffer lines = new StringBuffer();
+    	lines.append("\tpush ebp\n\tmov ebp, esp\n\tsub esp, 4\n\tlea esi, DWORD PTR [ebp-4]\n\tpush esi\n\tmov eax, OFFSET FLAT:scanf_fmt_gi\n\tpush eax\n\tcall scanf\n\tadd esp, 8\n\tmov esi, DWORD PTR [ebp+8]\n\tmov eax, DWORD PTR [ebp-4]\n\tmov DWORD PTR [esi], eax\n\tpush eax\n\tmov eax, OFFSET FLAT:fmt_gi\n\tpush eax\n\tcall printf\n\tadd esp, 8\n\tmov esp, ebp\n\tpop ebp\n\tret\n");
+    	code.put("grace_geti", lines);		
+	}
+
+	public void createstrlen() {
     	StringBuffer lines = new StringBuffer();
     	lines.append("\tpush ebp\n\tmov ebp, esp\n\tmov eax , DWORD PTR [ebp + 16]\n\tpush eax\n\tcall strlen\n\tadd esp, 4\n\tmov edx, DWORD ptr [ebp+12]\n\tmov DWORD PTR [edx], eax\n\tmov esp, ebp\n\tpop ebp\n\tret\n");
     	code.put("grace_strlen", lines);

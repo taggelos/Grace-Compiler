@@ -3,28 +3,22 @@ package compiler.visitors;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map.Entry;
-import java.util.Set;
 import java.util.Vector;
 
 import compiler.symboltable.Helpers;
-import compiler.symboltable.Method_t;
 import compiler.symboltable.Quad;
 import compiler.symboltable.SymbolTable;
-import compiler.symboltable.Variable_t;
 
 public class IrVisitor2 {
 	private LinkedList<Quad> quads;
-	private HashMap<String, LinkedList<Integer>> vars = new HashMap<String, LinkedList<Integer>>();
 	public Helpers h2 = new Helpers();
 	public Vector<StringBuffer> output = new Vector<StringBuffer>();
 	public StringBuffer data = new StringBuffer();
 	public SymbolTable st;
+	public LinkedList<LinkedList<Quad>> blocks;	
 	
-
 	HashMap<String, String> myhm = new HashMap<String, String>();
 	
-	//nop kai = 
 	public boolean revertConds(){ //reverts condition and deletes jump
 		boolean myret=false; //if sth changed boolean
 		for (int i = 0; i < quads.size()-1; i ++){		
@@ -50,6 +44,16 @@ public class IrVisitor2 {
 					h2.remQuad(quads.get(i+1));
 					myret=true;
 					break;
+				case "=":
+					h2.setQuad(quads.get(i), new Quad(quads.get(i).num,"#",quads.get(i).b,quads.get(i).c,quads.get(i+1).d));
+					h2.remQuad(quads.get(i+1));
+					myret=true;
+					break;
+				case "#":
+					h2.setQuad(quads.get(i), new Quad(quads.get(i).num,"=",quads.get(i).b,quads.get(i).c,quads.get(i+1).d));
+					h2.remQuad(quads.get(i+1));
+					myret=true;
+					break;
 				default:
 					break;
 				}					
@@ -69,10 +73,10 @@ public class IrVisitor2 {
 		return false;
 	}
 	
-	public boolean constantAndCopyPropagation(boolean simpleVersion){ //tested perfectly + meta extra oi prakseis+copyprop + oxi g while kalo
+	public boolean constantAndCopyPropagation(boolean simpleVersion){ 
 		boolean myret=false,simpleV=false; //if sth changed boolean
 		for (int i = 0; i < quads.size(); i ++){
-			if(quads.get(i).a.equals(":=") && !isInteger(quads.get(i).b)){ //&& isInteger(quads.get(i).d) //(for the other propagation only)
+			if(quads.get(i).a.equals(":=") && !isInteger(quads.get(i).b)){ //&& isInteger(quads.get(i).d) //(for one propagation only)
 				if(simpleVersion && checkSameAss(quads.get(i).b)) simpleV=true;
 				if (!simpleV ){ 
 					for (int j = i+1; j < quads.size(); j ++){
@@ -88,16 +92,19 @@ public class IrVisitor2 {
 							case "=":
 								if(quads.get(j).b.equals(quads.get(i).b) ){
 									h2.setQuad(quads.get(j), new Quad(quads.get(j).num,quads.get(j).a,quads.get(i).d,quads.get(j).c,quads.get(j).d));
+									h2.setQuad(quads.get(i), new Quad(quads.get(i).num,"-","-","-","-"));
 									myret=true;
 								}
 								if (quads.get(j).c.equals(quads.get(i).b)){
 									h2.setQuad(quads.get(j), new Quad(quads.get(j).num,quads.get(j).a,quads.get(j).b,quads.get(i).d,quads.get(j).d));
+									h2.setQuad(quads.get(i), new Quad(quads.get(i).num,"-","-","-","-"));
 									myret=true;
 								}
 								break;
 							case ":=":
 								if(quads.get(j).d.equals(quads.get(i).b) ){
 									h2.setQuad(quads.get(j), new Quad(quads.get(j).num,quads.get(j).a,quads.get(j).b,quads.get(j).c,quads.get(i).d));
+									h2.setQuad(quads.get(i), new Quad(quads.get(i).num,"-","-","-","-"));
 									myret=true;
 								}
 								break;
@@ -108,10 +115,12 @@ public class IrVisitor2 {
 							case "mod" :
 								if(quads.get(j).b.equals(quads.get(i).b) ){
 									h2.setQuad(quads.get(j), new Quad(quads.get(j).num,quads.get(j).a,quads.get(i).d,quads.get(j).c,quads.get(j).d));
+									h2.setQuad(quads.get(i), new Quad(quads.get(i).num,"-","-","-","-"));
 									myret=true;
 								}
 								if(quads.get(j).c.equals(quads.get(i).b) ){
 									h2.setQuad(quads.get(j), new Quad(quads.get(j).num,quads.get(j).a,quads.get(j).b,quads.get(i).d,quads.get(j).d));
+									h2.setQuad(quads.get(i), new Quad(quads.get(i).num,"-","-","-","-"));
 									myret=true;
 								}
 								break;
@@ -127,94 +136,35 @@ public class IrVisitor2 {
 		}
 		return myret;
 	}	
-	
-	
-	public void checkIfUsed(String qa){
-		switch (qa) {
-		case "<":				
-		case ">":
-		case "<=":
-		case ">=":
-		case "=":
-			for (int i = 0; i < quads.size(); i ++){
-				
-			}
-			break;
-		default:
-			break;
-		}
 		
-	}
-	
-	/*public boolean copyPropagation(){
+	public boolean constantFolding(){ 
 		boolean myret=false;
 		for (int i = 0; i < quads.size(); i ++){
-			if(quads.get(i).a.equals(":=")){
-				if (!isInteger(quads.get(i).b) && !isInteger(quads.get(i).d)){ 
-					for (int j = i+1; j < quads.size(); j ++){
-							if(quads.get(j).a.equals(":="))
-								if (quads.get(i).b.equals(quads.get(j).b) ){ 
-									break;
-								}
-							switch (quads.get(j).a) {
-							case "<":				
-							case ">":
-							case "<=":
-							case ">=":
-							case "=":
-								if(quads.get(j).b.equals(quads.get(i).b) ){
-
-									System.err.println("asdas " + quads.get(j).b  +"  "+quads.get(i).b);
-									h2.setQuad(quads.get(j), new Quad(quads.get(j).num,quads.get(j).a,quads.get(i).d,quads.get(j).c,quads.get(j).d));
-
-									System.err.println("asdas " + quads.get(j).b  +"  "+quads.get(i).b);
-									myret=true;
-								}
-								if (quads.get(j).c.equals(quads.get(i).b)){
-									h2.setQuad(quads.get(j), new Quad(quads.get(j).num,quads.get(j).a,quads.get(j).b,quads.get(i).d,quads.get(j).d));
-									myret=true;
-								}
-								break;
-							default:
-								break;							
-						
-							}
-				}
-				
-			}
-		}
-		}
-		return myret;
-	}*/
-		
-	public boolean constantFolding(){ //kind of??
-		boolean myret=false;
-		for (int i = 0; i < quads.size(); i ++){
-			if(isInteger(quads.get(i).b)==true && isInteger(quads.get(i).c)==true)
+			if(isInteger(quads.get(i).b) && isInteger(quads.get(i).c))
 				switch (quads.get(i).a) {
 					case "*" :
-						int mult = Integer.parseInt(quads.get(i).b.trim()) * Integer.parseInt(quads.get(i).c.trim());//needs float too
+						int mult = Integer.parseInt(quads.get(i).b.trim()) * Integer.parseInt(quads.get(i).c.trim());
 						h2.setQuad(quads.get(i), new Quad(quads.get(i).num,":=",quads.get(i).d,"-",Integer.toString(mult)));
 						myret=true;
 						break;
 					case "+" :
-						int plus = Integer.parseInt(quads.get(i).b.trim()) + Integer.parseInt(quads.get(i).c.trim());//needs float too
+						int plus = Integer.parseInt(quads.get(i).b.trim()) + Integer.parseInt(quads.get(i).c.trim());
 						h2.setQuad(quads.get(i), new Quad(quads.get(i).num,":=",quads.get(i).d,"-",Integer.toString(plus)));
 						myret=true;
 						break;
 					case "-" :
-						int minus = Integer.parseInt(quads.get(i).b.trim()) - Integer.parseInt(quads.get(i).c.trim());//needs float too
+						int minus = Integer.parseInt(quads.get(i).b.trim()) - Integer.parseInt(quads.get(i).c.trim());
 						h2.setQuad(quads.get(i), new Quad(quads.get(i).num,":=",quads.get(i).d,"-",Integer.toString(minus)));
 						myret=true;
 						break;
 					case "/" :
 						System.err.println(quads.get(i).b);
-						int div = Integer.parseInt(quads.get(i).b.trim()) / Integer.parseInt(quads.get(i).c.trim());//needs float too
+						int div = Integer.parseInt(quads.get(i).b.trim()) / Integer.parseInt(quads.get(i).c.trim());
 						h2.setQuad(quads.get(i), new Quad(quads.get(i).num,":=",quads.get(i).d,"-",Integer.toString(div)));
 						myret=true;
 						break;
 					case "mod" : 
-						int mod = Integer.parseInt(quads.get(i).b.trim()) % Integer.parseInt(quads.get(i).c.trim());//needs float too
+						int mod = Integer.parseInt(quads.get(i).b.trim()) % Integer.parseInt(quads.get(i).c.trim());
 						h2.setQuad(quads.get(i), new Quad(quads.get(i).num,":=",quads.get(i).d,"-",Integer.toString(mod)));
 						myret=true;
 						break;
@@ -224,6 +174,67 @@ public class IrVisitor2 {
 		}
 		return myret;
 	}
+	
+	public boolean algebraicSimplification(){
+		boolean myret=false;
+		for (int i = 0; i < quads.size(); i ++){
+			if(quads.get(i).a.equals(":=") && quads.get(i).b.equals(quads.get(i).d)){
+				 h2.setQuad(quads.get(i), new Quad(quads.get(i).num,"-","-","-","-"));
+				 myret=true;
+				 continue;
+			}
+			Integer a = null;
+			String b = null;
+			if(isInteger(quads.get(i).b)){
+				a=Integer.parseInt(quads.get(i).b.trim()) ;
+				b= quads.get(i).c;
+			}
+			else if (isInteger(quads.get(i).c))	{
+				a=Integer.parseInt(quads.get(i).c.trim()) ;
+				b= quads.get(i).b;
+				switch (quads.get(i).a) {
+				case "/" :
+				case "mod" :
+					if(a==1){	
+						h2.setQuad(quads.get(i), new Quad(quads.get(i).num,":=",quads.get(i).d,"-",b));
+						myret=true;
+					}
+					break;
+				case "-" :
+					if(a==0){	
+						h2.setQuad(quads.get(i), new Quad(quads.get(i).num,":=",quads.get(i).d,"-",b));
+						myret=true;
+					}
+					break;
+					default:
+						break;	
+				}				
+			}
+			if (a!=null){
+			switch (quads.get(i).a) {
+				case "+" :
+					if(a==0){	
+						h2.setQuad(quads.get(i), new Quad(quads.get(i).num,":=",quads.get(i).d,"-",b));
+						myret=true;
+					}
+					break;
+				case "*" :
+					if(a==1){	
+						h2.setQuad(quads.get(i), new Quad(quads.get(i).num,":=",quads.get(i).d,"-",b));
+						myret=true;
+					}
+					else if(a==0){
+						h2.setQuad(quads.get(i), new Quad(quads.get(i).num,":=",quads.get(i).d,"-","0"));
+						myret=true;
+					}
+					break;
+				default:
+					break;	
+			}
+		}
+	}
+	return myret;
+}
 	
 	public static boolean isInteger(String s) {
 	    try { 
@@ -237,7 +248,60 @@ public class IrVisitor2 {
 	    return true;
 	}
 	
-	public void iterateOverJumps(){//while problem?
+	public void findBlocks(){
+		 blocks = new LinkedList<>();
+		 for (int i=0; i<quads.size(); ) {
+		  LinkedList<Quad> block = new LinkedList<>();
+		  while (true) {
+		   Quad quad = quads.get(i);
+		   block.add(quad);
+		   i++;
+		   if (jump(quad) || i==quads.size() || isLabel(quads.get(i), quads)) {
+		    break;
+		   }
+		  }
+		  blocks.add(block);
+		}
+	}
+
+	boolean jump(Quad quad) {
+	 switch (quad.a) {
+	  case ">":
+	  case "<":
+	  case "<=":
+	  case ">=":
+	  case "=":
+	  case "#":
+	  case "jump":
+	  case "ret":
+	  case "endu":
+	   return true;
+	  default:
+	   return false;
+	 }
+	}
+
+	boolean isLabel(Quad quad, List<Quad> quads) {
+	if (quad.a.equals("unit")) {
+		   return true;
+		  }
+	 for (Quad q : quads) {
+	  switch (q.a) {
+	   case ">":
+	   case "<":
+	   case "<=":
+	   case ">=":
+	   case "=":
+	   case "#":
+	   case "jump":
+	    if (q.d.equals(String.valueOf(quad.num)))
+	     return true;
+	  }
+	 }
+	 return false;
+	}
+	
+	public void iterateOverRealJumps(){
 		int next=0;
 		for(Quad q : quads) {
 			if (q.a.equals("jump")){
@@ -251,24 +315,6 @@ public class IrVisitor2 {
 			}			
 		}
 	}
-	
-	//idio provlhma kai remove unused variables
-	public void remJumpsOfNextLine(){ //TODO needs checks g kathe jump mhn xrhsimopoieitai apo allh prin svhstei
-		for (int i = 0; i < quads.size()-1; i ++){
-			if (quads.get(i+1).equals("jump"))
-				switch (quads.get(i).a) {					
-				case "<":				
-				case ">":
-				case "<=":
-				case ">=":
-				case "=":
-					if(quads.get(i).d.trim().equals(quads.get(i+1).d))
-					break;
-				default:
-					break;
-				}
-		}
-	}
 
     public IrVisitor2(LinkedList<Quad> quads, SymbolTable symboltable) {
     	this.quads= quads;
@@ -278,69 +324,17 @@ public class IrVisitor2 {
 	public void create() {
 		init();
 		for(Quad q : quads) {
-			
-    		switch (q.a) {
-	    		case "unit":
-					caseUnit(q);
-					break;
-					
-				case "endu":
-					caseEndu(q);
-					break;
-					
-				case "jump":
-					caseJump(q);						
-					break;					
-				case "array":
-					caseArray(q);
-					break;						
-				case "par":
-					casePar(q);
-					break;						
-				case "call":
-					caseCall(q);
-					break;					
-				case ":=":
-					caseAss(q);
-					break;						
-				case "<" :
-				case "<=" :
-				case ">" :
-				case ">=" :
-				case "=" :
-					caseCompare(q);					
-					break;					
-				case "*" :
-				case "+" :
-				case "-" :
-				case "/" :
-				case "mod" :
-					caseOper(q);
-					break;					
-				case "ret":
-					caseReturn(q);
-					break;		
-				default:
-					break;
-			}  
-    	}
-		/*
-		for (HashMap.Entry<String,LinkedList<Integer>> entry : vars.entrySet()) {
-		    System.err.println(entry.getKey() + ", " + entry.getValue());
-		    if(entry.getValue().get(1)==0){
-		    	h2.remQuad(entry.getValue().get(0));
-		    }
-		}*/
+			h2.genQuad(q.a, q.b, q.c, q.d);
+		}		
 		this.quads=h2.quads;
-		//constantFolding(); //???
-		//constantAndCopyPropagation();
-		//constantAndCopyPropagation(true); //true for simple
-		revertConds();
+		//constantAndCopyPropagation(true); //true for simple version
+		revertConds();		
+		findBlocks();
 		//constantFolding();
-		while(constantAndCopyPropagation(true) || constantFolding()){
-		System.err.println("as");
+		while(constantAndCopyPropagation(true) || constantFolding() || algebraicSimplification()){
+			//System.err.println("one more time");
 		};
-		h2.printQuads();	
+		h2.printQuads();
 		
 	}
 
@@ -349,129 +343,4 @@ public class IrVisitor2 {
 		System.out.println("----------------------------------");
 		System.out.println();
 	}
-	
-	private void caseOper(Quad q) {	
-		if(!isInteger(q.b.trim())){
-			if(vars.containsKey(q.b.trim())){
-				LinkedList<Integer> ml= new LinkedList<Integer>();
-				ml.add(q.num);			
-				ml.add(1);
-				vars.put(q.b.trim(),ml);
-			}
-		}
-		if(!isInteger(q.c.trim())){
-			if(vars.containsKey(q.c.trim())){
-				LinkedList<Integer> ml= new LinkedList<Integer>();
-				ml.add(q.num);			
-				ml.add(1);
-				vars.put(q.c.trim(),ml);
-			}
-		}
-		
-		int cursum;
-		boolean flag=false;
-		if(q.a.equals("+")) {
-			if(q.b.contains("$")){
-				
-			}
-			if(isInteger(q.b.trim())) {
-				
-			}
-			if(isInteger(q.c.trim())) {
-			
-			}
-
-			if(q.b.trim().equals("t")){
-				//h2.remQuad(q);
-				flag=true;
-			}
-		}
-		else if(q.a.equals("-")) {				
-			
-		}
-		else if(q.a.equals("*")) {
-									
-		}
-		else if(q.a.equals("/")) {
-				
-		}
-		else if(q.a.equals("mod")) {			
-			
-		}
-
-		h2.genQuad(q.a, q.b, q.c, q.d);
-	}
-	
-	private void caseAss(Quad q) {
-		if(!isInteger(q.b.trim())){ //&& vars.get(q.b.trim()).isEmpty()) {
-			LinkedList<Integer> ml= new LinkedList<Integer>();
-			ml.add(q.num);			
-			ml.add(0);
-			vars.put(q.b.trim(), ml);
-		}
-		if(!isInteger(q.c.trim())){
-			if(vars.containsKey(q.c.trim())){
-				LinkedList<Integer> ml= new LinkedList<Integer>();
-				ml.add(q.num);			
-				ml.add(1);
-				vars.put(q.c.trim(),ml);
-			}
-		}	
-		
-		h2.genQuad(q.a, q.b, q.c, q.d);		
-		
-	}
-	
-	private void caseCompare(Quad q) {
-		if(!isInteger(q.b.trim())){
-			if(vars.containsKey(q.b.trim())){
-				LinkedList<Integer> ml= new LinkedList<Integer>();
-				ml.add(q.num);			
-				ml.add(1);
-				vars.put(q.b.trim(),ml);
-			}
-		}
-		if(!isInteger(q.c.trim())){
-			if(vars.containsKey(q.c.trim())){
-				LinkedList<Integer> ml= new LinkedList<Integer>();
-				ml.add(q.num);			
-				ml.add(1);
-				vars.put(q.c.trim(),ml);
-			}
-		}
-		h2.genQuad(q.a, q.b, q.c, q.d);
-	}
-	
-	private void caseUnit(Quad q) {	
-		h2.genQuad(q.a, q.b, q.c, q.d);
-	}
-	
-	private void caseEndu(Quad q) {	
-		h2.genQuad(q.a, q.b, q.c, q.d);
-		
-	}
-	
-	private void caseArray(Quad q) {
-		// TODO Auto-generated method stub
-		h2.genQuad(q.a, q.b, q.c, q.d);
-
-	}
-	
-	private void caseJump(Quad q) {
-		h2.genQuad(q.a, q.b, q.c, q.d);
-	}
-
-	private void casePar(Quad q) {
-		h2.genQuad(q.a, q.b, q.c, q.d);
-	}
-	
-	private void caseCall(Quad q) {
-		h2.genQuad(q.a, q.b, q.c, q.d);	
-		
-	}	
-	
-	private void caseReturn(Quad q) {
-		h2.genQuad(q.a, q.b, q.c, q.d);
-	}
-	
 }
