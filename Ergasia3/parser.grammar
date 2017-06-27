@@ -1,0 +1,351 @@
+Package compiler;
+
+Helpers
+    sp = ' ';
+    lf = 0x000a;
+    cr = 0x000d;
+    ff = 0x000c;
+    ht = 0x0009; 
+    line_terminator = lf | cr | cr lf;
+    white_space = (sp | ht | ff | line_terminator)*;
+
+    all = [0..0xffff];
+    input_character = [all - [cr + lf]];
+
+    digit = ['0' .. '9'];
+
+    hexdig = digit | ['a' .. 'f'] | ['A' .. 'F'];
+    hexcode = hexdig hexdig;
+
+    escape_seq = '\n' | '\t' | '\r' | '\0'  | '\\' | '\' ''' | '\"' | '\x' hexcode;
+
+    latin_letter = ['a' .. 'z'] | ['A' .. 'Z']; 
+
+    char_literal = ' ' | '!' | '#' | '$' | '%' | '&' | '(' | ')' 
+        | '*' | '+' | ',' | '-' | '.' | '/' | ':' | ';' | '<' | '=' | '>' 
+        | '?' | '@' | '[' | ']' | '^' | '_' | '`' | '{' | '|' | '}' | '~'
+        | latin_letter | digit | escape_seq;
+
+    not_dollar = [all - '$'];
+
+    simple_comment = '$' not_dollar input_character* line_terminator?;
+    multi_comment = '$$' ('$'? not_dollar)* '$$';
+
+Tokens
+    white_space = white_space;
+    escape_seq = escape_seq;
+    comment = simple_comment | multi_comment;
+
+    and     = 'and'; 
+    char    = 'char';
+    div     = 'div';
+    do      = 'do';
+    else    = 'else';
+    fun     = 'fun';
+    if      = 'if';
+    int     = 'int';
+    mod     = 'mod';
+    not     = 'not';
+    nothing = 'nothing';
+    or      = 'or';
+    ref     = 'ref';
+    return  = 'return';
+    then    = 'then';
+    var     = 'var';
+    while   = 'while';
+
+    identifier = latin_letter (latin_letter | digit | '_' )*;
+
+    integers = digit+;
+    erroneous_number = (digit)+ (latin_letter|'_')+;
+
+    char_const = ''' char_literal ''';
+
+    string_literal = '"' char_literal* '"';
+
+
+    //operators
+
+    minus   = '-';
+    plus    = '+';
+    star    = '*';
+    neq     = '#';
+    eq      = '=';
+    lt      = '<';
+    gt      = '>';
+    lteq    = '<=';
+    gteq    = '>=';
+
+    //separators
+
+    l_par   = '(';
+    r_par   = ')';
+    l_br    = '[';
+    r_br    = ']';
+    l_ag    = '{';
+    r_ag    = '}';
+    comma   = ',';
+    semi    = ';';
+    colon   = ':';
+    arrow   = '<-';
+
+Ignored Tokens
+    white_space,
+    comment;
+
+Productions
+    program = fun_def {-> New program(fun_def)};
+
+    fun_def =
+        header local_def* block
+        {-> New fun_def(header, [local_def], [block.stmt])};
+
+    header =
+        fun [name]:identifier l_par [pars]:par_list r_par colon return_type {-> New header(name, [pars.fpar_def], return_type)};
+
+    par_list {-> fpar_def*} =
+        {simple} fpar_def {-> [fpar_def]} |
+        {list} fpar_def semi par_list {-> [fpar_def, par_list.fpar_def]} |
+        {none} {-> []};
+
+    fpar_def =
+        ref? id_list colon types {-> New fpar_def(ref, [id_list.identifier], types)};
+
+    id_list {-> identifier*} = 
+        {simple} identifier {-> [identifier]} |
+        {list} id_list comma identifier {-> [id_list.identifier, identifier]} |
+        {none} {-> []};
+
+    data_types =
+        {int} int {-> New data_types.int(int)} |
+        {char} char {-> New data_types.char(char)};
+
+    array_types  =
+        {brackets} l_br integers? r_br {->New array_types.brackets( l_br, integers, r_br )};
+
+    types =
+        {simple} data_types {-> New types.simple(data_types)} |
+        {array} data_types array_types+ {-> New types.array(data_types,[array_types])};
+
+    return_type =
+        {simple} data_types {-> New return_type.simple(data_types)} |
+        {none} nothing {-> New return_type.none(nothing)};
+
+    local_def =
+        {fun} fun_def {-> New local_def.fun(fun_def)} |
+        {dec} fun_dec {-> New local_def.dec(fun_dec)} |
+        {var} var_def {-> New local_def.var(var_def)};
+
+    fun_dec =
+        header semi {-> New fun_dec(header)};
+
+    block {-> stmt*} =
+        l_ag stmt* r_ag {-> [stmt]}; 
+
+    stmt =
+        {semi} semi {-> New stmt.semi()} |
+        {assignment} assignment {-> assignment.stmt} |
+        {block} block {-> New stmt.block([block.stmt])} | 
+        {fun_cal} fun_cal semi {-> New stmt.fun_cal(fun_cal)} | 
+        {ifstmt} ifstmt {-> ifstmt.stmt} |
+        {whilestmt} whilestmt {-> whilestmt.stmt} | 
+        {returnstmt} returnstmt {-> New stmt.returnstmt(returnstmt.expr)};
+
+    assignment {-> stmt} = 
+        l_val arrow expr semi {-> New stmt.assignment(l_val, expr)};
+
+    l_val =
+        {id} identifier {-> New l_val.id(identifier)} | 
+        {string} string_literal {-> New l_val.string(string_literal)} | 
+        {id_brackets} l_val l_br expr r_br {-> New l_val.id_brackets(l_val, l_br, expr, r_br)};
+
+    fun_cal =
+        [name]:identifier l_par [exprs]:expr_list r_par {-> New fun_cal(name, [exprs.expr])};
+
+    expr_list {-> expr*} =
+        {simple} expr {-> [expr]} |
+        {list} expr_list comma expr {-> [expr_list.expr, expr]} |
+        {none} {-> []}; 
+
+    var_def =
+        var var_ids colon types semi {-> New var_def([var_ids.identifier], types)};
+
+    var_ids {-> identifier*} =
+        {id} identifier {-> [identifier]} |
+        {list} identifier comma var_ids {-> [identifier, var_ids.identifier]};
+
+    /* ----------------- IF & WHILE  ---------------------- */
+
+    whilestmt {-> stmt} =
+        while cond do stmt {-> New stmt.whilestmt(cond.expr, [stmt.stmt])};
+
+    while_with_else {-> stmt} =
+        while cond do stmt_with_else {-> New stmt.whilestmt(cond.expr, [stmt_with_else.stmt])};
+
+    ifstmt {-> stmt} =
+        if_header if_trail {-> New stmt.ifstmt(if_header,if_trail)};
+
+    if_header  =
+        if cond then {-> New if_header(cond.expr)};
+
+    if_trail  =
+        {no_else} [then]:stmt {-> New if_trail.no_else([then.stmt])} | 
+        {with_else} [then]:stmt_with_else else [else_st]:stmt {-> New if_trail.with_else([then.stmt], [else_st.stmt])};
+
+    stmt_with_else {-> stmt} =
+        {semi} semi {-> New stmt.semi() } | 
+        {assignment} assignment {-> assignment.stmt} | 
+        {stmt_returnstmt} returnstmt {-> New stmt.returnstmt(returnstmt.expr)} |
+        {stmt_funcal} fun_cal semi {-> New stmt.fun_cal(fun_cal)} |
+        {block} block {-> New stmt.block([block.stmt])} | 
+        {ifstmt} if_else {-> if_else.stmt} | 
+        {whilestmt} while_with_else {-> while_with_else.stmt};
+
+    if_else {-> stmt} =
+        if_header [then]:stmt_with_else else [else_st]:stmt_with_else 
+        {-> New stmt.if_else(if_header,[then.stmt], [else_st.stmt])};
+
+    /* ---------------------------------------------------- */
+
+    /* ----------------- CONDITION  ---------------------- */
+
+    cond {-> expr} =
+        {cond_and} conditional_and_expression {-> conditional_and_expression.expr} |
+        {or_expr} [left]:cond or [right]:conditional_and_expression {-> New expr.or_expr(left.expr, right.expr)};
+
+    conditional_and_expression {-> expr} =
+        {cond_not} conditional_not_expression {-> conditional_not_expression.expr} |
+        {and_expr} [left]:conditional_and_expression and [right]:conditional_not_expression {-> New expr.and_expr(left.expr, right.expr)};
+
+    conditional_not_expression {-> expr} =
+        {not_expr} not conditional_not_expression {-> New expr.not_expr(conditional_not_expression.expr)} |
+        {comparative} comparative_expression {-> comparative_expression.expr};
+
+    comparative_expression {-> expr} =
+        {relational} relational_expression {-> relational_expression.expr} |
+        {equal} [left]:expr eq [right]:expr {-> New expr.equal(left.expr, right.expr)} |
+        {not_equal} [left]:expr neq [right]:expr {-> New expr.not_equal(left.expr, right.expr)};
+
+    relational_expression {-> expr} =
+        {par} l_par cond r_par {-> cond.expr} |
+        {less_than} [left]:expr lt [right]:expr {-> New expr.less_than(left.expr, right.expr)} |
+        {greater_than} [left]:expr gt [right]:expr {-> New expr.greater_than(left.expr, right.expr)} |
+        {greater_equal_than} [left]:expr gteq [right]:expr {-> New expr.greater_equal_than(left.expr, right.expr)} |
+        {less_equal_than} [left]:expr lteq [right]:expr {-> New expr.less_equal_than(left.expr, right.expr)};
+
+    /* ---------------------------------------------------- */
+
+    returnstmt {-> expr?} =
+        {semi} return expr? semi {-> expr};
+
+    expr =
+        {factor} factor {-> factor.expr} |
+        {add} expr plus factor {-> New expr.add(expr, factor.expr)} |
+        {sub} expr minus factor {-> New expr.sub(expr, factor.expr)};
+
+    factor {-> expr} =
+        {term} term {-> term.expr} |
+        {mult} factor star term {-> New expr.mult(factor.expr, term.expr)} |
+        {mod} factor mod term {-> New expr.mod(factor.expr, term.expr)} |
+        {div} factor div term {-> New expr.div(factor.expr, term.expr)};
+
+    term {-> expr} =
+        {plus_or_minus} plus_or_minus term {-> New expr.plus_or_minus(plus_or_minus, term.expr)} |
+        {int} integers {-> New expr.int(integers)} |
+        {char} char_const {-> New expr.char(char_const)} |
+        {l_val} l_val {-> New expr.l_val(l_val)} |
+        {fun_cal} fun_cal {-> New expr.fun_cal(fun_cal)} |
+        {par} l_par expr r_par {-> expr.expr};
+
+    plus_or_minus =
+        {plus} plus | 
+        {minus} minus;
+
+Abstract Syntax Tree
+
+    program = fun_def;
+
+    fun_def =
+        header [local]:local_def* [block]:stmt*;
+
+    header =
+        [name]:identifier [pars]:fpar_def* [return_t]:return_type;
+
+    fpar_def =
+        ref? [names]:identifier* [types]:types;
+
+    local_def =
+        {fun} fun_def |
+        {dec} fun_dec |
+        {var} var_def;
+
+    fun_dec =
+        header;
+    
+    data_types =
+        {int} int |
+        {char} char;
+
+    array_types  =
+        {brackets} l_br integers? r_br;
+
+    types =
+        {simple} data_types  |
+        {array} data_types array_types+;
+
+    return_type =
+        {simple} data_types |
+        {none} nothing;
+
+    var_def = [name]:identifier* [type]:types;
+
+    fun_cal = [name]:identifier [exprs]:expr*;
+
+    l_val =
+        {id} identifier | 
+        {string} string_literal | 
+        {id_brackets} l_val l_br expr r_br;
+
+    if_header =
+        [cond]:expr;
+
+    if_trail =
+        {no_else} [then]:stmt* | 
+        {with_else} [then]:stmt* [else_st]:stmt*;
+
+    plus_or_minus =
+        {plus} plus | 
+        {minus} minus;
+
+    expr = 
+        {and_expr} [left]:expr [right]:expr |
+        {or_expr} [left]:expr [right]:expr |
+        {not_expr} [expr]:expr |
+        {par} [expr]:expr |
+        {less_than} [left]:expr [right]:expr |
+        {greater_than} [left]:expr [right]:expr |
+        {greater_equal_than} [left]:expr [right]:expr |
+        {less_equal_than} [left]:expr [right]:expr |
+        {equal} [left]:expr [right]:expr |
+        {not_equal} [left]:expr [right]:expr |
+        {add} [expr1]:expr [expr2]:expr |
+        {sub} [expr1]:expr [expr2]:expr |
+        {mult} [expr1]:expr [expr2]:expr |
+        {mod} [expr1]:expr [expr2]:expr |
+        {div} [expr1]:expr [expr2]:expr |
+        {plus_or_minus} plus_or_minus [expr]:expr |
+        {int} integers |
+        {char} char_const | 
+        {l_val} l_val |
+        {fun_cal} fun_cal | 
+        {returnstmt} [returnexpr]:expr?;
+
+    stmt =   
+        {semi} |
+        {assignment} [left]:l_val [right]:expr |
+        {ifstmt} [cond]:if_header [then]:if_trail |
+        {if_else} [cond]:if_header [then]:stmt* [else_st]:stmt*  |
+        {whilestmt} [cond]:expr [body]:stmt* |
+        {fun_cal} fun_cal |
+        {returnstmt} [returnexpr]:expr? |
+        {block} [block]:stmt* ;
