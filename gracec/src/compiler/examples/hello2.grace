@@ -10,7 +10,8 @@ var y:int;
       return 2;
     }
 {
-  x<-4;
+    x<-4;
+    x<-4*1;
    y<-f(x);
    y <- y + 2;
    puti(y);

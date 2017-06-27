@@ -5,7 +5,7 @@ import java.util.LinkedList;
 import compiler.assembly.Assembler;
 
 public class Standards {
-	HashMap<String, StringBuffer> code;
+	public HashMap<String, StringBuffer> code;
 	
 	static String[] smethodnames = {
 	  		  "puti ", 

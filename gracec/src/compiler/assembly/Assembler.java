@@ -40,7 +40,7 @@ public class Assembler {
 	public Vector<HashMap<String, Integer>> hm = new Vector<HashMap<String, Integer>>();
 	HashMap<String, String> datahm = new HashMap<String, String>();
 	HashMap<Integer, String> LabelMaps = new HashMap<Integer, String>();
-	Standards standards = new Standards();
+	public Standards standards = new Standards();
 	
 	public Variable_t getType(String var, Method_t meth) {
 		  
@@ -388,7 +388,7 @@ public class Assembler {
 		
 		String wtf=null;
 		
-		if(!isInteger(q.b.replaceAll("\\[", "").replaceAll("]", ""))) {
+		if(!isInteger(q.b.replaceAll("\\[", "").replaceAll("]", "").trim())) {
 			
 			
 			for(Variable_t var : st.contains(current.getName()).methodParams) {
@@ -407,7 +407,7 @@ public class Assembler {
 				name=find2(q.b.replaceAll("\\[", "").replaceAll("]", ""), false);
 		}
 		
-		if(!isInteger(q.d.replaceAll("\\[", "").replaceAll("]", ""))) {
+		if(!isInteger(q.d.replaceAll("\\[", "").replaceAll("]", "").trim())) {
 			if(q.d.equals("$$")) {
 				if(!isInteger(q.b.replaceAll("\\[", "").replaceAll("]", "").trim())) {
 					output.elementAt(Methcount).append("\tmov eax, "+name+"\n");
@@ -457,7 +457,7 @@ public class Assembler {
 			bp += 4;
 		}
 			
-		if(isInteger(q.c))
+		if(isInteger(q.c.trim()))
 			b=q.c;
 		else 
 			b="DWORD PTR [ebp-"+hm.elementAt(Methcount).get(q.c.trim().replaceAll("\\[", "").replaceAll("]", "")).toString()+"]";
@@ -487,7 +487,7 @@ public class Assembler {
 		int offset=4;
 		boolean flag = false;
 		if(q.c.equals("V")) {
-			if(isInteger(q.b))
+			if(isInteger(q.b.trim()))
 				a=q.b;
 			else {
 				if(!hm.elementAt(Methcount).containsKey(q.b.trim().replaceAll("\\[", "").replaceAll("]", ""))) {
@@ -515,7 +515,7 @@ public class Assembler {
 			update.append("\tmov eax, "+a+"\n\tpush eax\n");
 		}
 		else if(q.c.equals("R")) {
-			if(isInteger(q.b))
+			if(isInteger(q.b.trim()))
 				a=q.b;
 			else if(q.b.contains("\"")) {
 				if(!datahm.containsKey(q.b)) {
@@ -580,7 +580,7 @@ public class Assembler {
 			a=q.b;
 		else
 			a=find2(q.b, false);
-		if(isInteger(q.c))
+		if(isInteger(q.c.trim()))
 			b=q.c;
 		else
 			b=find2(q.c, false);
@@ -618,13 +618,14 @@ public class Assembler {
 		String a = null,b = null;
 		boolean flag=false;
 		String aa = null;
+		
 		if(isInteger(q.b.trim()))
 			a=q.b;
 		else {
 			a = find2(q.b, true);
 		}
 		
-		if(isInteger(q.c))
+		if(isInteger(q.c.trim()))
 			b=q.c;
 		else {
 			b=find2(q.c, true);

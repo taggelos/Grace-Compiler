@@ -92,19 +92,19 @@ public class IrVisitor2 {
 							case "=":
 								if(quads.get(j).b.equals(quads.get(i).b) ){
 									h2.setQuad(quads.get(j), new Quad(quads.get(j).num,quads.get(j).a,quads.get(i).d,quads.get(j).c,quads.get(j).d));
-									h2.setQuad(quads.get(i), new Quad(quads.get(i).num,"-","-","-","-"));
+									h2.setQuad(quads.get(i), new Quad(quads.get(i).num,"_","-","-","-"));
 									myret=true;
 								}
 								if (quads.get(j).c.equals(quads.get(i).b)){
 									h2.setQuad(quads.get(j), new Quad(quads.get(j).num,quads.get(j).a,quads.get(j).b,quads.get(i).d,quads.get(j).d));
-									h2.setQuad(quads.get(i), new Quad(quads.get(i).num,"-","-","-","-"));
+									h2.setQuad(quads.get(i), new Quad(quads.get(i).num,"_","-","-","-"));
 									myret=true;
 								}
 								break;
 							case ":=":
 								if(quads.get(j).d.equals(quads.get(i).b) ){
 									h2.setQuad(quads.get(j), new Quad(quads.get(j).num,quads.get(j).a,quads.get(j).b,quads.get(j).c,quads.get(i).d));
-									h2.setQuad(quads.get(i), new Quad(quads.get(i).num,"-","-","-","-"));
+									h2.setQuad(quads.get(i), new Quad(quads.get(i).num,"_","-","-","-"));
 									myret=true;
 								}
 								break;
@@ -115,12 +115,12 @@ public class IrVisitor2 {
 							case "mod" :
 								if(quads.get(j).b.equals(quads.get(i).b) ){
 									h2.setQuad(quads.get(j), new Quad(quads.get(j).num,quads.get(j).a,quads.get(i).d,quads.get(j).c,quads.get(j).d));
-									h2.setQuad(quads.get(i), new Quad(quads.get(i).num,"-","-","-","-"));
+									h2.setQuad(quads.get(i), new Quad(quads.get(i).num,"_","-","-","-"));
 									myret=true;
 								}
 								if(quads.get(j).c.equals(quads.get(i).b) ){
 									h2.setQuad(quads.get(j), new Quad(quads.get(j).num,quads.get(j).a,quads.get(j).b,quads.get(i).d,quads.get(j).d));
-									h2.setQuad(quads.get(i), new Quad(quads.get(i).num,"-","-","-","-"));
+									h2.setQuad(quads.get(i), new Quad(quads.get(i).num,"_","-","-","-"));
 									myret=true;
 								}
 								break;
@@ -179,7 +179,7 @@ public class IrVisitor2 {
 		boolean myret=false;
 		for (int i = 0; i < quads.size(); i ++){
 			if(quads.get(i).a.equals(":=") && quads.get(i).b.equals(quads.get(i).d)){
-				 h2.setQuad(quads.get(i), new Quad(quads.get(i).num,"-","-","-","-"));
+				 h2.setQuad(quads.get(i), new Quad(quads.get(i).num,"_","-","-","-"));
 				 myret=true;
 				 continue;
 			}
